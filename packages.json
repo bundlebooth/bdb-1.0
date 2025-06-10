@@ -18,6 +18,25 @@
     ],
     "packageType": "Bundle"
   },
+    {
+    "name": "🔥 TEST2 : Glow & Go Mini Bundle (Up to 100 Guests)",
+    "guests": 100,
+    "maxDuration": 3,
+    "price": 1020,
+    "regPrice": 1250,
+    "discount": 18,
+    "description": "Create maximum impact with minimal setup using the Glow & Go Mini Bundle. Perfect for smaller gatherings, this bundle combines the immersive 360 Video Booth with a mesmerizing Dry Ice Fog effect to elevate your event's ambiance.",
+    "equipment": [
+      "360 Video Booth",
+      "Dry Ice Fog"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Bundle"
+  },
   {
     "name": "🎉 Essential Celebration Bundle",
     "guests": 150,
