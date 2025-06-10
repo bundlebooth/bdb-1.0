@@ -1,0 +1,57 @@
+ [
+  {
+    "name": "🔥 Glow & Go Mini Bundle (Up to 100 Guests)",
+    "guests": 100,
+    "maxDuration": 3,
+    "price": 1020,
+    "regPrice": 1250,
+    "discount": 18,
+    "description": "Create maximum impact with minimal setup using the Glow & Go Mini Bundle. Perfect for smaller gatherings, this bundle combines the immersive 360 Video Booth with a mesmerizing Dry Ice Fog effect to elevate your event's ambiance.",
+    "equipment": [
+      "360 Video Booth",
+      "Dry Ice Fog"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "🎉 Essential Celebration Bundle",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 1160,
+    "regPrice": 1450,
+    "discount": 20,
+    "description": "Celebrate with style using our Essential Celebration Bundle. This package includes a Photo Booth for fun snapshots, an Audio Guest Book for heartfelt messages, and Sparkler Boxes for a dazzling touch.",
+    "equipment": [
+      "Photo Booth",
+      "Audio Guest Book",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "🪩 Laser First Dance - Classic Package",
+    "guests": 200,
+    "maxDuration": 1,
+    "price": 900,
+    "regPrice": 1100,
+    "discount": 18,
+    "description": "Make your first dance truly unforgettable with our Laser First Dance Experience! Set beneath a canopy of synchronized laser lights and dreamy effects.",
+    "equipment": [
+      "Laser Effect for First Dance"
+    ],
+    "note": "Laser light show for first dance",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  }
+]
