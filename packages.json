@@ -1,25 +1,6 @@
- [
+[
   {
     "name": "🔥 Glow & Go Mini Bundle (Up to 100 Guests)",
-    "guests": 100,
-    "maxDuration": 3,
-    "price": 1020,
-    "regPrice": 1250,
-    "discount": 18,
-    "description": "Create maximum impact with minimal setup using the Glow & Go Mini Bundle. Perfect for smaller gatherings, this bundle combines the immersive 360 Video Booth with a mesmerizing Dry Ice Fog effect to elevate your event's ambiance.",
-    "equipment": [
-      "360 Video Booth",
-      "Dry Ice Fog"
-    ],
-    "note": "Additional charges apply for extended hours or additional services.",
-    "eventType": [
-      "All",
-      "Corporate"
-    ],
-    "packageType": "Bundle"
-  },
-    {
-    "name": "🔥 TEST2 : Glow & Go Mini Bundle (Up to 100 Guests)",
     "guests": 100,
     "maxDuration": 3,
     "price": 1020,
@@ -55,6 +36,671 @@
       "All"
     ],
     "packageType": "Bundle"
+  },
+  {
+    "name": "📸 Ultimate Photo Experience Bundle",
+    "guests": 200,
+    "maxDuration": 6,
+    "price": 1680,
+    "regPrice": 2100,
+    "discount": 20,
+    "description": "Turn your event into a full-blown media moment with the Ultimate Photo Experience Bundle. Featuring a Photo Booth, 360 Video Booth, and Magazine Photo Booth Box for a variety of stunning photo ops.",
+    "equipment": [
+      "Photo Booth",
+      "360 Video Booth",
+      "Magazine Photo Booth Box"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "🥂 Elegant Engagement Bundle (Weddings Only)",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 1440,
+    "regPrice": 1800,
+    "discount": 20,
+    "description": "Perfect for intimate wedding receptions, the Elegant Engagement Bundle offers a Photo Booth, Audio Guest Book, and Sparkler Boxes to capture and celebrate every romantic moment.",
+    "equipment": [
+      "Photo Booth",
+      "Audio Guest Book",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Wedding"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "🧊 Chill & Capture Bundle",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 1680,
+    "regPrice": 2100,
+    "discount": 20,
+    "description": "Capture every cool moment with the Chill & Capture Bundle. Includes a Photo Booth, 360 Video Booth, and Sparkler Boxes for a vibrant and memorable event experience.",
+    "equipment": [
+      "Photo Booth",
+      "360 Video Booth",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "🎭 Glam Booth Experience",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 1980,
+    "regPrice": 2475,
+    "discount": 20,
+    "description": "Experience the glam with our premium Glam Booth Experience. Features a Photo Booth, Magazine Photo Booth Box, and Sparkler Boxes for a high-fashion event vibe.",
+    "equipment": [
+      "Photo Booth",
+      "Magazine Photo Booth Box",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "✨ Signature Experience Bundle",
+    "guests": 200,
+    "maxDuration": 8,
+    "price": 2760,
+    "regPrice": 3450,
+    "discount": 20,
+    "description": "Make your event unforgettable with the Signature Experience. Combines a Photo Booth, 360 Video Booth, Audio Guest Book, and Sparkler Boxes for a comprehensive celebration package.",
+    "equipment": [
+      "Photo Booth",
+      "360 Video Booth",
+      "Audio Guest Book",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "🎊 Social Soirée Bundle",
+    "guests": 200,
+    "maxDuration": 8,
+    "price": 2760,
+    "regPrice": 3450,
+    "discount": 20,
+    "description": "Host a social soirée with flair and fun. This bundle includes a Photo Booth, 360 Video Booth, and Sparkler Boxes to keep the energy high and the memories vivid.",
+    "equipment": [
+      "Photo Booth",
+      "360 Video Booth",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "💃 First Dance Fantasy Bundle",
+    "guests": 150,
+    "maxDuration": 8,
+    "price": 1920,
+    "regPrice": 2400,
+    "discount": 20,
+    "description": "Celebrate your first dance in style with the First Dance Fantasy Bundle. Features a Photo Booth, Audio Guest Book, and a stunning Laser Effect for First Dance.",
+    "equipment": [
+      "Photo Booth",
+      "Audio Guest Book",
+      "Laser Effect for First Dance"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Wedding"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "💼 Corporate Kickoff Bundle",
+    "guests": 300,
+    "maxDuration": 8,
+    "price": 3360,
+    "regPrice": 4200,
+    "discount": 20,
+    "description": "Kick off your corporate event with style. This bundle includes a Photo Booth, 360 Video Booth, and Sparkler Boxes for a professional yet engaging experience.",
+    "equipment": [
+      "Photo Booth",
+      "360 Video Booth",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "🥳 Milestone Magic Bundle",
+    "guests": 200,
+    "maxDuration": 6,
+    "price": 1680,
+    "regPrice": 2100,
+    "discount": 20,
+    "description": "Celebrate milestones with magic. Includes a Photo Booth, 360 Video Booth, and Sparkler Boxes to mark the occasion with flair.",
+    "equipment": [
+      "Photo Booth",
+      "360 Video Booth",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "🍩 Morning Mixer Bundle (Brunch Events)",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 1320,
+    "regPrice": 1650,
+    "discount": 20,
+    "description": "Perfect for brunch and daytime events, the Morning Mixer Bundle includes a Photo Booth and Audio Guest Book for a fun and heartfelt experience.",
+    "equipment": [
+      "Photo Booth",
+      "Audio Guest Book"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "☕🍓 Café & Chill Bundle (50 Guests)",
+    "guests": 50,
+    "maxDuration": 3,
+    "price": 720,
+    "regPrice": 900,
+    "discount": 20,
+    "description": "Relax and enjoy with the Café & Chill Bundle. Features a Photo Booth and Espresso & Coffee Booth for a cozy, caffeinated event experience.",
+    "equipment": [
+      "Photo Booth",
+      "Espresso & Coffee Booth"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "🍧 Cool Crowd Bundle (Summer Events)",
+    "guests": 200,
+    "maxDuration": 6,
+    "price": 1680,
+    "regPrice": 2100,
+    "discount": 20,
+    "description": "Keep it cool with the Cool Crowd Bundle. Includes a Photo Booth and 360 Video Booth, perfect for summer events.",
+    "equipment": [
+      "Photo Booth",
+      "360 Video Booth"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "💑 Luxury Romance Bundle (Weddings Only)",
+    "guests": 200,
+    "maxDuration": 6,
+    "price": 1920,
+    "regPrice": 2400,
+    "discount": 20,
+    "description": "Luxury wedding bundle for romance. Features a Photo Booth, Audio Guest Book, and Sparkler Boxes for an elegant celebration.",
+    "equipment": [
+      "Photo Booth",
+      "Audio Guest Book",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Wedding"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "☕📸 Corporate Connect Bundle (Up to 150 Guests)",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 1680,
+    "regPrice": 2100,
+    "discount": 20,
+    "description": "Connect your corporate guests with the Corporate Connect Bundle. Includes a Photo Booth and Magazine Photo Booth Box for a professional touch.",
+    "equipment": [
+      "Photo Booth",
+      "Magazine Photo Booth Box"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "🌟 The Grand Wedding Experience (Weddings Only) (Up to 300 Guests)",
+    "guests": 300,
+    "maxDuration": 10,
+    "price": 3840,
+    "regPrice": 4800,
+    "discount": 20,
+    "description": "Grand wedding experience with a Photo Booth, 360 Video Booth, and Sparkler Boxes for a spectacular celebration.",
+    "equipment": [
+      "Photo Booth",
+      "360 Video Booth",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Wedding"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "🥳 All-in-One Party Bundle",
+    "guests": 250,
+    "maxDuration": 8,
+    "price": 3120,
+    "regPrice": 3900,
+    "discount": 20,
+    "description": "All your party needs bundled together. Includes a Photo Booth, 360 Video Booth, Audio Guest Book, and Sparkler Boxes for a complete event experience.",
+    "equipment": [
+      "Photo Booth",
+      "360 Video Booth",
+      "Audio Guest Book",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Bundle"
+  },
+  {
+    "name": "📸 Photo Booth - Classic Package",
+    "guests": 200,
+    "maxDuration": 3,
+    "price": 500,
+    "regPrice": 600,
+    "discount": 17,
+    "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. All photos delivered digitally (no prints).",
+    "equipment": [
+      "Photo Booth"
+    ],
+    "note": "Additional hour: C$100",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "📸 Photo Booth - Deluxe Package",
+    "guests": 200,
+    "maxDuration": 3,
+    "price": 600,
+    "regPrice": 700,
+    "discount": 14,
+    "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. Unlimited prints + digital copies.",
+    "equipment": [
+      "Photo Booth"
+    ],
+    "note": "Additional hour: C$100",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "🎥 360 Video Booth - Classic Package",
+    "guests": 200,
+    "maxDuration": 3,
+    "price": 600,
+    "regPrice": 700,
+    "discount": 14,
+    "description": "Elevate your event with the sophistication of our 360 Video Booth experience. Guests are invited to step onto a sleek platform as a rotating camera captures elegant, slow-motion videos from every angle.",
+    "equipment": [
+      "360 Video Booth"
+    ],
+    "note": "Additional hour: C$100",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "☎️ Audio Guest Book - Classic Package",
+    "guests": 200,
+    "maxDuration": 6,
+    "price": 350,
+    "regPrice": 400,
+    "discount": 12,
+    "description": "The Audio Guest Book offers a timeless and personal way to capture heartfelt moments. Guests simply pick up the vintage-style phone and leave a message.",
+    "equipment": [
+      "Audio Guest Book"
+    ],
+    "note": "Additional hour: C$50",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "⭐ Magazine Photo Booth Box - Classic Package",
+    "guests": 200,
+    "maxDuration": 6,
+    "price": 600,
+    "regPrice": 700,
+    "discount": 14,
+    "description": "Bring the allure of a fashion magazine cover to your next event with our Magazine Photo Booth Box. Guests pose inside a life-sized, custom-branded magazine frame.",
+    "equipment": [
+      "Magazine Photo Booth Box"
+    ],
+    "note": "Additional hour: C$100",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "☕ Espresso & Coffee Booth (50 Guests)",
+    "guests": 50,
+    "maxDuration": 2,
+    "price": 700,
+    "regPrice": 800,
+    "discount": 13,
+    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "equipment": [
+      "Espresso & Coffee Booth"
+    ],
+    "note": "Additional hour: C$100",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "☕ Espresso & Coffee Booth (100 Guests)",
+    "guests": 100,
+    "maxDuration": 2,
+    "price": 1100,
+    "regPrice": 1300,
+    "discount": 15,
+    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "equipment": [
+      "Espresso & Coffee Booth"
+    ],
+    "note": "Additional hour: C$150",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "☕ Espresso & Coffee Booth (150 Guests)",
+    "guests": 150,
+    "maxDuration": 2,
+    "price": 1500,
+    "regPrice": 1800,
+    "discount": 17,
+    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, cappuccinos, and more.",
+    "equipment": [
+      "Espresso & Coffee Booth"
+    ],
+    "note": "Additional hour: C$175",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "☕ Espresso & Coffee Booth (200 Guests)",
+    "guests": 200,
+    "maxDuration": 2,
+    "price": 1900,
+    "regPrice": 2300,
+    "discount": 17,
+    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "equipment": [
+      "Espresso & Coffee Booth"
+    ],
+    "note": "Additional hour: C$200",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "🧇 Waffle Booth (50 Guests)",
+    "guests": 50,
+    "maxDuration": 2,
+    "price": 800,
+    "regPrice": 900,
+    "discount": 11,
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "equipment": [
+      "Waffle Booth"
+    ],
+    "note": "Additional hour: C$100",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "🧇 Waffle Booth (100 Guests)",
+    "guests": 100,
+    "maxDuration": 2,
+    "price": 1200,
+    "regPrice": 1400,
+    "discount": 14,
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "equipment": [
+      "Waffle Booth"
+    ],
+    "note": "Additional hour: C$150",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "🧇 Waffle Booth (150 Guests)",
+    "guests": 150,
+    "maxDuration": 2,
+    "price": 1600,
+    "regPrice": 1900,
+    "discount": 16,
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "equipment": [
+      "Waffle Booth"
+    ],
+    "note": "Additional hour: C$175",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "🧇 Waffle Booth (200 Guests)",
+    "guests": 200,
+    "maxDuration": 2,
+    "price": 2000,
+    "regPrice": 2400,
+    "discount": 17,
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "equipment": [
+      "Waffle Booth"
+    ],
+    "note": "Additional hour: C$200",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "🥤 Smoothies Booth (50 Guests)",
+    "guests": 50,
+    "maxDuration": 2,
+    "price": 900,
+    "regPrice": 1000,
+    "discount": 10,
+    "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies with real fruits, natural ingredients and a variety of add-ins.",
+    "equipment": [
+      "Smoothies Booth"
+    ],
+    "note": "Additional hour: C$100",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "🥤 Smoothies Booth (100 Guests)",
+    "guests": 100,
+    "maxDuration": 2,
+    "price": 1300,
+    "regPrice": 1500,
+    "discount": 13,
+    "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies using real fruits, natural ingredients and a variety of add-ins.",
+    "equipment": [
+      "Smoothies Booth"
+    ],
+    "note": "Additional hour: C$150",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "🥤 Smoothies Booth (150 Guests)",
+    "guests": 150,
+    "maxDuration": 2,
+    "price": 1700,
+    "regPrice": 2000,
+    "discount": 15,
+    "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies using real fruits, natural ingredients and a variety of add-ins.",
+    "equipment": [
+      "Smoothies Booth"
+    ],
+    "note": "Additional hour: C$175",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "🥤 Smoothies Booth (200 Guests)",
+    "guests": 200,
+    "maxDuration": 2,
+    "price": 2100,
+    "regPrice": 2500,
+    "discount": 16,
+    "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies using real fruits, natural ingredients and a variety of add-ins.",
+    "equipment": [
+      "Smoothies Booth"
+    ],
+    "note": "Additional hour: C$200",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "✨ Sparkler Boxes - Classic Package",
+    "guests": 200,
+    "maxDuration": 1,
+    "price": 400,
+    "regPrice": 450,
+    "discount": 11,
+    "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
+    "equipment": [
+      "Sparkler Boxes"
+    ],
+    "note": "Two sparklers included",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "✨ Sparkler Boxes - Deluxe Package",
+    "guests": 200,
+    "maxDuration": 1,
+    "price": 600,
+    "regPrice": 700,
+    "discount": 14,
+    "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
+    "equipment": [
+      "Sparkler Boxes"
+    ],
+    "note": "Four sparklers included",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "✨ Sparkler Boxes - Red Carpet Package",
+    "guests": 200,
+    "maxDuration": 1,
+    "price": 800,
+    "regPrice": 1000,
+    "discount": 20,
+    "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
+    "equipment": [
+      "Sparkler Boxes"
+    ],
+    "note": "Six sparklers included",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
+  },
+  {
+    "name": "🌫️ Dry Ice (Fog Effect) - Classic Package",
+    "guests": 200,
+    "maxDuration": 1,
+    "price": 400,
+    "regPrice": 500,
+    "discount": 20,
+    "description": "Create a stunning, cinematic atmosphere with our Dry Ice Fog Effect! This low-lying fog adds a magical touch to first dances, stage entrances, or any moment you want to make unforgettable.",
+    "equipment": [
+      "Dry Ice Fog"
+    ],
+    "note": "One dry ice machine included",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Individual"
   },
   {
     "name": "🪩 Laser First Dance - Classic Package",
