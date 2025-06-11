@@ -16,7 +16,8 @@
       "All",
       "Corporate"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packages/ola/services/glow-go-mini-bundle-up-to-100-guests#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "🎉 Essential Celebration Bundle",
@@ -35,7 +36,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packages/ola/services/essential-celebration-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "📸 Ultimate Photo Experience Bundle",
@@ -54,7 +56,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packages/ola/services/ultimate-photo-experience-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "🥂 Elegant Engagement Bundle (Weddings Only)",
@@ -74,7 +77,8 @@
       "All",
       "Wedding"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packages/ola/services/elegant-engagement-bundle-weddings-only#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "🧊 Chill & Capture Bundle",
@@ -93,7 +97,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packaging/ola/services/chill-capture-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "🎭 Glam Booth Experience",
@@ -112,7 +117,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/ola/services/glam-booth-experience#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "✨ Signature Experience Bundle",
@@ -132,12 +138,13 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/signature-experience-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "🎊 Social Soirée Bundle",
     "guests": 200,
-    "maxDuration": 8,
+    "Approximate maxDuration": 8,
     "price": 2760,
     "regPrice": 3450,
     "discount": 20,
@@ -151,7 +158,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/social-soiree-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "💃 First Dance Fantasy Bundle",
@@ -171,7 +179,8 @@
       "All",
       "Wedding"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/first-dance-fantasy-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "💼 Corporate Kickoff Bundle",
@@ -191,7 +200,8 @@
       "All",
       "Corporate"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/corporate-kickoff-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "🥳 Milestone Magic Bundle",
@@ -210,7 +220,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/milestone-magic-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "🍩 Morning Mixer Bundle (Brunch Events)",
@@ -228,7 +239,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/morning-mixer-bundle-brunch-events#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "☕🍓 Café & Chill Bundle (50 Guests)",
@@ -246,7 +258,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/cafe-chill-bundle-50-guests#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "🍧 Cool Crowd Bundle (Summer Events)",
@@ -264,7 +277,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/cool-crowd-bundle-summer-events#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "💑 Luxury Romance Bundle (Weddings Only)",
@@ -284,7 +298,8 @@
       "All",
       "Wedding"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/luxury-romance-bundle-weddings-only#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "☕📸 Corporate Connect Bundle (Up to 150 Guests)",
@@ -303,7 +318,8 @@
       "All",
       "Corporate"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/corporate-connect-bundle-up-to-150-guests#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "🌟 The Grand Wedding Experience (Weddings Only) (Up to 300 Guests)",
@@ -323,7 +339,8 @@
       "All",
       "Wedding"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/the-grand-wedding-experience-weddings-only-up-to-300-guests#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "🥳 All-in-One Party Bundle",
@@ -343,7 +360,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Bundle"
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/all-in-one-party-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
   },
   {
     "name": "📸 Photo Booth - Classic Package",
@@ -360,7 +378,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/photo-booth-classic"
   },
   {
     "name": "📸 Photo Booth - Deluxe Package",
@@ -377,7 +396,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/photo-booth-deluxe"
   },
   {
     "name": "🎥 360 Video Booth - Classic Package",
@@ -394,7 +414,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/360-video-booth"
   },
   {
     "name": "☎️ Audio Guest Book - Classic Package",
@@ -411,7 +432,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/audio-guest-book"
   },
   {
     "name": "⭐ Magazine Photo Booth Box - Classic Package",
@@ -428,7 +450,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/magazine-photo-booth"
   },
   {
     "name": "☕ Espresso & Coffee Booth (50 Guests)",
@@ -445,7 +468,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-50"
   },
   {
     "name": "☕ Espresso & Coffee Booth (100 Guests)",
@@ -462,7 +486,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-100"
   },
   {
     "name": "☕ Espresso & Coffee Booth (150 Guests)",
@@ -479,7 +504,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-150"
   },
   {
     "name": "☕ Espresso & Coffee Booth (200 Guests)",
@@ -496,7 +522,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-200"
   },
   {
     "name": "🧇 Waffle Booth (50 Guests)",
@@ -513,7 +540,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-50"
   },
   {
     "name": "🧇 Waffle Booth (100 Guests)",
@@ -530,7 +558,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-100"
   },
   {
     "name": "🧇 Waffle Booth (150 Guests)",
@@ -547,7 +576,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-150"
   },
   {
     "name": "🧇 Waffle Booth (200 Guests)",
@@ -564,7 +594,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-200"
   },
   {
     "name": "🥤 Smoothies Booth (50 Guests)",
@@ -581,7 +612,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-50"
   },
   {
     "name": "🥤 Smoothies Booth (100 Guests)",
@@ -598,7 +630,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-100"
   },
   {
     "name": "🥤 Smoothies Booth (150 Guests)",
@@ -615,7 +648,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-150"
   },
   {
     "name": "🥤 Smoothies Booth (200 Guests)",
@@ -632,7 +666,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-200"
   },
   {
     "name": "✨ Sparkler Boxes - Classic Package",
@@ -649,7 +684,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-classic"
   },
   {
     "name": "✨ Sparkler Boxes - Deluxe Package",
@@ -666,7 +702,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-deluxe"
   },
   {
     "name": "✨ Sparkler Boxes - Red Carpet Package",
@@ -683,7 +720,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-red-carpet"
   },
   {
     "name": "🌫️ Dry Ice (Fog Effect) - Classic Package",
@@ -700,7 +738,8 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/dry-ice-fog"
   },
   {
     "name": "🪩 Laser First Dance - Classic Package",
@@ -717,6 +756,7 @@
     "eventType": [
       "All"
     ],
-    "packageType": "Individual"
+    "packageType": "Individual",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/laser-first-dance"
   }
 ]
