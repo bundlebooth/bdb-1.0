@@ -38,7 +38,8 @@ async function syncServicesToCalcom() {
     const response = await fetch(calcomApiUrl, {
       headers: {
         'Authorization': `Bearer ${calcomApiKey}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'cal-api-version': '2024-06-14'
       }
     });
     if (!response.ok) {
@@ -46,6 +47,13 @@ async function syncServicesToCalcom() {
       throw new Error(`Failed to fetch event types: ${response.status} ${response.statusText}\nDetails: ${errorText}`);
     }
     const existingEventTypes = await response.json();
+
+    // Handle v2 API response (array) or v1 (object with data property)
+    const eventTypes = Array.isArray(existingEventTypes) ? existingEventTypes : existingEventTypes.data || [];
+    if (!Array.isArray(eventTypes)) {
+      console.error('Unexpected event types response:', JSON.stringify(existingEventTypes, null, 2));
+      throw new Error('Event types response is not an array');
+    }
 
     for (const service of services) {
       if (!service.name || !service.maxDuration || !service.price) {
@@ -65,7 +73,7 @@ async function syncServicesToCalcom() {
       };
 
       // Check if event type exists
-      const existingEvent = existingEventTypes.data?.find(e => e.slug === payload.slug);
+      const existingEvent = eventTypes.find(e => e.slug === payload.slug);
       const method = existingEvent ? 'PATCH' : 'POST';
       const url = existingEvent ? `${calcomApiUrl}/${existingEvent.id}` : calcomApiUrl;
 
@@ -74,7 +82,8 @@ async function syncServicesToCalcom() {
         method,
         headers: {
           'Authorization': `Bearer ${calcomApiKey}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'cal-api-version': '2024-06-14'
         },
         body: JSON.stringify(payload)
       });
@@ -90,7 +99,7 @@ async function syncServicesToCalcom() {
 
     // Delete event types not in JSON
     const serviceSlugs = services.map(s => s.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-'));
-    for (const eventType of existingEventTypes.data || []) {
+    for (const eventType of eventTypes) {
       if (!serviceSlugs.includes(eventType.slug)) {
         const deleteUrl = `${calcomApiUrl}/${eventType.id}`;
         console.log(`Sending DELETE request to: ${deleteUrl}`);
@@ -98,7 +107,8 @@ async function syncServicesToCalcom() {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${calcomApiKey}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'cal-api-version': '2024-06-14'
           }
         });
         if (!deleteResponse.ok) {
