@@ -1,22 +1,20 @@
-name: Sync Services to Cal.com
+name: Sync Services
 on:
   push:
-    paths:
-      - 'packages.json' # Trigger on changes to packages.json
+    branches: [main]
 jobs:
-  sync-services:
+  sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '18' # Use a recent Node.js version
-      - name: Install dependencies
-        run: npm install node-fetch
-      - name: Run sync script
-        run: node sync-services.js
+          node-version: '18'
+      - name: Install Dependencies
+        run: npm install
+      - name: Run Sync Script
         env:
-          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-          CALCOM_API_URL: 'https://api.cal.com/v2'
+          CALCOM_API_URL: ${{ secrets.CALCOM_API_URL }} # Should be https://api.cal.com/v2
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }} # Should be cal_abc123
+        run: node sync-services.js
