@@ -1,8 +1,10 @@
+
 const fs = require('fs');
 const https = require('https');
 
 const CALCOM_API_KEY = process.env.CALCOM_API_KEY;
 
+// Transform weekday strings to numeric values (Mon=1)
 const dayMap = {
   'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
   'Friday': 5, 'Saturday': 6, 'Sunday': 7
@@ -38,15 +40,9 @@ async function getEventTypeId(slug) {
 
 async function syncPackages() {
   const packages = JSON.parse(fs.readFileSync('./packages.json', 'utf8'));
-  const seenSlugs = new Set();
 
   for (const pkg of packages) {
     const slug = (pkg.name || 'placeholder').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    if (seenSlugs.has(slug)) {
-      console.warn(`Duplicate slug skipped: ${slug}`);
-      continue;
-    }
-    seenSlugs.add(slug);
 
     const payload = {
       title: pkg.name || 'Placeholder Title',
@@ -87,11 +83,7 @@ async function syncPackages() {
       let body = '';
       res.on('data', chunk => body += chunk);
       res.on('end', () => {
-        if (res.statusCode >= 400) {
-          console.error(`❌ Error [${res.statusCode}] for ${slug}: ${body}`);
-        } else {
-          console.log(`✅ Success for ${slug}: ${body}`);
-        }
+        console.log(`Response for [${slug}] - ${res.statusCode}: ${body}`);
       });
     });
 
@@ -101,9 +93,6 @@ async function syncPackages() {
 
     req.write(JSON.stringify(payload));
     req.end();
-
-    // Wait between requests to avoid throttling
-    await new Promise(resolve => setTimeout(resolve, 500));
   }
 }
 
