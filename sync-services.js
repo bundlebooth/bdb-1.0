@@ -1,8 +1,6 @@
-const fetch = require('node-fetch');
-
 async function fetchServices() {
   const response = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-1.0/refs/heads/main/packages.json');
-  if (!response.ok) throw new Error('Failed to fetch JSON from GitHub');
+  if (!response.ok) throw new Error(`Failed to fetch JSON from GitHub: ${response.statusText}`);
   return response.json();
 }
 
@@ -10,28 +8,45 @@ async function syncServicesToCalcom() {
   const calcomApiUrl = process.env.CALCOM_API_URL;
   const calcomApiKey = process.env.CALCOM_API_KEY;
 
+  if (!calcomApiUrl || !calcomApiKey) {
+    throw new Error('Missing CALCOM_API_URL or CALCOM_API_KEY environment variables');
+  }
+
   try {
     const services = await fetchServices();
 
-    // Fetch existing event types to check for updates
+    // Validate services data
+    if (!Array.isArray(services)) {
+      throw new Error('Fetched services data is not an array');
+    }
+
+    // Fetch existing event types
     const existingEventTypes = await fetch(calcomApiUrl, {
       headers: { 'Authorization': `Bearer ${calcomApiKey}` }
-    }).then(res => res.json());
+    }).then(res => {
+      if (!res.ok) throw new Error(`Failed to fetch event types: ${res.statusText}`);
+      return res.json();
+    });
 
     for (const service of services) {
+      if (!service.name || !service.maxDuration || !service.price) {
+        console.warn(`Skipping invalid service: ${JSON.stringify(service)}`);
+        continue;
+      }
+
       const payload = {
         title: service.name,
-        description: `${service.description}${service.note ? `\n\nNote: ${service.note}` : ''}`,
+        description: `${service.description || ''}${service.note ? `\n\nNote: ${service.note}` : ''}`,
         length: service.maxDuration * 60, // Convert hours to minutes
         price: service.price * 100, // Convert dollars to cents
         currency: 'usd', // Update to 'cad' if needed
-        slug: service.name.toLowerCase().replace(/\s+/g, '-'),
+        slug: service.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-'),
         requiresConfirmation: false,
         locations: [{ type: 'integrations:google:calendar' }]
       };
 
       // Check if event type exists
-      const existingEvent = existingEventTypes.data.find(e => e.slug === payload.slug);
+      const existingEvent = existingEventTypes.data?.find(e => e.slug === payload.slug);
       const method = existingEvent ? 'PATCH' : 'POST';
       const url = existingEvent ? `${calcomApiUrl}/${existingEvent.id}` : calcomApiUrl;
 
@@ -44,23 +59,30 @@ async function syncServicesToCalcom() {
         body: JSON.stringify(payload)
       });
 
+      if (!response.ok) {
+        throw new Error(`Failed to ${method} event type ${service.name}: ${response.statusText}`);
+      }
+
       const result = await response.json();
       console.log(`${method === 'POST' ? 'Created' : 'Updated'} event type: ${service.name}`, result);
     }
 
     // Delete event types not in JSON
-    const serviceSlugs = services.map(s => s.name.toLowerCase().replace(/\s+/g, '-'));
-    for (const eventType of existingEventTypes.data) {
+    const serviceSlugs = services.map(s => s.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-'));
+    for (const eventType of existingEventTypes.data || []) {
       if (!serviceSlugs.includes(eventType.slug)) {
-        await fetch(`${calcomApiUrl}/${eventType.id}`, {
+        const response = await fetch(`${calcomApiUrl}/${eventType.id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${calcomApiKey}` }
         });
+        if (!response.ok) {
+          throw new Error(`Failed to delete event type ${eventType.title}: ${response.statusText}`);
+        }
         console.log(`Deleted event type: ${eventType.title}`);
       }
     }
   } catch (error) {
-    console.error('Error syncing services:', error);
+    console.error('Error syncing services:', error.message);
     process.exit(1); // Exit with error to fail the GitHub Action
   }
 }
