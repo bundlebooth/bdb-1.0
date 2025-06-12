@@ -58,9 +58,9 @@ jobs:
       - name: Map JSON and Push to Cal.com
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-          STRIPE_ACTIVE: ${{ steps.stripe-check.outputs.STRIPE_ACTIVE }}
+          STRIPE_ACTIVE: ${{ env.STRIPE_ACTIVE }}
         run: |
-          node -e "
+          node <<EOF
             const fs = require('fs');
             const https = require('https');
 
@@ -101,8 +101,14 @@ jobs:
 
             async function processEvents() {
               try {
-                const packages = JSON.parse(fs.readFileSync('packages.json'));
-                
+                console.log('Reading packages.json...');
+                let packages = JSON.parse(fs.readFileSync('packages.json'));
+
+                // Handle nested package structure if present
+                if (packages.some(pkg => Object.keys(pkg).length === 1)) {
+                  packages = packages.map(pkg => Object.values(pkg)[0]);
+                }
+
                 // Validate packages.json
                 for (const pkg of packages) {
                   if (!pkg.slug || !pkg.name) {
@@ -112,8 +118,10 @@ jobs:
                 }
 
                 const isStripeActive = process.env.STRIPE_ACTIVE === 'true';
+                console.log('Stripe active:', isStripeActive);
 
                 for (const pkg of packages) {
+                  console.log('Processing package:', pkg.slug);
                   const transformed = {
                     title: pkg.name || 'Placeholder Title',
                     slug: pkg.slug || 'placeholder',
@@ -143,7 +151,8 @@ jobs:
                   const slug = transformed.slug;
                   const eventTypeId = await getEventTypeId(slug);
                   const method = eventTypeId ? 'PUT' : 'POST';
-                  const path = eventTypeId ? `/v2/event-types/${eventTypeId}` : '/v2/event-types';
+                  const path = eventTypeId ? \`/v2/event-types/\${eventTypeId}\` : '/v2/event-types';
+                  console.log('API call:', method, path);
 
                   const options = {
                     hostname: 'api.cal.com',
@@ -160,14 +169,14 @@ jobs:
                     res.on('data', (chunk) => data += chunk);
                     res.on('end', () => {
                       if (res.statusCode >= 200 && res.statusCode < 300) {
-                        console.log(`Success for ${slug}: ${res.statusCode}, Response: ${data}`);
+                        console.log(\`Success for \${slug}: \${res.statusCode}, Response: \${data}\`);
                       } else {
-                        console.error(`Failed for ${slug}: ${res.statusCode}, Response: ${data}`);
+                        console.error(\`Failed for \${slug}: \${res.statusCode}, Response: \${data}\`);
                       }
                     });
                   });
                   req.on('error', (e) => {
-                    console.error(`Error for ${slug}: ${e.message}`);
+                    console.error(\`Error for \${slug}: \${e.message}\`);
                   });
                   req.write(JSON.stringify(transformed));
                   req.end();
@@ -182,4 +191,4 @@ jobs:
             }
 
             processEvents().catch(console.error);
-          "
+          EOF
