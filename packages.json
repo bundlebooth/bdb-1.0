@@ -1,6 +1,6 @@
 [
   {
-    "name": "🔥 Glow & Go Mini Bundle (Up to 100 Guests)",
+    "name": "🔥 Glow & Go Mini Bundle",
     "guests": 100,
     "maxDuration": 3,
     "price": 1020,
@@ -14,10 +14,13 @@
     "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
       "All",
-      "Corporate"
+      "Networking Event"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/booking/ola/services/glow-go-mini-bundle-up-to-100-guests"
+    "bookingUrl": "https://bundlebooth.ca/booking/ola/services/glow-go-mini-bundle-up-to-100-guests",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
     "name": "🎉 Essential Celebration Bundle",
@@ -34,10 +37,14 @@
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
-      "All"
+      "All",
+      "Engagement Party"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packages/ola/services/essential-celebration-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packages/ola/services/essential-celebration-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
     "name": "📸 Ultimate Photo Experience Bundle",
@@ -54,13 +61,17 @@
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
-      "All"
+      "All",
+      "Anniversary Celebration"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packages/ola/services/ultimate-photo-experience-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packages/ola/services/ultimate-photo-experience-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "🥂 Elegant Engagement Bundle (Weddings Only)",
+    "name": "💍✨ Elegant Engagement Bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 1440,
@@ -78,10 +89,13 @@
       "Wedding"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packages/ola/services/elegant-engagement-bundle-weddings-only#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/elegant-engagement-bundle-weddings-only#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "🧊 Chill & Capture Bundle",
+    "name": "🎉📸 Chill & Capture Bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 1680,
@@ -95,13 +109,17 @@
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
-      "All"
+      "All",
+      "Birthday Party"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packaging/ola/services/chill-capture-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packaging/ola/services/chill-capture-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "🎭 Glam Booth Experience",
+    "name": "🌟📖 Glam Booth Experience",
     "guests": 150,
     "maxDuration": 6,
     "price": 1980,
@@ -115,13 +133,17 @@
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
-      "All"
+      "All",
+      "Wedding"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/ola/services/glam-booth-experience#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/ola/services/glam-booth-experience#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "✨ Signature Experience Bundle",
+    "name": "💞🎤 Signature Experience Bundle",
     "guests": 200,
     "maxDuration": 8,
     "price": 2760,
@@ -136,15 +158,19 @@
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
-      "All"
+      "All",
+      "Anniversary Celebration"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/signature-experience-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/signature-experience-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "🎊 Social Soirée Bundle",
+    "name": "🎉📹 Social Soirée Bundle",
     "guests": 200,
-    "Approximate maxDuration": 8,
+    "maxDuration": 8,
     "price": 2760,
     "regPrice": 3450,
     "discount": 20,
@@ -156,13 +182,17 @@
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
-      "All"
+      "All",
+      "Engagement Party"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/social-soiree-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/social-soiree-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "💃 First Dance Fantasy Bundle",
+    "name": "💃💍 First Dance Fantasy Bundle",
     "guests": 150,
     "maxDuration": 8,
     "price": 1920,
@@ -180,10 +210,13 @@
       "Wedding"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/first-dance-fantasy-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/first-dance-fantasy-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "💼 Corporate Kickoff Bundle",
+    "name": "💼📸 Corporate Kickoff Bundle",
     "guests": 300,
     "maxDuration": 8,
     "price": 3360,
@@ -201,10 +234,13 @@
       "Corporate"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/corporate-kickoff-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/corporate-kickoff-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "🥳 Milestone Magic Bundle",
+    "name": "🎓✨ Milestone Magic Bundle",
     "guests": 200,
     "maxDuration": 6,
     "price": 1680,
@@ -218,13 +254,17 @@
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
-      "All"
+      "All",
+      "Graduation Party"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/milestone-magic-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/milestone-magic-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "🍩 Morning Mixer Bundle (Brunch Events)",
+    "name": "☕📸 Morning Mixer Bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 1320,
@@ -237,13 +277,17 @@
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
-      "All"
+      "All",
+      "Bridal Shower"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/morning-mixer-bundle-brunch-events#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/morning-mixer-bundle-brunch-events#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "☕🍓 Café & Chill Bundle (50 Guests)",
+    "name": "☕🖼️ Café & Chill Bundle",
     "guests": 50,
     "maxDuration": 3,
     "price": 720,
@@ -256,13 +300,17 @@
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
-      "All"
+      "All",
+      "Bridal Shower"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/cafe-chill-bundle-50-guests#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/cafe-chill-bundle-50-guests#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "🍧 Cool Crowd Bundle (Summer Events)",
+    "name": "🎉📹 Cool Crowd Bundle",
     "guests": 200,
     "maxDuration": 6,
     "price": 1680,
@@ -275,13 +323,17 @@
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
-      "All"
+      "All",
+      "Birthday Party"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/cool-crowd-bundle-summer-events#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/cool-crowd-bundle-summer-events#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "💑 Luxury Romance Bundle (Weddings Only)",
+    "name": "❤️✨ Luxury Romance Bundle",
     "guests": 200,
     "maxDuration": 6,
     "price": 1920,
@@ -299,10 +351,13 @@
       "Wedding"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/luxury-romance-bundle-weddings-only#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/luxury-romance-bundle-weddings-only#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "☕📸 Corporate Connect Bundle (Up to 150 Guests)",
+    "name": "🎤📖 Corporate Connect Bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 1680,
@@ -316,13 +371,16 @@
     "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
       "All",
-      "Corporate"
+      "Press Conference"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/corporate-connect-bundle-up-to-150-guests#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/corporate-connect-bundle-up-to-150-guests#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "🌟 The Grand Wedding Experience (Weddings Only) (Up to 300 Guests)",
+    "name": "💒🎇 The Grand Wedding Experience",
     "guests": 300,
     "maxDuration": 10,
     "price": 3840,
@@ -340,10 +398,13 @@
       "Wedding"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/the-grand-wedding-experience-weddings-only-up-to-300-guests#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/the-grand-wedding-experience-weddings-only-up-to-300-guests#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "🥳 All-in-One Party Bundle",
+    "name": "🎂🎉 All-in-One Party Bundle",
     "guests": 250,
     "maxDuration": 8,
     "price": 3120,
@@ -358,13 +419,17 @@
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
-      "All"
+      "All",
+      "Birthday Party"
     ],
     "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/all-in-one-party-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/all-in-one-party-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "Y"
   },
   {
-    "name": "📸 Photo Booth - Classic Package",
+    "name": "📸🖼️ Photo Booth - Classic Package",
     "guests": 200,
     "maxDuration": 3,
     "price": 500,
@@ -376,13 +441,17 @@
     ],
     "note": "Additional hour: C$100",
     "eventType": [
-      "All"
+      "All",
+      "Birthday Party"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/photo-booth-classic"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/photo-booth-classic",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "📸 Photo Booth - Deluxe Package",
+    "name": "📸🎉 Photo Booth - Deluxe Package",
     "guests": 200,
     "maxDuration": 3,
     "price": 600,
@@ -394,49 +463,61 @@
     ],
     "note": "Additional hour: C$100",
     "eventType": [
-      "All"
+      "All",
+      "Birthday Party"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/photo-booth-deluxe"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/photo-booth-deluxe",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "🎥 360 Video Booth - Classic Package",
+    "name": "🎥🌟 360 Video Booth - Classic Package",
     "guests": 200,
     "maxDuration": 3,
     "price": 600,
     "regPrice": 700,
     "discount": 14,
-    "description": "Elevate your event with the sophistication of our 360 Video Booth experience. Guests are invited to step onto a sleek platform as a rotating camera captures elegant, slow-motion videos from every angle.",
+    "description": "Elevate your event with the sophistication of our 360 Video Booth experience. Guests step onto a sleek platform as a rotating camera captures elegant, slow-motion videos from every angle.",
     "equipment": [
       "360 Video Booth"
     ],
     "note": "Additional hour: C$100",
     "eventType": [
-      "All"
+      "All",
+      "Wedding"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/360-video-booth"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/360-video-booth",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "☎️ Audio Guest Book - Classic Package",
+    "name": "🎤💞 Audio Guest Book - Classic Package",
     "guests": 200,
     "maxDuration": 6,
     "price": 350,
     "regPrice": 400,
     "discount": 12,
-    "description": "The Audio Guest Book offers a timeless and personal way to capture heartfelt moments. Guests simply pick up the vintage-style phone and leave a message.",
+    "description": "The Audio Guest Book offers a timeless and personal way to capture heartfelt messages. Guests simply pick up the vintage-style phone and leave a message.",
     "equipment": [
       "Audio Guest Book"
     ],
     "note": "Additional hour: C$50",
     "eventType": [
-      "All"
+      "All",
+      "Anniversary Celebration"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/audio-guest-book"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/audio-guest-book",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "⭐ Magazine Photo Booth Box - Classic Package",
+    "name": "📖🌟 Magazine Photo Booth Box - Classic Package",
     "guests": 200,
     "maxDuration": 6,
     "price": 600,
@@ -448,13 +529,17 @@
     ],
     "note": "Additional hour: C$100",
     "eventType": [
-      "All"
+      "All",
+      "Press Conference"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/magazine-photo-booth"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/magazine-photo-booth",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "☕ Espresso & Coffee Booth (50 Guests)",
+    "name": "☕🍵 Espresso & Coffee Booth",
     "guests": 50,
     "maxDuration": 2,
     "price": 700,
@@ -466,13 +551,17 @@
     ],
     "note": "Additional hour: C$100",
     "eventType": [
-      "All"
+      "All",
+      "Bridal Shower"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-50"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-50",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "☕ Espresso & Coffee Booth (100 Guests)",
+    "name": "☕🍵 Espresso & Coffee Booth",
     "guests": 100,
     "maxDuration": 2,
     "price": 1100,
@@ -484,13 +573,17 @@
     ],
     "note": "Additional hour: C$150",
     "eventType": [
-      "All"
+      "All",
+      "Bridal Shower"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-100"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-100",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "☕ Espresso & Coffee Booth (150 Guests)",
+    "name": "☕🍵 Espresso & Coffee Booth",
     "guests": 150,
     "maxDuration": 2,
     "price": 1500,
@@ -502,13 +595,17 @@
     ],
     "note": "Additional hour: C$175",
     "eventType": [
-      "All"
+      "All",
+      "Bridal Shower"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-150"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-150",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "☕ Espresso & Coffee Booth (200 Guests)",
+    "name": "☕🍵 Espresso & Coffee Booth",
     "guests": 200,
     "maxDuration": 2,
     "price": 1900,
@@ -520,13 +617,17 @@
     ],
     "note": "Additional hour: C$200",
     "eventType": [
-      "All"
+      "All",
+      "Bridal Shower"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-200"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-200",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "🧇 Waffle Booth (50 Guests)",
+    "name": "🧇🍓 Waffle Booth",
     "guests": 50,
     "maxDuration": 2,
     "price": 800,
@@ -538,13 +639,17 @@
     ],
     "note": "Additional hour: C$100",
     "eventType": [
-      "All"
+      "All",
+      "Baby Shower"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-50"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-50",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "🧇 Waffle Booth (100 Guests)",
+    "name": "🧇🍓 Waffle Booth",
     "guests": 100,
     "maxDuration": 2,
     "price": 1200,
@@ -556,13 +661,17 @@
     ],
     "note": "Additional hour: C$150",
     "eventType": [
-      "All"
+      "All",
+      "Baby Shower"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-100"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-100",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "🧇 Waffle Booth (150 Guests)",
+    "name": "🧇🍓 Waffle Booth",
     "guests": 150,
     "maxDuration": 2,
     "price": 1600,
@@ -574,13 +683,17 @@
     ],
     "note": "Additional hour: C$175",
     "eventType": [
-      "All"
+      "All",
+      "Baby Shower"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-150"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-150",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "🧇 Waffle Booth (200 Guests)",
+    "name": "🧇🍓 Waffle Booth",
     "guests": 200,
     "maxDuration": 2,
     "price": 2000,
@@ -592,13 +705,17 @@
     ],
     "note": "Additional hour: C$200",
     "eventType": [
-      "All"
+      "All",
+      "Baby Shower"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-200"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-200",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "🥤 Smoothies Booth (50 Guests)",
+    "name": "🥤🍎 Smoothies Booth",
     "guests": 50,
     "maxDuration": 2,
     "price": 900,
@@ -610,13 +727,17 @@
     ],
     "note": "Additional hour: C$100",
     "eventType": [
-      "All"
+      "All",
+      "Gender Reveal Party"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-50"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-50",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "🥤 Smoothies Booth (100 Guests)",
+    "name": "🥤🍎 Smoothies Booth",
     "guests": 100,
     "maxDuration": 2,
     "price": 1300,
@@ -628,13 +749,17 @@
     ],
     "note": "Additional hour: C$150",
     "eventType": [
-      "All"
+      "All",
+      "Gender Reveal Party"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-100"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-100",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "🥤 Smoothies Booth (150 Guests)",
+    "name": "🥤🍎 Smoothies Booth",
     "guests": 150,
     "maxDuration": 2,
     "price": 1700,
@@ -646,13 +771,16 @@
     ],
     "note": "Additional hour: C$175",
     "eventType": [
-      "All"
+      "All",
+      "Gender Reveal Party"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-150"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-150",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
-  {
-    "name": "🥤 Smoothies Booth (200 Guests)",
+Pastries Booth",
     "guests": 200,
     "maxDuration": 2,
     "price": 2100,
@@ -664,14 +792,18 @@
     ],
     "note": "Additional hour: C$200",
     "eventType": [
-      "All"
+      "All",
+      "Gender Reveal Party"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-200"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-200",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "✨ Sparkler Boxes - Classic Package",
-    "guests": 200,
+    "name": "✨🎇 Sparkler Boxes - Classic Package",
+    "guests": 150,
     "maxDuration": 1,
     "price": 400,
     "regPrice": 450,
@@ -682,81 +814,413 @@
     ],
     "note": "Two sparklers included",
     "eventType": [
-      "All"
+      "All",
+      "Engagement Party"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-classic"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-classic",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "✨ Sparkler Boxes - Deluxe Package",
-    "guests": 200,
+    "name": "✨🎉 Sparkler Boxes - Deluxe Package",
+    "guests": 350,
     "maxDuration": 1,
     "price": 600,
     "regPrice": 700,
     "discount": 14,
-    "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
+    "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical moment or party finale.",
     "equipment": [
       "Sparkler Boxes"
     ],
     "note": "Four sparklers included",
     "eventType": [
-      "All"
+      "All",
+      "Engagement Party"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-deluxe"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-deluxe",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "✨ Sparkler Boxes - Red Carpet Package",
-    "guests": 200,
+    "name": "✨🌟 Sparkler Boxes - Red Carpet Package",
+    "guests": 350,
     "maxDuration": 1,
-    "price": 800,
-    "regPrice": 1000,
-    "discount": 20,
-    "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
+    "price": 650,
+    "regPrice": 750,
+    "discount": 13,
+    "description": "Light up your celebration with our glamorous Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
     "equipment": [
       "Sparkler Boxes"
     ],
     "note": "Six sparklers included",
     "eventType": [
-      "All"
+      "All",
+      "Engagement Party"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-red-carpet"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-red-carpet",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "🌫️ Dry Ice (Fog Effect) - Classic Package",
-    "guests": 200,
+    "name": "🌫️❄️ Dry Ice Fog Effect",
+    "guests": 300,
     "maxDuration": 1,
-    "price": 400,
-    "regPrice": 500,
-    "discount": 20,
+    "price": 350,
+    "regPrice": 400,
+    "discount": 13,
     "description": "Create a stunning, cinematic atmosphere with our Dry Ice Fog Effect! This low-lying fog adds a magical touch to first dances, stage entrances, or any moment you want to make unforgettable.",
     "equipment": [
       "Dry Ice Fog"
     ],
     "note": "One dry ice machine included",
     "eventType": [
-      "All"
+      "All",
+      "Wedding"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/dry-ice-fog"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/dry-ice-fog",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
   },
   {
-    "name": "🪩 Laser First Dance - Classic Package",
-    "guests": 200,
+    "name": "💃🌌 Dancer",
+    "guests": 300,
     "maxDuration": 1,
-    "price": 900,
-    "regPrice": 1100,
-    "discount": 18,
-    "description": "Make your first dance truly unforgettable with our Laser First Dance Experience! Set beneath a canopy of synchronized laser lights and dreamy effects.",
+    "price": 850,
+    "regPrice": 1000,
+    "discount": 15,
+    "description": "Make your first dance truly unforgettable with our Laser First Dance experience! Set beneath a canopy of synchronized laser lights and dreamy effects.",
     "equipment": [
       "Laser Effect for First Dance"
     ],
-    "note": "Laser light show for first dance",
+    "note": "Laser light show for dancing",
     "eventType": [
-      "All"
+      "All",
+      "Wedding"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/laser-first-dance"
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/laser-first-dance",
+    "dateAdded": "05-31-2025",
+    "New": "N",
+    "Sale": "N"
+  },
+  {
+    "name": "🌟🌌 Starry Night Bundle",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 2700,
+    "regPrice": 3300,
+    "discount": 18,
+    "description": "Transform your evening event into a celestial celebration with the Starry Night Bundle. Featuring a 360 Video Booth for dynamic captures, Dry Ice Fog for a mystical ambiance, and an Espresso & Coffee Booth for a sophisticated touch.",
+    "equipment": [
+      "360 Video Booth",
+      "Dry Ice Fog",
+      "Espresso & Coffee Booth"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Anniversary Celebration"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": null,
+    "dateAdded": "06-11-2025",
+    "New": "Y",
+    "Sale": "Y"
+  },
+  {
+    "name": "🍼🧇 Festive Feast Bundle",
+    "guests": 100,
+    "maxDuration": 4,
+    "price": 3000,
+    "regPrice": 3700,
+    "discount": 19,
+    "description": "Delight your guests with the Festive Feast Bundle, perfect for casual gatherings. Includes a Photo Booth for fun snapshots, a Waffle Booth with delicious toppings, and a Smoothies Booth for refreshing drinks.",
+    "equipment": [
+      "Photo Booth",
+      "Waffle Booth",
+      "Smoothies Booth"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Baby Shower"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": null,
+    "dateAdded": "06-11-2025",
+    "New": "Y",
+    "Sale": "Y"
+  },
+  {
+    "name": "💍💃 Radiant Reception Bundle",
+    "guests": 200,
+    "maxDuration": 6,
+    "price": 2400,
+    "regPrice": 3000,
+    "discount": 20,
+    "description": "Elevate your wedding reception with the Radiant Reception Bundle. Features a Magazine Photo Booth Box for glamorous shots, an Audio Guest Book for heartfelt messages, and a Laser Effect for First Dance to create a magical moment.",
+    "equipment": [
+      "Magazine Photo Booth Box",
+      "Audio Guest Book",
+      "Laser Effect for First Dance"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Wedding"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": null,
+    "dateAdded": "06-11-2025",
+    "New": "Y",
+    "Sale": "Y"
+  },
+  {
+    "name": "🎈🥤 Vibrant Vibes Bundle",
+    "guests": 100,
+    "maxDuration": 4,
+    "price": 1800,
+    "regPrice": 2250,
+    "discount": 20,
+    "description": "Energize your event with the Vibrant Vibes Bundle. Combines the immersive 360 Video Booth with a refreshing Smoothies Booth to keep the party lively and fun.",
+    "equipment": [
+      "360 Video Booth",
+      "Smoothies Booth"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Gender Reveal Party"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": null,
+    "dateAdded": "06-11-2025",
+    "New": "Y",
+    "Sale": "Y"
+  },
+  {
+    "name": "🌅✨ Twilight Glow Bundle",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 3000,
+    "regPrice": 3750,
+    "discount": 20,
+    "description": "Create an enchanting atmosphere with the Twilight Glow Bundle. Includes a Magazine Photo Booth Box for stylish photos, Dry Ice Fog for a dreamy ambiance, and an Espresso & Coffee Booth for a refined experience.",
+    "equipment": [
+      "Magazine Photo Booth Box",
+      "Dry Ice Fog",
+      "Espresso & Coffee Booth"
+    ],
+    "note": "Additional charges apply for extended hours or additional services。",
+    "eventType": [
+      "All",
+      "Anniversary Celebration"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": null,
+    "dateAdded": "06-11-2025",
+    "New": "Y",
+    "Sale": "Y"
+  },
+  {
+    "name": "👶🧇 Sweet Moments Bundle",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 2600,
+    "regPrice": 3250,
+    "discount": 20,
+    "description": "Capture the sweetness of your event with the Sweet Moments Bundle. Features a Photo Booth for instant memories, a Waffle Booth with delectable treats, and an Audio Guest Book for heartfelt messages.",
+    "equipment": [
+      "Photo Booth",
+      "Waffle Booth",
+      "Audio Guest Book"
+    ],
+    "note": "Additional charges apply for extended hours or additional services。",
+    "eventType": [
+      "All",
+      "Baby Shower"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": null,
+    "dateAdded": "06-11-2025",
+    "New": "Y",
+    "Sale": "Y"
+  },
+  {
+    "name": "💃🎇 Dazzling Dance Bundle",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 2400,
+    "regPrice": 3000,
+    "discount": 20,
+    "description": "Make your wedding dance floor shine with the Dazzling Dance Bundle. Includes a 360 Video Booth for dynamic videos, a Laser Effect for First Dance, and Sparkler Boxes for a sparkling exit.",
+    "equipment": [
+      "360 Video Booth",
+      "Laser Effect for First Dance",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services。",
+    "eventType": [
+      "All",
+      "Wedding"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": null,
+    "dateAdded": "06-11-2025",
+    "New": "Y",
+    "Sale": "Y"
+  },
+  {
+    "name": "💼☕ Corporate Caffeine Bundle",
+    "guests": 200,
+    "maxDuration": 6,
+    "price": 2800,
+    "regPrice": 3500,
+    "discount": 20,
+    "description": "Energize your corporate event with the Corporate Caffeine Bundle. Features a Photo Booth for team photos, an Espresso & Coffee Booth for premium drinks, and an Audio Guest Book for memorable messages.",
+    "equipment": [
+      "Photo Booth",
+      "Espresso & Coffee Booth",
+      "Audio Guest Book"
+    ],
+    "note": "Additional charges apply for extended hours or additional services。",
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": null,
+    "dateAdded": "06-11-2025",
+    "New": "Y",
+    "Sale": "Y"
+  },
+  {
+    "name": "🎈✨ Summer Sparkle Bundle",
+    "guests": 100,
+    "maxDuration": 4,
+    "price": 2400,
+    "regPrice": 3000,
+    "discount": 20,
+    "description": "Brighten your summer event with the Summer Sparkle Bundle. Includes a Magazine Photo Booth Box for glamorous shots, a Smoothies Booth for refreshing drinks, and Sparkler Boxes for a dazzling finale.",
+    "equipment": [
+      "Magazine Photo Booth Box",
+      "Smoothies Booth",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services。",
+    "eventType": [
+      "All",
+      "Gender Reveal Party"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": null,
+    "dateAdded": "06-11-2025",
+    "New": "Y",
+    "Sale": "Y"
+  },
+  {
+    "name": "👶🌫️ Festive Flash Bundle",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": "2300,
+    "regPrice": 2800,
+    "discount": 18,
+    "description": "Light up your event with the Festive Flash Bundle. Features a 360 Video Booth for stunning videos, a Waffle Booth for sweet treats, and Dry Ice Fog for a magical atmosphere.",
+    "equipment": [
+      "360 Video Booth",
+      "Waffle Booth",
+      "Dry Ice Fog"
+    ],
+    "note": "Additional charges apply for extended hours or additional services。",
+    "eventType": [
+      "All",
+      "Baby Shower"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": null,
+    "dateAdded": "06-11-2025",
+    "New": "Y",
+    "Sale": "Y"
+  },
+  {
+    "name": "💖💍 Romantic Radiance Bundle",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 2300,
+    "regPrice": 2875,
+    "discount": 20,
+    "description": "Create an unforgettable wedding with the Romantic Radiance Bundle. Includes an Audio Guest Book for heartfelt messages, a Laser Effect for First Dance, and Dry Ice Fog for a dreamy ambiance.",
+    "equipment": [
+      "Audio Guest Book",
+      "Laser Effect for First Dance",
+      "Dry Ice Fog"
+    ],
+    "note": "Additional charges apply for extended hours or additional services。",
+    "eventType": [
+      "All",
+      "Wedding"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": null,
+    "dateAdded": "06-11-2025",
+    "New": "Y",
+    "Sale": "Y"
+  },
+  {
+    "name": "☕📸 Sip & Snap Bundle",
+    "guests": 50,
+    "maxDuration": 4,
+    "price": 2400,
+    "regPrice": 3000,
+    "discount": 20,
+    "description": "Enjoy a delightful experience with the Sip & Snap Bundle. Perfect for smaller gatherings, it includes a Photo Booth for fun photos, a Smoothies Booth for refreshing drinks, and an Espresso & Coffee Booth for a caffeine kick.",
+    "equipment": [
+      "Photo Booth",
+      "Smoothies Booth",
+      "Espresso & Coffee Booth"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Bridal Shower"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": null,
+    "dateAdded": "06-11-2025",
+    "New": "Y",
+    "Sale": "Y"
+  },
+  {
+    "name": "🌟🎉 Grand Gala Bundle",
+    "guests": 250,
+    "maxDuration": 8,
+    "price": 3500,
+    "regPrice": 4375,
+    "discount": 20,
+    "description": "Host an extraordinary event with the Grand Gala Bundle. Features a 360 Video Booth, Magazine Photo Booth Box, Waffle Booth, and Audio Guest Book for a memorable luxurious celebration.",
+    "equipment": [
+      "360 Video Booth",
+      "Magazine Photo Booth Box",
+      "Waffle Booth",
+      "Audio Guest Book"
+    ],
+    "note": "Additional charges apply for extended hours or additional services。",
+    "eventType": [
+      "All",
+      "Anniversary Celebration"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": null,
+    "dateAdded": "06-11-2025",
+    "New": "Y",
+    "Sale": "Y"
   }
 ]
