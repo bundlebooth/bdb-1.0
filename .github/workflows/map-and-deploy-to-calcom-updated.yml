@@ -63,19 +63,31 @@ jobs:
             async function processEvents() {
               const packages = JSON.parse(fs.readFileSync('packages.json'));
               for (const pkg of packages) {
+                // Validate price to ensure it's a valid number and meets Stripe's minimum (50 cents CAD)
+                const priceInCents = pkg.price ? Math.round(pkg.price * 100) : 0;
+                if (priceInCents > 0 && priceInCents < 50) {
+                  console.error(`Invalid price for ${pkg.slug}: ${priceInCents} cents is below Stripe's minimum of 50 cents.`);
+                  continue;
+                }
+
                 const transformed = {
                   title: pkg.name || 'Placeholder Title',
                   slug: pkg.slug || 'placeholder',
                   length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
-                  description: pkg.description || 'No description provided',
+                  description: pkg.description ? \`${pkg.description}\n\n**Payment Terms**: Payment is collected at booking. All sales are final, and no refunds will be issued.\` : 'No description provided.\n\n**Payment Terms**: Payment is collected at booking. All sales are final, and no refunds will be issued.',
                   locations: [{ type: 'inPerson', address: 'Toronto, ON' }],
                   availability: {
                     days: [1, 2, 3, 4, 5],
                     startTime: '09:00',
                     endTime: '17:00'
                   },
-                  price: pkg.price ? pkg.price * 100 : 0,
-                  currency: 'cad',
+                  price: priceInCents, // Price in cents for Stripe
+                  currency: 'cad', // Currency set to CAD
+                  metadata: {
+                    payment_app: 'stripe', // Explicitly specify Stripe as the payment app
+                    payment_terms: 'collect_on_booking', // Document payment collection behavior
+                    refund_policy: 'no_refunded' // Document refund policy
+                  },
                   tags: [
                     ...(pkg.eventType || []),
                     pkg.packageType,
@@ -87,10 +99,11 @@ jobs:
                 const slug = transformed.slug;
                 const eventTypeId = await getEventTypeId(slug);
                 const method = eventTypeId ? 'PUT' : 'POST';
+                const path = eventTypeId ? '/v2/event-types/' + eventTypeId : '/v2/event-types';
 
                 const options = {
                   hostname: 'api.cal.com',
-                  path: eventTypeId ? '/v2/event-types/' + eventTypeId : '/v2/event-types',
+                  path,
                   method,
                   headers: {
                     'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
@@ -99,11 +112,147 @@ jobs:
                 };
 
                 const req = https.request(options, (res) => {
-                  console.log(`Status for ${slug}: ${res.statusCode}`);
                   let data = '';
                   res.on('data', (chunk) => data += chunk);
                   res.on('end', () => {
-                    console.log(`Response for ${slug}: ${data}`);
+                    if (res.statusCode >= 200 && res.statusCode < 300) {
+                      console.log(`Successfully ${method === 'POST' ? 'created' : 'updated'} event type ${slug} with Stripe payment.`);
+                    } else {
+                      console.error(`Failed for ${slug}: Status ${res.statusCode}, Response: ${data}`);
+                    }
+                  });
+                });
+                req.on('error', (e) => {
+                  console.error(`Error for ${slug}: ${e.message}`);
+                });
+                req.write(JSON.stringify(transformed));
+                req.end();
+              }
+            }
+
+            processEvents().catch(console.error);
+          "name: Map and Deploy JSON to Cal.com
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Map JSON and Push to Cal.com
+        env:
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
+        run: |
+          node -e "
+            const fs = require('fs');
+            const https = require('https');
+
+            const dayMap = {
+              'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
+              'Friday': 5, 'Saturday': 6, 'Sunday': 7
+            };
+
+            async function getEventTypeId(slug) {
+              return new Promise((resolve) => {
+                const options = {
+                  hostname: 'api.cal.com',
+                  path: '/v2/event-types',
+                  method: 'GET',
+                  headers: { Authorization: 'Bearer ' + process.env.CALCOM_API_KEY }
+                };
+                https.request(options, (res) => {
+                  let data = '';
+                  res.on('data', (chunk) => data += chunk);
+                  res.on('end', () => {
+                    try {
+                      const eventTypes = JSON.parse(data).event_types || [];
+                      const event = eventTypes.find(e => e.slug === slug);
+                      resolve(event ? event.id : null);
+                    } catch (e) {
+                      console.error('Error parsing event types:', e);
+                      resolve(null);
+                    }
+                  });
+                }).on('error', (e) => {
+                  console.error('Error fetching event types:', e);
+                  resolve(null);
+                }).end();
+              });
+            }
+
+            async function processEvents() {
+              const packages = JSON.parse(fs.readFileSync('packages.json'));
+              for (const pkg of packages) {
+                // Validate price to ensure it's a valid number and meets Stripe's minimum (50 cents CAD)
+                const priceInCents = pkg.price ? Math.round(pkg.price * 100) : 0;
+                if (priceInCents > 0 && priceInCents < 50) {
+                  console.error(`Invalid price for ${pkg.slug}: ${priceInCents} cents is below Stripe's minimum of 50 cents.`);
+                  continue;
+                }
+
+                const transformed = {
+                  title: pkg.name || 'Placeholder Title',
+                  slug: pkg.slug || 'placeholder',
+                  length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
+                  description: pkg.description ? \`${pkg.description}\n\n**Payment Terms**: Payment is collected at booking. All sales are final, and no refunds will be issued.\` : 'No description provided.\n\n**Payment Terms**: Payment is collected at booking. All sales are final, and no refunds will be issued.',
+                  locations: [{ type: 'inPerson', address: 'Toronto, ON' }],
+                  availability: {
+                    days: [1, 2, 3, 4, 5],
+                    startTime: '09:00',
+                    endTime: '17:00'
+                  },
+                  price: priceInCents, // Price in cents for Stripe
+                  currency: 'cad', // Currency set to CAD
+                  metadata: {
+                    payment_app: 'stripe', // Explicitly specify Stripe as the payment app
+                    payment_terms: 'collect_on_booking', // Document payment collection behavior
+                    refund_policy: 'no_refunded' // Document refund policy
+                  },
+                  tags: [
+                    ...(pkg.eventType || []),
+                    pkg.packageType,
+                    pkg.Sale === 'Y' ? 'On Sale' : '',
+                    pkg.New === 'Y' ? 'New' : ''
+                  ].filter(Boolean)
+                };
+
+                const slug = transformed.slug;
+                const eventTypeId = await getEventTypeId(slug);
+                const method = eventTypeId ? 'PUT' : 'POST';
+                const path = eventTypeId ? '/v2/event-types/' + eventTypeId : '/v2/event-types';
+
+                const options = {
+                  hostname: 'api.cal.com',
+                  path,
+                  method,
+                  headers: {
+                    'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
+                    'Content-Type': 'application/json'
+                  }
+                };
+
+                const req = https.request(options, (res) => {
+                  let data = '';
+                  res.on('data', (chunk) => data += chunk);
+                  res.on('end', () => {
+                    if (res.statusCode >= 200 && res.statusCode < 300) {
+                      console.log(`Successfully ${method === 'POST' ? 'created' : 'updated'} event type ${slug} with Stripe payment.`);
+                    } else {
+                      console.error(`Failed for ${slug}: Status ${res.statusCode}, Response: ${data}`);
+                    }
                   });
                 });
                 req.on('error', (e) => {
