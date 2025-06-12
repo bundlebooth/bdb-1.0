@@ -28,7 +28,14 @@ jobs:
         run: |
           node <<EOF
             const https = require('https');
-            console.log('Configuring Stripe in Cal.com...');
+            console.log('Starting Stripe configuration in Cal.com...');
+            console.log('CALCOM_API_KEY present:', !!process.env.CALCOM_API_KEY);
+            console.log('STRIPE_SECRET_KEY present:', !!process.env.STRIPE_SECRET_KEY);
+            if (!process.env.STRIPE_SECRET_KEY || !process.env.CALCOM_API_KEY) {
+              console.error('Missing CALCOM_API_KEY or STRIPE_SECRET_KEY');
+              console.log('::set-output name=STRIPE_ACTIVE::false');
+              process.exit(0);
+            }
             const postData = JSON.stringify({ secretKey: process.env.STRIPE_SECRET_KEY });
             const options = {
               hostname: 'api.cal.com',
@@ -44,14 +51,15 @@ jobs:
               let data = '';
               res.on('data', (chunk) => data += chunk);
               res.on('end', () => {
+                console.log('Stripe configuration response:', res.statusCode, data);
                 if (res.statusCode === 200 || res.statusCode === 201) {
-                  console.log('Stripe configured in Cal.com:', data);
+                  console.log('Stripe configured successfully in Cal.com');
                   console.log('::set-output name=STRIPE_ACTIVE::true');
                 } else if (res.statusCode === 409) {
-                  console.log('Stripe already configured in Cal.com:', data);
+                  console.log('Stripe already configured in Cal.com');
                   console.log('::set-output name=STRIPE_ACTIVE::true');
                 } else {
-                  console.warn('Warning: Failed to configure Stripe in Cal.com:', res.statusCode, data);
+                  console.warn('Failed to configure Stripe in Cal.com:', res.statusCode, data);
                   console.warn('Proceeding without Stripe payments.');
                   console.log('::set-output name=STRIPE_ACTIVE::false');
                 }
@@ -107,9 +115,8 @@ jobs:
                     const product = JSON.parse(data);
                     const priceData = JSON.stringify({
                       product: product.id,
-                      unit_amount: pkg.price * 100, // Convert to cents
-                      currency: 'cad',
-                      recurring: { interval: 'month' } // Adjust if one-time payment is preferred
+                      unit_amount: pkg.price * 100,
+                      currency: 'cad'
                     });
                     const priceOptions = {
                       hostname: 'api.stripe.com',
@@ -122,21 +129,21 @@ jobs:
                       }
                     };
                     const priceReq = https.request(priceOptions, (priceRes) => {
-                      let priceData = '';
-                      priceRes.on('data', (chunk) => priceData += chunk);
+                      let data = '';
+                      priceRes.on('data', (chunk) => data += chunk);
                       priceRes.on('end', () => {
                         if (priceRes.statusCode !== 200) {
-                          console.error('Failed to create Stripe price for', pkg.slug, ':', priceRes.statusCode, priceData);
+                          console.error('Failed to create price for', pkg.slug, ':', priceRes.statusCode, data);
                           resolve(null);
                         } else {
-                          const price = JSON.parse(priceData);
-                          console.log('Created Stripe product and price for', pkg.slug, ':', price.id);
-                          resolve(price.id);
+                          const price = JSON.parse(data);
+                          console.log('Created price for', pkg.name, ':', price.id);
+                          resolve(price);
                         }
                       });
                     });
                     priceReq.on('error', (e) => {
-                      console.error('Error creating Stripe price for', pkg.slug, ':', e.message);
+                      console.error('Error creating price for', pkg.name, ':', e);
                       resolve(null);
                     });
                     priceReq.write(priceData);
@@ -144,7 +151,7 @@ jobs:
                   });
                 });
                 productReq.on('error', (e) => {
-                  console.error('Error creating Stripe product for', pkg.slug, ':', e.message);
+                  console.error('Error creating Stripe product for', pkg.name, ':', e);
                   resolve(null);
                 });
                 productReq.write(productData);
@@ -152,36 +159,35 @@ jobs:
               });
             }
 
-            async function processPackages() {
+            async function processEvents() {
               try {
-                console.log('Reading packages.json for Stripe products...');
+                console.log('Processing packages.json for Stripe products...');
                 let packages = JSON.parse(fs.readFileSync('packages.json'));
-                if (packages.some(pkg => Object.keys(pkg).length === 1)) {
+                if (const pkg of packages.some(pkg => Object.keys(pkg).length === 1)) {
                   packages = packages.map(pkg => Object.values(pkg)[0]);
                 }
                 const priceIds = {};
                 for (const pkg of packages) {
-                  if (!pkg.slug || !pkg.name || !pkg.price) {
-                    console.error('Invalid package: missing slug, name, or price', pkg);
+                  if (!pkg.name || !pkg.slug || !pkg.price) {
+                    console.error('Invalid package: missing name, slug, or price', pkg);
                     continue;
                   }
-                  const priceId = await createStripeProductAndPrice(pkg);
-                  if (priceId) {
-                    priceIds[pkg.slug] = priceId;
+                  const price = await createStripeProductAndPrice(pkg);
+                  if (price && price.id) {
+                    priceIds[pkg.slug] = price.id;
                   }
                 }
                 fs.writeFileSync('stripe-price-ids.json', JSON.stringify(priceIds, null, 2));
                 console.log('Saved Stripe price IDs to stripe-price-ids.json');
               } catch (e) {
-                console.error('Error processing Stripe products:', e);
+                console.error('Error processing packages:', e);
                 process.exit(1);
               }
             }
-
-            processPackages().catch(console.error);
+            processEvents();
           EOF
 
-      - name: Map JSON and Push to Cal.com
+      - name: Map JSON to Cal.com
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
           STRIPE_ACTIVE: ${{ steps.stripe-config.outputs.STRIPE_ACTIVE }}
@@ -190,19 +196,25 @@ jobs:
             const fs = require('fs');
             const https = require('https');
 
+            console.log('Starting Cal.com event type processing...');
+            console.log('CALCOM_API_KEY present:', !!process.env.CALCOM_API_KEY);
             console.log('STRIPE_ACTIVE:', process.env.STRIPE_ACTIVE);
+
             const dayMap = {
-              'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
-              'Friday': 5, 'Saturday': 6, 'Sunday': 7
+              Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4,
+              Friday: 5, Saturday: 6, Sunday: 0
             };
 
             async function getEventTypeId(slug) {
               return new Promise((resolve) => {
                 const options = {
                   hostname: 'api.cal.com',
-                  path: '/v2/event-types',
+                  path: '/v2/event-types?apiKey=${process.env.CALCOM_API_KEY}',
                   method: 'GET',
-                  headers: { Authorization: 'Bearer ' + process.env.CALCOM_API_KEY }
+                  headers: {
+                    'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
+                    'Content-Type': 'application/json'
+                  }
                 };
                 const req = https.request(options, (res) => {
                   let data = '';
@@ -221,6 +233,7 @@ jobs:
                 req.on('error', (e) => {
                   console.error('Error fetching event types:', e);
                   resolve(null);
+                  process.exit(0);
                 });
                 req.end();
               });
@@ -228,16 +241,19 @@ jobs:
 
             async function processEvents() {
               try {
-                console.log('Reading packages.json for Cal.com event types...');
+                console.log('Reading packages.json...');
                 let packages = JSON.parse(fs.readFileSync('packages.json'));
+                console.log('Raw packages:', packages);
                 if (packages.some(pkg => Object.keys(pkg).length === 1)) {
                   packages = packages.map(pkg => Object.values(pkg)[0]);
                 }
+                console.log('Processed packages:', packages);
 
                 console.log('Reading Stripe price IDs...');
                 const priceIds = fs.existsSync('stripe-price-ids.json')
                   ? JSON.parse(fs.readFileSync('stripe-price-ids.json'))
                   : {};
+                console.log('Price IDs:', priceIds);
 
                 for (const pkg of packages) {
                   if (!pkg.slug || !pkg.name) {
@@ -246,11 +262,23 @@ jobs:
                   }
                   console.log('Processing package:', pkg.slug);
                   const transformed = {
-                    title: pkg.name || 'Placeholder Title',
-                    slug: pkg.slug || 'placeholder',
-                    length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
+                    title: pkg.name,
+                    slug: pkg.slug,
+                    length: pkg.maxDuration ? pkg.maxDuration * 60 : 1800,
                     description: pkg.description || 'No description provided',
                     locations: [{ type: 'inPerson', address: pkg.location || 'Toronto, ON' }],
+                    event_type: {
+                      requires_confirmation: false,
+                      disable_guests: true,
+                      hide_calendar_notes: false,
+                      minimum_booking_notice: 120,
+                      before_event_buffer: 0,
+                      after_event_buffer: 0,
+                      seats_per_time_slot: null,
+                      only_admin_can_edit: false,
+                      booking_limits: null,
+                      duration_limits: null
+                    },
                     availability: {
                       days: pkg.availabilityDays
                         ? pkg.availabilityDays.map(day => dayMap[day] || 1)
@@ -259,14 +287,14 @@ jobs:
                       endTime: pkg.endTime || '17:00'
                     },
                     ...(process.env.STRIPE_ACTIVE === 'true' && pkg.price > 0 && priceIds[pkg.slug] ? {
-                      price: pkg.price * 100, // Convert to cents
+                      price: pkg.price * 100,
                       currency: 'cad',
                       requiresPayment: true,
                       metadata: { stripePriceId: priceIds[pkg.slug] }
                     } : {}),
                     tags: [
                       ...(pkg.eventType || []),
-                      pkg.packageType,
+                      pkg.packageType || 'default',
                       pkg.Sale === 'Y' ? 'On Sale' : '',
                       pkg.New === 'Y' ? 'New' : ''
                     ].filter(Boolean)
@@ -274,8 +302,8 @@ jobs:
 
                   const slug = transformed.slug;
                   const eventTypeId = await getEventTypeId(slug);
-                  const method = eventTypeId ? 'PUT' : 'POST';
-                  const path = eventTypeId ? `/v2/event-types/${eventTypeId}` : '/v2/event-types';
+                  const method = eventTypeId ? 'PATCH' : 'POST';
+                  const path = eventTypeId ? `/v2/event-types/${eventTypeId}?apiKey=${process.env.CALCOM_API_KEY}` : `/v2/event-types?apiKey=${process.env.CALCOM_API_KEY}`;
                   console.log('API call:', method, path);
 
                   const options = {
@@ -284,7 +312,8 @@ jobs:
                     method,
                     headers: {
                       'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                      'Content-Type': 'application/json'
+                      'Content-Type': 'application/json',
+                      'Content-Length': Buffer.byteLength(JSON.stringify(transformed))
                     }
                   };
 
@@ -293,14 +322,14 @@ jobs:
                     res.on('data', (chunk) => data += chunk);
                     res.on('end', () => {
                       if (res.statusCode >= 200 && res.statusCode < 300) {
-                        console.log(`Success for ${slug}: ${res.statusCode}, Response: ${data}`);
+                        console.log(\`Success for \${slug}: \${res.statusCode}, Response: \${data}\`);
                       } else {
-                        console.error(`Failed for ${slug}: ${res.statusCode}, Response: ${data}`);
+                        console.error(\`Failed for \${slug}: \${res.statusCode}, Response: \${data}\`);
                       }
                     });
                   });
                   req.on('error', (e) => {
-                    console.error(`Error for ${slug}: ${e.message}`);
+                    console.error(\`Error for \${slug}: \${e.message}\`);
                   });
                   req.write(JSON.stringify(transformed));
                   req.end();
@@ -313,5 +342,8 @@ jobs:
               }
             }
 
-            processEvents().catch(console.error);
+            processEvents().catch(e => {
+              console.error('Fatal error:', e);
+              process.exit(1);
+            });
           EOF
