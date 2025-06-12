@@ -1371,8 +1371,8 @@
     "dateAdded": "06-12-2025"
   }, 
     {
-    "name": "Test2",
-    "slug": "test1",
+    "name": "Test3",
+    "slug": "test3",
     "guests": 200,
     "maxDuration": 6,
     "price": 1200,
