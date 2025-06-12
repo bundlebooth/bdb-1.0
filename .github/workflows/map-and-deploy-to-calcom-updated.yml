@@ -1,4 +1,4 @@
-name: Map and Deploy JSON to Cal.com
+name: Map and Deploy JSON to Cal.com with Stripe Integration
 
 on:
   push:
@@ -19,41 +19,170 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Validate Cal.com Stripe Integration
+      - name: Install Stripe CLI
+        run: |
+          npm install -g stripe
+          stripe --version
+
+      - name: Configure Stripe in Cal.com
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-        id: stripe-check
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+        id: stripe-config
         continue-on-error: true
         run: |
-          node -e "
+          node <<EOF
             const https = require('https');
+            const postData = JSON.stringify({ secretKey: process.env.STRIPE_SECRET_KEY });
             const options = {
               hostname: 'api.cal.com',
-              path: '/v2/stripe/check',
-              method: 'GET',
-              headers: { Authorization: 'Bearer ' + process.env.CALCOM_API_KEY }
+              path: '/v2/stripe',
+              method: 'POST',
+              headers: {
+                'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
+                'Content-Type': 'application/json',
+                'Content-Length': postData.length
+              }
             };
             const req = https.request(options, (res) => {
               let data = '';
               res.on('data', (chunk) => data += chunk);
               res.on('end', () => {
-                if (res.statusCode === 200) {
-                  console.log('Stripe integration is active:', data);
+                if (res.statusCode === 200 || res.statusCode === 201) {
+                  console.log('Stripe configured in Cal.com:', data);
+                  process.env.STRIPE_ACTIVE = 'true';
+                } else if (res.statusCode === 409) {
+                  console.log('Stripe already configured in Cal.com:', data);
                   process.env.STRIPE_ACTIVE = 'true';
                 } else {
-                  console.warn('Warning: Stripe integration check failed:', res.statusCode, data);
-                  console.warn('Proceeding without Stripe payments. Ensure Stripe is configured in Cal.com if payments are needed.');
+                  console.warn('Warning: Failed to configure Stripe in Cal.com:', res.statusCode, data);
+                  console.warn('Proceeding without Stripe payments.');
                   process.env.STRIPE_ACTIVE = 'false';
                 }
               });
             });
             req.on('error', (e) => {
-              console.warn('Error checking Stripe integration:', e.message);
-              console.warn('Proceeding without Stripe payments. Ensure Stripe is configured in Cal.com if payments are needed.');
+              console.warn('Error configuring Stripe in Cal.com:', e.message);
+              console.warn('Proceeding without Stripe payments.');
               process.env.STRIPE_ACTIVE = 'false';
             });
+            req.write(postData);
             req.end();
-          "
+          EOF
+
+      - name: Create Stripe Products and Prices
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_ACTIVE: ${{ env.STRIPE_ACTIVE }}
+        id: stripe-products
+        if: env.STRIPE_ACTIVE == 'true'
+        run: |
+          node <<EOF
+            const fs = require('fs');
+            const https = require('https');
+
+            async function createStripeProductAndPrice(pkg) {
+              return new Promise((resolve) => {
+                const productData = JSON.stringify({
+                  name: pkg.name,
+                  description: pkg.description || 'No description provided',
+                  metadata: { calcom_slug: pkg.slug }
+                });
+                const productOptions = {
+                  hostname: 'api.stripe.com',
+                  path: '/v1/products',
+                  method: 'POST',
+                  headers: {
+                    'Authorization': 'Bearer ' + process.env.STRIPE_SECRET_KEY,
+                    'Content-Type': 'application/json',
+                    'Content-Length': productData.length
+                  }
+                };
+                const productReq = https.request(productOptions, (res) => {
+                  let data = '';
+                  res.on('data', (chunk) => data += chunk);
+                  res.on('end', () => {
+                    if (res.statusCode !== 200) {
+                      console.error('Failed to create Stripe product for', pkg.slug, ':', res.statusCode, data);
+                      resolve(null);
+                      return;
+                    }
+                    const product = JSON.parse(data);
+                    const priceData = JSON.stringify({
+                      product: product.id,
+                      unit_amount: pkg.price * 100, // Convert to cents
+                      currency: 'cad',
+                      recurring: { interval: 'month' }
+                    });
+                    const priceOptions = {
+                      hostname: 'api.stripe.com',
+                      path: '/v1/prices',
+                      method: 'POST',
+                      headers: {
+                        'Authorization': 'Bearer ' + process.env.STRIPE_SECRET_KEY,
+                        'Content-Type': 'application/json',
+                        'Content-Length': priceData.length
+                      }
+                    };
+                    const priceReq = https.request(priceOptions, (priceRes) => {
+                      let priceData = '';
+                      priceRes.on('data', (chunk) => priceData += chunk);
+                      priceRes.on('end', () => {
+                        if (priceRes.statusCode !== 200) {
+                          console.error('Failed to create Stripe price for', pkg.slug, ':', priceRes.statusCode, priceData);
+                          resolve(null);
+                        } else {
+                          const price = JSON.parse(priceData);
+                          console.log('Created Stripe product and price for', pkg.slug, ':', price.id);
+                          resolve(price.id);
+                        }
+                      });
+                    });
+                    priceReq.on('error', (e) => {
+                      console.error('Error creating Stripe price for', pkg.slug, ':', e.message);
+                      resolve(null);
+                    });
+                    priceReq.write(priceData);
+                    priceReq.end();
+                  });
+                });
+                productReq.on('error', (e) => {
+                  console.error('Error creating Stripe product for', pkg.slug, ':', e.message);
+                  resolve(null);
+                });
+                productReq.write(productData);
+                productReq.end();
+              });
+            }
+
+            async function processPackages() {
+              try {
+                console.log('Reading packages.json for Stripe products...');
+                let packages = JSON.parse(fs.readFileSync('packages.json'));
+                if (packages.some(pkg => Object.keys(pkg).length === 1)) {
+                  packages = packages.map(pkg => Object.values(pkg)[0]);
+                }
+                const priceIds = {};
+                for (const pkg of packages) {
+                  if (!pkg.slug || !pkg.name || !pkg.price) {
+                    console.error('Invalid package: missing slug, name, or price', pkg);
+                    continue;
+                  }
+                  const priceId = await createStripeProductAndPrice(pkg);
+                  if (priceId) {
+                    priceIds[pkg.slug] = priceId;
+                  }
+                }
+                fs.writeFileSync('stripe-price-ids.json', JSON.stringify(priceIds, null, 2));
+                console.log('Saved Stripe price IDs to stripe-price-ids.json');
+              } catch (e) {
+                console.error('Error processing Stripe products:', e);
+                process.exit(1);
+              }
+            }
+
+            processPackages().catch(console.error);
+          EOF
 
       - name: Map JSON and Push to Cal.com
         env:
@@ -101,26 +230,22 @@ jobs:
 
             async function processEvents() {
               try {
-                console.log('Reading packages.json...');
+                console.log('Reading packages.json for Cal.com event types...');
                 let packages = JSON.parse(fs.readFileSync('packages.json'));
-
-                // Handle nested package structure if present
                 if (packages.some(pkg => Object.keys(pkg).length === 1)) {
                   packages = packages.map(pkg => Object.values(pkg)[0]);
                 }
 
-                // Validate packages.json
+                console.log('Reading Stripe price IDs...');
+                const priceIds = fs.existsSync('stripe-price-ids.json')
+                  ? JSON.parse(fs.readFileSync('stripe-price-ids.json'))
+                  : {};
+
                 for (const pkg of packages) {
                   if (!pkg.slug || !pkg.name) {
                     console.error('Invalid package: missing slug or name', pkg);
-                    process.exit(1);
+                    continue;
                   }
-                }
-
-                const isStripeActive = process.env.STRIPE_ACTIVE === 'true';
-                console.log('Stripe active:', isStripeActive);
-
-                for (const pkg of packages) {
                   console.log('Processing package:', pkg.slug);
                   const transformed = {
                     title: pkg.name || 'Placeholder Title',
@@ -135,10 +260,11 @@ jobs:
                       startTime: pkg.startTime || '09:00',
                       endTime: pkg.endTime || '17:00'
                     },
-                    ...(isStripeActive && pkg.price > 0 ? {
+                    ...(process.env.STRIPE_ACTIVE === 'true' && pkg.price > 0 && priceIds[pkg.slug] ? {
                       price: pkg.price * 100, // Convert to cents
                       currency: 'cad',
-                      requiresPayment: true
+                      requiresPayment: true,
+                      metadata: { stripePriceId: priceIds[pkg.slug] }
                     } : {}),
                     tags: [
                       ...(pkg.eventType || []),
@@ -151,7 +277,7 @@ jobs:
                   const slug = transformed.slug;
                   const eventTypeId = await getEventTypeId(slug);
                   const method = eventTypeId ? 'PUT' : 'POST';
-                  const path = eventTypeId ? \`/v2/event-types/\${eventTypeId}\` : '/v2/event-types';
+                  const path = eventTypeId ? `/v2/event-types/${eventTypeId}` : '/v2/event-types';
                   console.log('API call:', method, path);
 
                   const options = {
@@ -169,19 +295,18 @@ jobs:
                     res.on('data', (chunk) => data += chunk);
                     res.on('end', () => {
                       if (res.statusCode >= 200 && res.statusCode < 300) {
-                        console.log(\`Success for \${slug}: \${res.statusCode}, Response: \${data}\`);
+                        console.log(`Success for ${slug}: ${res.statusCode}, Response: ${data}`);
                       } else {
-                        console.error(\`Failed for \${slug}: \${res.statusCode}, Response: \${data}\`);
+                        console.error(`Failed for ${slug}: ${res.statusCode}, Response: ${data}`);
                       }
                     });
                   });
                   req.on('error', (e) => {
-                    console.error(\`Error for \${slug}: \${e.message}\`);
+                    console.error(`Error for ${slug}: ${e.message}`);
                   });
                   req.write(JSON.stringify(transformed));
                   req.end();
 
-                  // Delay to avoid rate limiting
                   await new Promise(resolve => setTimeout(resolve, 1000));
                 }
               } catch (e) {
