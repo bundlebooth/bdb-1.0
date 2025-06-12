@@ -19,4 +19,4 @@ jobs:
         run: node sync-services.js
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-          CALCOM_API_URL: 'https://app.cal.com/api/v1/event-types'
+          CALCOM_API_URL: 'https://app.cal.com/api/v1/'
