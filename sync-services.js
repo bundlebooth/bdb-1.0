@@ -1,127 +1,99 @@
-async function fetchServices() {
-  const response = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-1.0/refs/heads/main/packages.json');
-  if (!response.ok) throw new Error(`Failed to fetch JSON from GitHub: ${response.status} ${response.statusText}`);
-  return response.json();
-}
 
-async function syncServicesToCalcom() {
-  let calcomApiBaseUrl = process.env.CALCOM_API_URL;
-  let calcomApiKey = process.env.CALCOM_API_KEY;
+const fs = require('fs');
+const https = require('https');
 
-  if (!calcomApiBaseUrl || !calcomApiKey) {
-    throw new Error(`Missing environment variables: CALCOM_API_URL=${calcomApiBaseUrl}, CALCOM_API_KEY=${calcomApiKey ? '[set]' : 'undefined'}`);
-  }
+const CALCOM_API_KEY = process.env.CALCOM_API_KEY;
 
-  // Ensure CALCOM_API_URL does not end with a slash
-  calcomApiBaseUrl = calcomApiBaseUrl.replace(/\/+$/, '');
-  // Ensure API key is prefixed with 'cal_'
-  if (!calcomApiKey.startsWith('cal_')) {
-    calcomApiKey = `cal_${calcomApiKey}`;
-  }
+// Transform weekday strings to numeric values (Mon=1)
+const dayMap = {
+  'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
+  'Friday': 5, 'Saturday': 6, 'Sunday': 7
+};
 
-  // Log the API key (partially masked for security)
-  console.log(`Using API key: ${calcomApiKey.slice(0, 7)}...${calcomApiKey.slice(-4)}`);
-
-  // Construct event-types endpoint
-  const calcomApiUrl = `${calcomApiBaseUrl}/event-types`;
-
-  try {
-    const services = await fetchServices();
-
-    // Validate services data
-    if (!Array.isArray(services)) {
-      throw new Error('Fetched services data is not an array');
-    }
-
-    // Fetch existing event types
-    console.log(`Fetching event types from: ${calcomApiUrl}`);
-    const response = await fetch(calcomApiUrl, {
-      headers: {
-        'Authorization': `Bearer ${calcomApiKey}`,
-        'Content-Type': 'application/json',
-        'cal-api-version': '2024-06-14'
-      }
-    });
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => 'No additional error details');
-      throw new Error(`Failed to fetch event types: ${response.status} ${response.statusText}\nDetails: ${errorText}`);
-    }
-    const existingEventTypes = await response.json();
-
-    // Handle v2 API response (array) or v1 (object with data property)
-    const eventTypes = Array.isArray(existingEventTypes) ? existingEventTypes : existingEventTypes.data || [];
-    if (!Array.isArray(eventTypes)) {
-      console.error('Unexpected event types response:', JSON.stringify(existingEventTypes, null, 2));
-      throw new Error('Event types response is not an array');
-    }
-
-    for (const service of services) {
-      if (!service.name || !service.maxDuration || !service.price) {
-        console.warn(`Skipping invalid service: ${JSON.stringify(service)}`);
-        continue;
-      }
-
-      const payload = {
-        title: service.name,
-        description: `${service.description || ''}${service.note ? `\n\nNote: ${service.note}` : ''}`,
-        length: service.maxDuration * 60, // Convert hours to minutes
-        price: service.price * 100, // Convert dollars to cents
-        currency: 'usd', // Update to 'cad' if needed
-        slug: service.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-'),
-        requiresConfirmation: false,
-        locations: [{ type: 'integrations:google:calendar' }]
-      };
-
-      // Check if event type exists
-      const existingEvent = eventTypes.find(e => e.slug === payload.slug);
-      const method = existingEvent ? 'PATCH' : 'POST';
-      const url = existingEvent ? `${calcomApiUrl}/${existingEvent.id}` : calcomApiUrl;
-
-      console.log(`Sending ${method} request to: ${url}`);
-      const eventResponse = await fetch(url, {
-        method,
-        headers: {
-          'Authorization': `Bearer ${calcomApiKey}`,
-          'Content-Type': 'application/json',
-          'cal-api-version': '2024-06-14'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!eventResponse.ok) {
-        const errorText = await eventResponse.text().catch(() => 'No additional error details');
-        throw new Error(`Failed to ${method} event type ${service.name}: ${eventResponse.status} ${eventResponse.statusText}\nDetails: ${errorText}`);
-      }
-
-      const result = await eventResponse.json();
-      console.log(`${method === 'POST' ? 'Created' : 'Updated'} event type: ${service.name}`, result);
-    }
-
-    // Delete event types not in JSON
-    const serviceSlugs = services.map(s => s.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-'));
-    for (const eventType of eventTypes) {
-      if (!serviceSlugs.includes(eventType.slug)) {
-        const deleteUrl = `${calcomApiUrl}/${eventType.id}`;
-        console.log(`Sending DELETE request to: ${deleteUrl}`);
-        const deleteResponse = await fetch(deleteUrl, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${calcomApiKey}`,
-            'Content-Type': 'application/json',
-            'cal-api-version': '2024-06-14'
-          }
-        });
-        if (!deleteResponse.ok) {
-          const errorText = await deleteResponse.text().catch(() => 'No additional error details');
-          throw new Error(`Failed to delete event type ${eventType.title}: ${deleteResponse.status} ${deleteResponse.statusText}\nDetails: ${errorText}`);
+async function getEventTypeId(slug) {
+  return new Promise((resolve) => {
+    const options = {
+      hostname: 'api.cal.com',
+      path: '/v2/event-types',
+      method: 'GET',
+      headers: { Authorization: 'Bearer ' + CALCOM_API_KEY }
+    };
+    https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const parsed = JSON.parse(data).event_types || [];
+          const match = parsed.find(e => e.slug === slug);
+          resolve(match ? match.id : null);
+        } catch (err) {
+          console.error('Error parsing response:', err);
+          resolve(null);
         }
-        console.log(`Deleted event type: ${eventType.title}`);
+      });
+    }).on('error', (err) => {
+      console.error('Error fetching event types:', err);
+      resolve(null);
+    }).end();
+  });
+}
+
+async function syncPackages() {
+  const packages = JSON.parse(fs.readFileSync('./packages.json', 'utf8'));
+
+  for (const pkg of packages) {
+    const slug = (pkg.name || 'placeholder').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+    const payload = {
+      title: pkg.name || 'Placeholder Title',
+      slug,
+      length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
+      description: pkg.description || 'No description provided',
+      locations: [{ type: 'inPerson', address: 'Toronto, ON' }],
+      availability: {
+        days: [1, 2, 3, 4, 5],
+        startTime: '09:00',
+        endTime: '17:00'
+      },
+      price: pkg.price ? pkg.price * 100 : 0,
+      currency: 'cad',
+      tags: [
+        ...(pkg.eventType || []),
+        pkg.packageType,
+        pkg.Sale === 'Y' ? 'On Sale' : '',
+        pkg.New === 'Y' ? 'New' : ''
+      ].filter(Boolean)
+    };
+
+    const eventTypeId = await getEventTypeId(slug);
+    const method = eventTypeId ? 'PUT' : 'POST';
+    const path = eventTypeId ? `/v2/event-types/${eventTypeId}` : '/v2/event-types';
+
+    const options = {
+      hostname: 'api.cal.com',
+      path,
+      method,
+      headers: {
+        Authorization: 'Bearer ' + CALCOM_API_KEY,
+        'Content-Type': 'application/json'
       }
-    }
-  } catch (error) {
-    console.error('Error syncing services:', error.message);
-    process.exit(1); // Exit with error to fail the GitHub Action
+    };
+
+    const req = https.request(options, res => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => {
+        console.log(`Response for [${slug}] - ${res.statusCode}: ${body}`);
+      });
+    });
+
+    req.on('error', err => {
+      console.error(`Request failed for [${slug}]:`, err.message);
+    });
+
+    req.write(JSON.stringify(payload));
+    req.end();
   }
 }
 
-syncServicesToCalcom();
+syncPackages().catch(console.error);
