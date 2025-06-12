@@ -1,16 +1,19 @@
 async function fetchServices() {
   const response = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-1.0/refs/heads/main/packages.json');
-  if (!response.ok) throw new Error(`Failed to fetch JSON from GitHub: ${response.statusText}`);
+  if (!response.ok) throw new Error(`Failed to fetch JSON from GitHub: ${response.status} ${response.statusText}`);
   return response.json();
 }
 
 async function syncServicesToCalcom() {
-  const calcomApiUrl = process.env.CALCOM_API_URL;
+  const calcomApiBaseUrl = process.env.CALCOM_API_URL;
   const calcomApiKey = process.env.CALCOM_API_KEY;
 
-  if (!calcomApiUrl || !calcomApiKey) {
+  if (!calcomApiBaseUrl || !calcomApiKey) {
     throw new Error('Missing CALCOM_API_URL or CALCOM_API_KEY environment variables');
   }
+
+  // Append /event-types to the base URL for fetching event types
+  const calcomApiUrl = `${calcomApiBaseUrl}/event-types`.replace(/\/+$/, ''); // Remove trailing slashes
 
   try {
     const services = await fetchServices();
@@ -21,12 +24,15 @@ async function syncServicesToCalcom() {
     }
 
     // Fetch existing event types
-    const existingEventTypes = await fetch(calcomApiUrl, {
+    console.log(`Fetching event types from: ${calcomApiUrl}`);
+    const response = await fetch(calcomApiUrl, {
       headers: { 'Authorization': `Bearer ${calcomApiKey}` }
-    }).then(res => {
-      if (!res.ok) throw new Error(`Failed to fetch event types: ${res.statusText}`);
-      return res.json();
     });
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => 'No additional error details');
+      throw new Error(`Failed to fetch event types: ${response.status} ${response.statusText}\nDetails: ${errorText}`);
+    }
+    const existingEventTypes = await response.json();
 
     for (const service of services) {
       if (!service.name || !service.maxDuration || !service.price) {
@@ -50,7 +56,8 @@ async function syncServicesToCalcom() {
       const method = existingEvent ? 'PATCH' : 'POST';
       const url = existingEvent ? `${calcomApiUrl}/${existingEvent.id}` : calcomApiUrl;
 
-      const response = await fetch(url, {
+      console.log(`Sending ${method} request to: ${url}`);
+      const eventResponse = await fetch(url, {
         method,
         headers: {
           'Authorization': `Bearer ${calcomApiKey}`,
@@ -59,11 +66,12 @@ async function syncServicesToCalcom() {
         body: JSON.stringify(payload)
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to ${method} event type ${service.name}: ${response.statusText}`);
+      if (!eventResponse.ok) {
+        const errorText = await eventResponse.text().catch(() => 'No additional error details');
+        throw new Error(`Failed to ${method} event type ${service.name}: ${eventResponse.status} ${eventResponse.statusText}\nDetails: ${errorText}`);
       }
 
-      const result = await response.json();
+      const result = await eventResponse.json();
       console.log(`${method === 'POST' ? 'Created' : 'Updated'} event type: ${service.name}`, result);
     }
 
@@ -71,12 +79,15 @@ async function syncServicesToCalcom() {
     const serviceSlugs = services.map(s => s.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-'));
     for (const eventType of existingEventTypes.data || []) {
       if (!serviceSlugs.includes(eventType.slug)) {
-        const response = await fetch(`${calcomApiUrl}/${eventType.id}`, {
+        const deleteUrl = `${calcomApiUrl}/${eventType.id}`;
+        console.log(`Sending DELETE request to: ${deleteUrl}`);
+        const deleteResponse = await fetch(deleteUrl, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${calcomApiKey}` }
         });
-        if (!response.ok) {
-          throw new Error(`Failed to delete event type ${eventType.title}: ${response.statusText}`);
+        if (!deleteResponse.ok) {
+          const errorText = await deleteResponse.text().catch(() => 'No additional error details');
+          throw new Error(`Failed to delete event type ${eventType.title}: ${deleteResponse.status} ${deleteResponse.statusText}\nDetails: ${errorText}`);
         }
         console.log(`Deleted event type: ${eventType.title}`);
       }
