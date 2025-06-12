@@ -1,0 +1,41 @@
+name: Transform and Deploy JSON to Cal.com
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Transform JSON
+        run: |
+          npm install -g json
+          node -e "
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('packages.json'));
+            // Example transformation: add a required field
+            data.title = data.title || 'Default Event Title';
+            fs.writeFileSync('transformed-packages.json', JSON.stringify(data, null, 2));
+          "
+
+      - name: Push JSON to Cal.com
+        env:
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
+        run: |
+          curl -X POST \
+            https://api.cal.com/v2/event-types \
+            -H "Authorization: Bearer $CALCOM_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d @transformed-packages.json
