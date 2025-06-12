@@ -19,11 +19,6 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install Stripe CLI
-        run: |
-          npm install -g stripe
-          stripe --version
-
       - name: Configure Stripe in Cal.com
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
@@ -112,7 +107,7 @@ jobs:
                       product: product.id,
                       unit_amount: pkg.price * 100, // Convert to cents
                       currency: 'cad',
-                      recurring: { interval: 'month' }
+                      recurring: { interval: 'month' } // Adjust if one-time payment is preferred
                     });
                     const priceOptions = {
                       hostname: 'api.stripe.com',
