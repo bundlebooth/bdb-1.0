@@ -28,6 +28,7 @@ jobs:
         run: |
           node <<EOF
             const https = require('https');
+            console.log('Configuring Stripe in Cal.com...');
             const postData = JSON.stringify({ secretKey: process.env.STRIPE_SECRET_KEY });
             const options = {
               hostname: 'api.cal.com',
@@ -45,21 +46,21 @@ jobs:
               res.on('end', () => {
                 if (res.statusCode === 200 || res.statusCode === 201) {
                   console.log('Stripe configured in Cal.com:', data);
-                  process.env.STRIPE_ACTIVE = 'true';
+                  console.log('::set-output name=STRIPE_ACTIVE::true');
                 } else if (res.statusCode === 409) {
                   console.log('Stripe already configured in Cal.com:', data);
-                  process.env.STRIPE_ACTIVE = 'true';
+                  console.log('::set-output name=STRIPE_ACTIVE::true');
                 } else {
                   console.warn('Warning: Failed to configure Stripe in Cal.com:', res.statusCode, data);
                   console.warn('Proceeding without Stripe payments.');
-                  process.env.STRIPE_ACTIVE = 'false';
+                  console.log('::set-output name=STRIPE_ACTIVE::false');
                 }
               });
             });
             req.on('error', (e) => {
               console.warn('Error configuring Stripe in Cal.com:', e.message);
               console.warn('Proceeding without Stripe payments.');
-              process.env.STRIPE_ACTIVE = 'false';
+              console.log('::set-output name=STRIPE_ACTIVE::false');
             });
             req.write(postData);
             req.end();
@@ -68,14 +69,15 @@ jobs:
       - name: Create Stripe Products and Prices
         env:
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-          STRIPE_ACTIVE: ${{ env.STRIPE_ACTIVE }}
+          STRIPE_ACTIVE: ${{ steps.stripe-config.outputs.STRIPE_ACTIVE }}
         id: stripe-products
-        if: env.STRIPE_ACTIVE == 'true'
+        if: steps.stripe-config.outputs.STRIPE_ACTIVE == 'true'
         run: |
           node <<EOF
             const fs = require('fs');
             const https = require('https');
 
+            console.log('Creating Stripe products and prices...');
             async function createStripeProductAndPrice(pkg) {
               return new Promise((resolve) => {
                 const productData = JSON.stringify({
@@ -182,12 +184,13 @@ jobs:
       - name: Map JSON and Push to Cal.com
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-          STRIPE_ACTIVE: ${{ env.STRIPE_ACTIVE }}
+          STRIPE_ACTIVE: ${{ steps.stripe-config.outputs.STRIPE_ACTIVE }}
         run: |
           node <<EOF
             const fs = require('fs');
             const https = require('https');
 
+            console.log('STRIPE_ACTIVE:', process.env.STRIPE_ACTIVE);
             const dayMap = {
               'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
               'Friday': 5, 'Saturday': 6, 'Sunday': 7
