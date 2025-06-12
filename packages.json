@@ -780,15 +780,16 @@
     "New": "N",
     "Sale": "N"
   },
-Pastries Booth",
+  {
+    "name": "🥐🍰 Pastries Booth",
     "guests": 200,
     "maxDuration": 2,
     "price": 2100,
     "regPrice": 2500,
     "discount": 16,
-    "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies using real fruits, natural ingredients and a variety of add-ins.",
+    "description": "Delight your guests with our Pastries Booth! Offering a selection of freshly baked pastries, including croissants, danishes, and more, with a variety of sweet and savory options.",
     "equipment": [
-      "Smoothies Booth"
+      "Pastries Booth"
     ],
     "note": "Additional hour: C$200",
     "eventType": [
@@ -796,7 +797,7 @@ Pastries Booth",
       "Gender Reveal Party"
     ],
     "packageType": "Individual",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-200",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/pastries-booth-200",
     "dateAdded": "05-31-2025",
     "New": "N",
     "Sale": "N"
@@ -931,7 +932,7 @@ Pastries Booth",
     ],
     "packageType": "Bundle",
     "bookingUrl": null,
-    "dateAdded": "06-11-2025",
+    "dateAdded": "06-10-2025",
     "New": "Y",
     "Sale": "Y"
   },
@@ -955,7 +956,7 @@ Pastries Booth",
     ],
     "packageType": "Bundle",
     "bookingUrl": null,
-    "dateAdded": "06-11-2025",
+    "dateAdded": "06-10-2025",
     "New": "Y",
     "Sale": "Y"
   },
@@ -979,7 +980,7 @@ Pastries Booth",
     ],
     "packageType": "Bundle",
     "bookingUrl": null,
-    "dateAdded": "06-11-2025",
+    "dateAdded": "06-10-2025",
     "New": "Y",
     "Sale": "Y"
   },
@@ -1002,7 +1003,7 @@ Pastries Booth",
     ],
     "packageType": "Bundle",
     "bookingUrl": null,
-    "dateAdded": "06-11-2025",
+    "dateAdded": "06-10-2025",
     "New": "Y",
     "Sale": "Y"
   },
@@ -1019,14 +1020,14 @@ Pastries Booth",
       "Dry Ice Fog",
       "Espresso & Coffee Booth"
     ],
-    "note": "Additional charges apply for extended hours or additional services。",
+    "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
       "All",
       "Anniversary Celebration"
     ],
     "packageType": "Bundle",
     "bookingUrl": null,
-    "dateAdded": "06-11-2025",
+    "dateAdded": "06-10-2025",
     "New": "Y",
     "Sale": "Y"
   },
@@ -1043,14 +1044,14 @@ Pastries Booth",
       "Waffle Booth",
       "Audio Guest Book"
     ],
-    "note": "Additional charges apply for extended hours or additional services。",
+    "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
       "All",
       "Baby Shower"
     ],
     "packageType": "Bundle",
     "bookingUrl": null,
-    "dateAdded": "06-11-2025",
+    "dateAdded": "06-10-2025",
     "New": "Y",
     "Sale": "Y"
   },
@@ -1067,14 +1068,14 @@ Pastries Booth",
       "Laser Effect for First Dance",
       "Sparkler Boxes"
     ],
-    "note": "Additional charges apply for extended hours or additional services。",
+    "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
       "All",
       "Wedding"
     ],
     "packageType": "Bundle",
     "bookingUrl": null,
-    "dateAdded": "06-11-2025",
+    "dateAdded": "06-10-2025",
     "New": "Y",
     "Sale": "Y"
   },
@@ -1091,14 +1092,14 @@ Pastries Booth",
       "Espresso & Coffee Booth",
       "Audio Guest Book"
     ],
-    "note": "Additional charges apply for extended hours or additional services。",
+    "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
       "All",
       "Corporate"
     ],
     "packageType": "Bundle",
     "bookingUrl": null,
-    "dateAdded": "06-11-2025",
+    "dateAdded": "06-10-2025",
     "New": "Y",
     "Sale": "Y"
   },
@@ -1115,14 +1116,14 @@ Pastries Booth",
       "Smoothies Booth",
       "Sparkler Boxes"
     ],
-    "note": "Additional charges apply for extended hours or additional services。",
+    "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
       "All",
       "Gender Reveal Party"
     ],
     "packageType": "Bundle",
     "bookingUrl": null,
-    "dateAdded": "06-11-2025",
+    "dateAdded": "06-10-2025",
     "New": "Y",
     "Sale": "Y"
   },
@@ -1130,7 +1131,7 @@ Pastries Booth",
     "name": "👶🌫️ Festive Flash Bundle",
     "guests": 150,
     "maxDuration": 6,
-    "price": "2300,
+    "price": 2300,
     "regPrice": 2800,
     "discount": 18,
     "description": "Light up your event with the Festive Flash Bundle. Features a 360 Video Booth for stunning videos, a Waffle Booth for sweet treats, and Dry Ice Fog for a magical atmosphere.",
@@ -1139,14 +1140,14 @@ Pastries Booth",
       "Waffle Booth",
       "Dry Ice Fog"
     ],
-    "note": "Additional charges apply for extended hours or additional services。",
+    "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
       "All",
       "Baby Shower"
     ],
     "packageType": "Bundle",
     "bookingUrl": null,
-    "dateAdded": "06-11-2025",
+    "dateAdded": "06-10-2025",
     "New": "Y",
     "Sale": "Y"
   },
@@ -1163,14 +1164,14 @@ Pastries Booth",
       "Laser Effect for First Dance",
       "Dry Ice Fog"
     ],
-    "note": "Additional charges apply for extended hours or additional services。",
+    "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
       "All",
       "Wedding"
     ],
     "packageType": "Bundle",
     "bookingUrl": null,
-    "dateAdded": "06-11-2025",
+    "dateAdded": "06-10-2025",
     "New": "Y",
     "Sale": "Y"
   },
@@ -1194,7 +1195,7 @@ Pastries Booth",
     ],
     "packageType": "Bundle",
     "bookingUrl": null,
-    "dateAdded": "06-11-2025",
+    "dateAdded": "06-10-2025",
     "New": "Y",
     "Sale": "Y"
   },
@@ -1212,14 +1213,14 @@ Pastries Booth",
       "Waffle Booth",
       "Audio Guest Book"
     ],
-    "note": "Additional charges apply for extended hours or additional services。",
+    "note": "Additional charges apply for extended hours or additional services.",
     "eventType": [
       "All",
       "Anniversary Celebration"
     ],
     "packageType": "Bundle",
     "bookingUrl": null,
-    "dateAdded": "06-11-2025",
+    "dateAdded": "06-10-2025",
     "New": "Y",
     "Sale": "Y"
   }
