@@ -1,4 +1,4 @@
-name: Map and Deploy JSON to Cal.com with Stripe Integration
+name: Map and Deploy JSON to Cal.com
 
 on:
   push:
@@ -19,202 +19,60 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Configure Stripe in Cal.com
+      - name: Validate Cal.com Stripe Integration
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-        id: stripe-config
+        id: stripe-check
         continue-on-error: true
         run: |
-          node <<EOF
+          node -e "
             const https = require('https');
-            console.log('Starting Stripe configuration in Cal.com...');
-            console.log('CALCOM_API_KEY present:', !!process.env.CALCOM_API_KEY);
-            console.log('STRIPE_SECRET_KEY present:', !!process.env.STRIPE_SECRET_KEY);
-            if (!process.env.STRIPE_SECRET_KEY || !process.env.CALCOM_API_KEY) {
-              console.error('Missing CALCOM_API_KEY or STRIPE_SECRET_KEY');
-              console.log('::set-output name=STRIPE_ACTIVE::false');
-              process.exit(0);
-            }
-            const postData = JSON.stringify({ secretKey: process.env.STRIPE_SECRET_KEY });
             const options = {
               hostname: 'api.cal.com',
-              path: '/v2/stripe',
-              method: 'POST',
-              headers: {
-                'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                'Content-Type': 'application/json',
-                'Content-Length': postData.length
-              }
+              path: '/v2/stripe/check',
+              method: 'GET',
+              headers: { Authorization: 'Bearer ' + process.env.CALCOM_API_KEY }
             };
             const req = https.request(options, (res) => {
               let data = '';
               res.on('data', (chunk) => data += chunk);
               res.on('end', () => {
-                console.log('Stripe configuration response:', res.statusCode, data);
-                if (res.statusCode === 200 || res.statusCode === 201) {
-                  console.log('Stripe configured successfully in Cal.com');
-                  console.log('::set-output name=STRIPE_ACTIVE::true');
-                } else if (res.statusCode === 409) {
-                  console.log('Stripe already configured in Cal.com');
-                  console.log('::set-output name=STRIPE_ACTIVE::true');
+                if (res.statusCode === 200) {
+                  console.log('Stripe integration is active:', data);
+                  process.env.STRIPE_ACTIVE = 'true';
                 } else {
-                  console.warn('Failed to configure Stripe in Cal.com:', res.statusCode, data);
-                  console.warn('Proceeding without Stripe payments.');
-                  console.log('::set-output name=STRIPE_ACTIVE::false');
+                  console.warn('Warning: Stripe integration check failed:', res.statusCode, data);
+                  console.warn('Proceeding without Stripe payments. Ensure Stripe is configured in Cal.com if payments are needed.');
+                  process.env.STRIPE_ACTIVE = 'false';
                 }
               });
             });
             req.on('error', (e) => {
-              console.warn('Error configuring Stripe in Cal.com:', e.message);
-              console.warn('Proceeding without Stripe payments.');
-              console.log('::set-output name=STRIPE_ACTIVE::false');
+              console.warn('Error checking Stripe integration:', e.message);
+              console.warn('Proceeding without Stripe payments. Ensure Stripe is configured in Cal.com if payments are needed.');
+              process.env.STRIPE_ACTIVE = 'false';
             });
-            req.write(postData);
             req.end();
-          EOF
-
-      - name: Create Stripe Products and Prices
-        env:
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-          STRIPE_ACTIVE: ${{ steps.stripe-config.outputs.STRIPE_ACTIVE }}
-        id: stripe-products
-        if: steps.stripe-config.outputs.STRIPE_ACTIVE == 'true'
-        run: |
-          node <<EOF
-            const fs = require('fs');
-            const https = require('https');
-
-            console.log('Creating Stripe products and prices...');
-            async function createStripeProductAndPrice(pkg) {
-              return new Promise((resolve) => {
-                const productData = JSON.stringify({
-                  name: pkg.name,
-                  description: pkg.description || 'No description provided',
-                  metadata: { calcom_slug: pkg.slug }
-                });
-                const productOptions = {
-                  hostname: 'api.stripe.com',
-                  path: '/v1/products',
-                  method: 'POST',
-                  headers: {
-                    'Authorization': 'Bearer ' + process.env.STRIPE_SECRET_KEY,
-                    'Content-Type': 'application/json',
-                    'Content-Length': productData.length
-                  }
-                };
-                const productReq = https.request(productOptions, (res) => {
-                  let data = '';
-                  res.on('data', (chunk) => data += chunk);
-                  res.on('end', () => {
-                    if (res.statusCode !== 200) {
-                      console.error('Failed to create Stripe product for', pkg.slug, ':', res.statusCode, data);
-                      resolve(null);
-                      return;
-                    }
-                    const product = JSON.parse(data);
-                    const priceData = JSON.stringify({
-                      product: product.id,
-                      unit_amount: pkg.price * 100,
-                      currency: 'cad'
-                    });
-                    const priceOptions = {
-                      hostname: 'api.stripe.com',
-                      path: '/v1/prices',
-                      method: 'POST',
-                      headers: {
-                        'Authorization': 'Bearer ' + process.env.STRIPE_SECRET_KEY,
-                        'Content-Type': 'application/json',
-                        'Content-Length': priceData.length
-                      }
-                    };
-                    const priceReq = https.request(priceOptions, (priceRes) => {
-                      let data = '';
-                      priceRes.on('data', (chunk) => data += chunk);
-                      priceRes.on('end', () => {
-                        if (priceRes.statusCode !== 200) {
-                          console.error('Failed to create price for', pkg.slug, ':', priceRes.statusCode, data);
-                          resolve(null);
-                        } else {
-                          const price = JSON.parse(data);
-                          console.log('Created price for', pkg.name, ':', price.id);
-                          resolve(price);
-                        }
-                      });
-                    });
-                    priceReq.on('error', (e) => {
-                      console.error('Error creating price for', pkg.name, ':', e);
-                      resolve(null);
-                    });
-                    priceReq.write(priceData);
-                    priceReq.end();
-                  });
-                });
-                productReq.on('error', (e) => {
-                  console.error('Error creating Stripe product for', pkg.name, ':', e);
-                  resolve(null);
-                });
-                productReq.write(productData);
-                productReq.end();
-              });
-            }
-
-            async function processEvents() {
-              try {
-                console.log('Processing packages.json for Stripe products...');
-                let packages = JSON.parse(fs.readFileSync('packages.json'));
-                if (const pkg of packages.some(pkg => Object.keys(pkg).length === 1)) {
-                  packages = packages.map(pkg => Object.values(pkg)[0]);
-                }
-                const priceIds = {};
-                for (const pkg of packages) {
-                  if (!pkg.name || !pkg.slug || !pkg.price) {
-                    console.error('Invalid package: missing name, slug, or price', pkg);
-                    continue;
-                  }
-                  const price = await createStripeProductAndPrice(pkg);
-                  if (price && price.id) {
-                    priceIds[pkg.slug] = price.id;
-                  }
-                }
-                fs.writeFileSync('stripe-price-ids.json', JSON.stringify(priceIds, null, 2));
-                console.log('Saved Stripe price IDs to stripe-price-ids.json');
-              } catch (e) {
-                console.error('Error processing packages:', e);
-                process.exit(1);
-              }
-            }
-            processEvents();
-          EOF
-
-      - name: Map JSON to Cal.com
+          "
+      - name: Map JSON and Push to Cal.com
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-          STRIPE_ACTIVE: ${{ steps.stripe-config.outputs.STRIPE_ACTIVE }}
+          STRIPE_ACTIVE: ${{ env.STRIPE_ACTIVE }}
         run: |
           node <<EOF
             const fs = require('fs');
             const https = require('https');
-
-            console.log('Starting Cal.com event type processing...');
-            console.log('CALCOM_API_KEY present:', !!process.env.CALCOM_API_KEY);
-            console.log('STRIPE_ACTIVE:', process.env.STRIPE_ACTIVE);
-
             const dayMap = {
-              Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4,
-              Friday: 5, Saturday: 6, Sunday: 0
+              'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
+              'Friday': 5, 'Saturday': 6, 'Sunday': 7
             };
-
             async function getEventTypeId(slug) {
               return new Promise((resolve) => {
                 const options = {
                   hostname: 'api.cal.com',
-                  path: '/v2/event-types?apiKey=${process.env.CALCOM_API_KEY}',
+                  path: '/v2/event-types',
                   method: 'GET',
-                  headers: {
-                    'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                    'Content-Type': 'application/json'
-                  }
+                  headers: { Authorization: 'Bearer ' + process.env.CALCOM_API_KEY }
                 };
                 const req = https.request(options, (res) => {
                   let data = '';
@@ -233,52 +91,35 @@ jobs:
                 req.on('error', (e) => {
                   console.error('Error fetching event types:', e);
                   resolve(null);
-                  process.exit(0);
                 });
                 req.end();
               });
             }
-
             async function processEvents() {
               try {
                 console.log('Reading packages.json...');
                 let packages = JSON.parse(fs.readFileSync('packages.json'));
-                console.log('Raw packages:', packages);
+                // Handle nested package structure if present
                 if (packages.some(pkg => Object.keys(pkg).length === 1)) {
                   packages = packages.map(pkg => Object.values(pkg)[0]);
                 }
-                console.log('Processed packages:', packages);
-
-                console.log('Reading Stripe price IDs...');
-                const priceIds = fs.existsSync('stripe-price-ids.json')
-                  ? JSON.parse(fs.readFileSync('stripe-price-ids.json'))
-                  : {};
-                console.log('Price IDs:', priceIds);
-
+                // Validate packages.json
                 for (const pkg of packages) {
                   if (!pkg.slug || !pkg.name) {
                     console.error('Invalid package: missing slug or name', pkg);
-                    continue;
+                    process.exit(1);
                   }
+                }
+                const isStripeActive = process.env.STRIPE_ACTIVE === 'true';
+                console.log('Stripe active:', isStripeActive);
+                for (const pkg of packages) {
                   console.log('Processing package:', pkg.slug);
                   const transformed = {
-                    title: pkg.name,
-                    slug: pkg.slug,
-                    length: pkg.maxDuration ? pkg.maxDuration * 60 : 1800,
+                    title: pkg.name || 'Placeholder Title',
+                    slug: pkg.slug || 'placeholder',
+                    length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
                     description: pkg.description || 'No description provided',
                     locations: [{ type: 'inPerson', address: pkg.location || 'Toronto, ON' }],
-                    event_type: {
-                      requires_confirmation: false,
-                      disable_guests: true,
-                      hide_calendar_notes: false,
-                      minimum_booking_notice: 120,
-                      before_event_buffer: 0,
-                      after_event_buffer: 0,
-                      seats_per_time_slot: null,
-                      only_admin_can_edit: false,
-                      booking_limits: null,
-                      duration_limits: null
-                    },
                     availability: {
                       days: pkg.availabilityDays
                         ? pkg.availabilityDays.map(day => dayMap[day] || 1)
@@ -286,37 +127,32 @@ jobs:
                       startTime: pkg.startTime || '09:00',
                       endTime: pkg.endTime || '17:00'
                     },
-                    ...(process.env.STRIPE_ACTIVE === 'true' && pkg.price > 0 && priceIds[pkg.slug] ? {
-                      price: pkg.price * 100,
+                    ...(isStripeActive && pkg.price > 0 ? {
+                      price: pkg.price * 100, // Convert to cents
                       currency: 'cad',
-                      requiresPayment: true,
-                      metadata: { stripePriceId: priceIds[pkg.slug] }
+                      requiresPayment: true
                     } : {}),
                     tags: [
                       ...(pkg.eventType || []),
-                      pkg.packageType || 'default',
+                      pkg.packageType,
                       pkg.Sale === 'Y' ? 'On Sale' : '',
                       pkg.New === 'Y' ? 'New' : ''
                     ].filter(Boolean)
                   };
-
                   const slug = transformed.slug;
                   const eventTypeId = await getEventTypeId(slug);
-                  const method = eventTypeId ? 'PATCH' : 'POST';
-                  const path = eventTypeId ? `/v2/event-types/${eventTypeId}?apiKey=${process.env.CALCOM_API_KEY}` : `/v2/event-types?apiKey=${process.env.CALCOM_API_KEY}`;
+                  const method = eventTypeId ? 'PUT' : 'POST';
+                  const path = eventTypeId ? \`/v2/event-types/\${eventTypeId}\` : '/v2/event-types';
                   console.log('API call:', method, path);
-
                   const options = {
                     hostname: 'api.cal.com',
                     path,
                     method,
                     headers: {
                       'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                      'Content-Type': 'application/json',
-                      'Content-Length': Buffer.byteLength(JSON.stringify(transformed))
+                      'Content-Type': 'application/json'
                     }
                   };
-
                   const req = https.request(options, (res) => {
                     let data = '';
                     res.on('data', (chunk) => data += chunk);
@@ -333,7 +169,7 @@ jobs:
                   });
                   req.write(JSON.stringify(transformed));
                   req.end();
-
+                  // Delay to avoid rate limiting
                   await new Promise(resolve => setTimeout(resolve, 1000));
                 }
               } catch (e) {
@@ -341,9 +177,5 @@ jobs:
                 process.exit(1);
               }
             }
-
-            processEvents().catch(e => {
-              console.error('Fatal error:', e);
-              process.exit(1);
-            });
+            processEvents().catch(console.error);
           EOF
