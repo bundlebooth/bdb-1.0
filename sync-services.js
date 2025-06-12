@@ -5,15 +5,25 @@ async function fetchServices() {
 }
 
 async function syncServicesToCalcom() {
-  const calcomApiBaseUrl = process.env.CALCOM_API_URL;
-  const calcomApiKey = process.env.CALCOM_API_KEY;
+  let calcomApiBaseUrl = process.env.CALCOM_API_URL;
+  let calcomApiKey = process.env.CALCOM_API_KEY;
 
   if (!calcomApiBaseUrl || !calcomApiKey) {
-    throw new Error('Missing CALCOM_API_URL or CALCOM_API_KEY environment variables');
+    throw new Error(`Missing environment variables: CALCOM_API_URL=${calcomApiBaseUrl}, CALCOM_API_KEY=${calcomApiKey ? '[set]' : 'undefined'}`);
   }
 
-  // Append /event-types to the base URL for fetching event types
-  const calcomApiUrl = `${calcomApiBaseUrl}/event-types`.replace(/\/+$/, ''); // Remove trailing slashes
+  // Ensure CALCOM_API_URL does not end with a slash
+  calcomApiBaseUrl = calcomApiBaseUrl.replace(/\/+$/, '');
+  // Ensure API key is prefixed with 'cal_'
+  if (!calcomApiKey.startsWith('cal_')) {
+    calcomApiKey = `cal_${calcomApiKey}`;
+  }
+
+  // Log the API key (partially masked for security)
+  console.log(`Using API key: ${calcomApiKey.slice(0, 7)}...${calcomApiKey.slice(-4)}`);
+
+  // Construct event-types endpoint
+  const calcomApiUrl = `${calcomApiBaseUrl}/event-types`;
 
   try {
     const services = await fetchServices();
@@ -26,7 +36,10 @@ async function syncServicesToCalcom() {
     // Fetch existing event types
     console.log(`Fetching event types from: ${calcomApiUrl}`);
     const response = await fetch(calcomApiUrl, {
-      headers: { 'Authorization': `Bearer ${calcomApiKey}` }
+      headers: {
+        'Authorization': `Bearer ${calcomApiKey}`,
+        'Content-Type': 'application/json'
+      }
     });
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'No additional error details');
@@ -83,7 +96,10 @@ async function syncServicesToCalcom() {
         console.log(`Sending DELETE request to: ${deleteUrl}`);
         const deleteResponse = await fetch(deleteUrl, {
           method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${calcomApiKey}` }
+          headers: {
+            'Authorization': `Bearer ${calcomApiKey}`,
+            'Content-Type': 'application/json'
+          }
         });
         if (!deleteResponse.ok) {
           const errorText = await deleteResponse.text().catch(() => 'No additional error details');
