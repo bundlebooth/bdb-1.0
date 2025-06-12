@@ -1,0 +1,25 @@
+name: Deploy JSON to Cal.com
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Fetch and push JSON to Cal.com
+        env:
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
+        run: |
+          curl -X POST \
+            https://api.cal.com/v2/event-types \
+            -H "Authorization: Bearer $CALCOM_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d @packages.json
