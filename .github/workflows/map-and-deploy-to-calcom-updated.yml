@@ -19,6 +19,37 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Validate Cal.com Stripe Integration
+        env:
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
+        run: |
+          node -e "
+            const https = require('https');
+            const options = {
+              hostname: 'api.cal.com',
+              path: '/v2/integrations/stripe',
+              method: 'GET',
+              headers: { Authorization: 'Bearer ' + process.env.CALCOM_API_KEY }
+            };
+            const req = https.request(options, (res) => {
+              let data = '';
+              res.on('data', (chunk) => data += chunk);
+              res.on('end', () => {
+                if (res.statusCode === 200) {
+                  console.log('Stripe integration is active:', data);
+                } else {
+                  console.error('Stripe integration check failed:', res.statusCode, data);
+                  process.exit(1);
+                }
+              });
+            });
+            req.on('error', (e) => {
+              console.error('Error checking Stripe integration:', e);
+              process.exit(1);
+            });
+            req.end();
+          "
+
       - name: Map JSON and Push to Cal.com
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
@@ -28,8 +59,7 @@ jobs:
             const https = require('https');
 
             const dayMap = {
-              'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
-              'Friday': 5, 'Saturday': 6, 'Sunday': 7
+              'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5, 'Saturday': 6, 'Sunday': '7
             };
 
             async function getEventTypeId(slug) {
@@ -38,9 +68,9 @@ jobs:
                   hostname: 'api.cal.com',
                   path: '/v2/event-types',
                   method: 'GET',
-                  headers: { Authorization: 'Bearer ' + process.env.CALCOM_API_KEY }
+                  headers: { Authorization: 'Bearer', process.env.CALCOM_API_KEY }
                 };
-                https.request(options, (res) => {
+                const req = https.request(options, (res) => {
                   let data = '';
                   res.on('data', (chunk) => data += chunk);
                   res.on('end', () => {
@@ -53,64 +83,90 @@ jobs:
                       resolve(null);
                     }
                   });
-                }).on('error', (e) => {
+                });
+                req.on('error', (e) => {
                   console.error('Error fetching event types:', e);
                   resolve(null);
-                }).end();
+                });
+                req.end();
               });
             }
 
             async function processEvents() {
-              const packages = JSON.parse(fs.readFileSync('packages.json'));
-              for (const pkg of packages) {
-                const transformed = {
-                  title: pkg.name || 'Placeholder Title',
-                  slug: pkg.slug || 'placeholder',
-                  length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
-                  description: pkg.description || 'No description provided',
-                  locations: [{ type: 'inPerson', address: 'Toronto, ON' }],
-                  availability: {
-                    days: [1, 2, 3, 4, 5],
-                    startTime: '09:00',
-                    endTime: '17:00'
-                  },
-                  price: pkg.price ? pkg.price * 100 : 0,
-                  currency: 'cad',
-                  tags: [
-                    ...(pkg.eventType || []),
-                    pkg.packageType,
-                    pkg.Sale === 'Y' ? 'On Sale' : '',
-                    pkg.New === 'Y' ? 'New' : ''
-                  ].filter(Boolean)
-                };
-
-                const slug = transformed.slug;
-                const eventTypeId = await getEventTypeId(slug);
-                const method = eventTypeId ? 'PUT' : 'POST';
-
-                const options = {
-                  hostname: 'api.cal.com',
-                  path: eventTypeId ? '/v2/event-types/' + eventTypeId : '/v2/event-types',
-                  method,
-                  headers: {
-                    'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                    'Content-Type': 'application/json'
+              try {
+                const packages = JSON.parse(fs.readFileSync('packages.json'));
+                
+                // Validate packages.json
+                for (const pkg of packages) {
+                  if (!pkg.slug || !pkg.name) {
+                    console.error('Invalid package: missing slug or name', pkg);
+                    process.exit(1);
                   }
-                };
+                }
 
-                const req = https.request(options, (res) => {
-                  console.log(`Status for ${slug}: ${res.statusCode}`);
-                  let data = '';
-                  res.on('data', (chunk) => data += chunk);
-                  res.on('end', () => {
-                    console.log(`Response for ${slug}: ${data}`);
+                for (const pkg of packages) {
+                  const transformed = {
+                    title: pkg.name || 'Placeholder Title',
+                    slug: pkg.slug || 'placeholder',
+                    length: pkg.maxDuration ? pkg.maxDuration * 60 : 180, // Convert hours to minutes
+                    description: pkg.description || 'No description provided',
+                    locations: [{ type: 'inPerson', address: pkg.location || 'Toronto, ON' }],
+                    availability: {
+                      days: pkg.availabilityDays
+                        ? pkg.availabilityDays.map(day => dayMap[day] || 1)
+                        : [1, 2, 3, 4, 5],
+                      startTime: pkg.startTime || '09:00',
+                      endTime: pkg.endTime || '17:00'
+                    },
+                    price: pkg.price ? pkg.price * 100 : 0, // Convert to cents
+                    currency: 'cad',
+                    requiresPayment: pkg.price > 0, // Enable Stripe for non-zero prices
+                    tags: [
+                      ...(pkg.eventType || []),
+                      pkg.packageType,
+                      pkg.Sale === 'Y' ? 'On Sale' : '',
+                      pkg.New === 'Y' ? 'New' : ''
+                    ].filter(Boolean)
+                  };
+
+                  const slug = transformed.slug;
+                  const eventTypeId = await getEventTypeId(slug);
+                  const method = eventTypeId ? 'PUT' : 'POST';
+                  const path = eventTypeId ? `/v2/event-types/${eventTypeId}` : '/v2/event-types';
+
+                  const options = {
+                    hostname: 'api.cal.com',
+                    path,
+                    method,
+                    headers: {
+                      'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
+                      'Content-Type': 'application/json'
+                    }
+                  };
+
+                  const req = https.request(options, (res) => {
+                    let data = '';
+                    res.on('data', (chunk) => data += chunk);
+                    res.on('end', () => {
+                      if (res.statusCode >= 200 && res.statusCode < 300) {
+                        console.log(`Success for ${slug}: ${res.statusCode}, Response: ${data}`);
+                      } else {
+                        console.error(`Failed for ${slug}: ${res.statusCode}, Response: ${data}`);
+                      }
+                    });
                   });
-                });
-                req.on('error', (e) => {
-                  console.error(`Error for ${slug}: ${e.message}`);
-                });
-                req.write(JSON.stringify(transformed));
-                req.end();
+                  req.on('error', (e) => {
+                    console.error(`Error for ${slug}: ${e.message}`);
+                  });
+                  req.write(JSON.stringify(transformed));
+                  req.end();
+
+                  // Delay to avoid rate limiting
+                  await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+              } catch (e) {
+                console.error('Error processing events:', e);
+                process.exit(1);
               }
             }
 
