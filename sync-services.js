@@ -3,10 +3,9 @@ const https = require('https');
 
 const CALCOM_API_KEY = process.env.CALCOM_API_KEY;
 
-const dayMap = {
-  'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
-  'Friday': 5, 'Saturday': 6, 'Sunday': 7
-};
+async function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function getEventTypeId(slug) {
   return new Promise((resolve) => {
@@ -33,6 +32,37 @@ async function getEventTypeId(slug) {
       console.error('Error fetching event types:', err);
       resolve(null);
     }).end();
+  });
+}
+
+async function sendRequestWithRetry(options, payload, slug) {
+  return new Promise((resolve) => {
+    const req = https.request(options, async (res) => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', async () => {
+        if (res.statusCode >= 400) {
+          if (res.statusCode === 429 || body.includes('ThrottlerException')) {
+            console.warn(`⚠️ Throttled on ${slug}, retrying after 3 seconds...`);
+            await delay(3000);
+            await sendRequestWithRetry(options, payload, slug);
+          } else {
+            console.error(`❌ Error [${res.statusCode}] for ${slug}: ${body}`);
+          }
+        } else {
+          console.log(`✅ Success for ${slug}: ${body}`);
+        }
+        resolve();
+      });
+    });
+
+    req.on('error', err => {
+      console.error(`Request failed for [${slug}]:`, err.message);
+      resolve();
+    });
+
+    req.write(JSON.stringify(payload));
+    req.end();
   });
 }
 
@@ -83,27 +113,8 @@ async function syncPackages() {
       }
     };
 
-    const req = https.request(options, res => {
-      let body = '';
-      res.on('data', chunk => body += chunk);
-      res.on('end', () => {
-        if (res.statusCode >= 400) {
-          console.error(`❌ Error [${res.statusCode}] for ${slug}: ${body}`);
-        } else {
-          console.log(`✅ Success for ${slug}: ${body}`);
-        }
-      });
-    });
-
-    req.on('error', err => {
-      console.error(`Request failed for [${slug}]:`, err.message);
-    });
-
-    req.write(JSON.stringify(payload));
-    req.end();
-
-    // Wait between requests to avoid throttling
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await sendRequestWithRetry(options, payload, slug);
+    await delay(1500);
   }
 }
 
