@@ -19,45 +19,9 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Validate Cal.com Stripe Integration
-        env:
-          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-        id: stripe-check
-        continue-on-error: true
-        run: |
-          node -e "
-            const https = require('https');
-            const options = {
-              hostname: 'api.cal.com',
-              path: '/v2/stripe/check',
-              method: 'GET',
-              headers: { Authorization: 'Bearer ' + process.env.CALCOM_API_KEY }
-            };
-            const req = https.request(options, (res) => {
-              let data = '';
-              res.on('data', (chunk) => data += chunk);
-              res.on('end', () => {
-                if (res.statusCode === 200) {
-                  console.log('Stripe integration is active:', data);
-                  process.env.STRIPE_ACTIVE = 'true';
-                } else {
-                  console.warn('Warning: Stripe integration check failed:', res.statusCode, data);
-                  console.warn('Proceeding without Stripe payments. Ensure Stripe is configured in Cal.com if payments are needed.');
-                  process.env.STRIPE_ACTIVE = 'false';
-                }
-              });
-            });
-            req.on('error', (e) => {
-              console.warn('Error checking Stripe integration:', e.message);
-              console.warn('Proceeding without Stripe payments. Ensure Stripe is configured in Cal.com if payments are needed.');
-              process.env.STRIPE_ACTIVE = 'false';
-            });
-            req.end();
-          "
       - name: Map JSON and Push to Cal.com
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-          STRIPE_ACTIVE: ${{ env.STRIPE_ACTIVE }}
         run: |
           node <<EOF
             const fs = require('fs');
@@ -66,6 +30,7 @@ jobs:
               'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
               'Friday': 5, 'Saturday': 6, 'Sunday': 7
             };
+
             async function getEventTypeId(slug) {
               return new Promise((resolve) => {
                 const options = {
@@ -95,6 +60,7 @@ jobs:
                 req.end();
               });
             }
+
             async function processEvents() {
               try {
                 console.log('Reading packages.json...');
@@ -110,8 +76,7 @@ jobs:
                     process.exit(1);
                   }
                 }
-                const isStripeActive = process.env.STRIPE_ACTIVE === 'true';
-                console.log('Stripe active:', isStripeActive);
+
                 for (const pkg of packages) {
                   console.log('Processing package:', pkg.slug);
                   const transformed = {
@@ -127,7 +92,8 @@ jobs:
                       startTime: pkg.startTime || '09:00',
                       endTime: pkg.endTime || '17:00'
                     },
-                    ...(isStripeActive && pkg.price > 0 ? {
+                    // Include payment details if price is specified
+                    ...(pkg.price > 0 ? {
                       price: pkg.price * 100, // Convert to cents
                       currency: 'cad',
                       requiresPayment: true
@@ -139,11 +105,13 @@ jobs:
                       pkg.New === 'Y' ? 'New' : ''
                     ].filter(Boolean)
                   };
+
                   const slug = transformed.slug;
                   const eventTypeId = await getEventTypeId(slug);
                   const method = eventTypeId ? 'PUT' : 'POST';
-                  const path = eventTypeId ? \`/v2/event-types/\${eventTypeId}\` : '/v2/event-types';
+                  const path = eventTypeId ? `/v2/event-types/${eventTypeId}` : '/v2/event-types';
                   console.log('API call:', method, path);
+
                   const options = {
                     hostname: 'api.cal.com',
                     path,
@@ -153,22 +121,32 @@ jobs:
                       'Content-Type': 'application/json'
                     }
                   };
+
                   const req = https.request(options, (res) => {
                     let data = '';
                     res.on('data', (chunk) => data += chunk);
                     res.on('end', () => {
                       if (res.statusCode >= 200 && res.statusCode < 300) {
-                        console.log(\`Success for \${slug}: \${res.statusCode}, Response: \${data}\`);
+                        console.log(`Success for ${slug}: ${res.statusCode}, Response: ${data}`);
                       } else {
-                        console.error(\`Failed for \${slug}: \${res.statusCode}, Response: \${data}\`);
+                        console.error(`Failed for ${slug}: ${res.statusCode}, Response: ${data}`);
+                        if (pkg.price > 0 && res.statusCode === 400) {
+                          console.warn('Warning: Payment details included but Stripe may not be enabled in Cal.com. Please verify Stripe configuration.');
+                        }
                       }
                     });
                   });
+
                   req.on('error', (e) => {
-                    console.error(\`Error for \${slug}: \${e.message}\`);
+                    console.error(`Error for ${slug}: ${e.message}`);
+                    if (pkg.price > 0) {
+                      console.warn('Warning: Payment details included but request failed. Ensure Stripe is configured in Cal.com.');
+                    }
                   });
+
                   req.write(JSON.stringify(transformed));
                   req.end();
+
                   // Delay to avoid rate limiting
                   await new Promise(resolve => setTimeout(resolve, 1000));
                 }
@@ -177,5 +155,6 @@ jobs:
                 process.exit(1);
               }
             }
+
             processEvents().catch(console.error);
           EOF
