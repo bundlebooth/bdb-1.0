@@ -80,19 +80,6 @@ jobs:
             }
           }
 
-          async function enableStripeForEventType(eventTypeId) {
-            try {
-              const payload = {
-                app: 'stripe',
-                enabled: true
-              };
-              const result = await apiRequest('POST', `/v2/event-types/${eventTypeId}/apps`, payload);
-              console.log(`Stripe enabled for event type ${eventTypeId}:`, result);
-            } catch (err) {
-              console.error(`Failed to enable Stripe for event type ${eventTypeId}:`, err);
-            }
-          }
-
           async function processEvents() {
             try {
               console.log('Reading packages.json...');
@@ -157,14 +144,11 @@ jobs:
                 const method = eventTypeId ? 'PUT' : 'POST';
                 const path = eventTypeId ? '/v2/event-types/' + eventTypeId : '/v2/event-types';
                 try {
+                  console.log('Transformed payload:', JSON.stringify(transformed, null, 2));
                   const result = await apiRequest(method, path, transformed);
                   console.log('Success for ' + transformed.slug + ':', result);
-                  // Attempt to enable Stripe (if API supports it)
-                  if (pkg.price && pkg.price > 0 && eventTypeId) {
-                    await enableStripeForEventType(eventTypeId);
-                  }
                 } catch (err) {
-                  console.error('Failed for ' + transformed.slug + ':', err);
+                  console.error('Failed for ' + transformed.slug + ':', JSON.stringify(err, null, 2));
                 }
                 await new Promise(resolve => setTimeout(resolve, 500));
               }
