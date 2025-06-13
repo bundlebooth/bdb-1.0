@@ -5,7 +5,7 @@
     "price": 1020,
     "regularPrice": 1250,
     "discount": 18,
-    "description": "Create maximum impact with minimal setup using the Glow & Go Mini Bundle. Perfect for smaller gatherings, this bundle combines the immersive 360 Video Booth with a mesmerizing Dry Ice Fog effect to elevate your event's ambiance.",
+    "description": "Create maximum impact with minimal setup using the Glow & Go Mini Bundle. Perfect for smaller gatherings, this bundle combines the immersive 360 Video Booth with a mesmerizing Dry Ice Fog effect to elevate your event's ambiance.\n\n**Please provide the event address in the booking form.**",
     "guests": "Up to 100",
     "maxDuration": 3,
     "servicesIncluded": ["360 Video Booth", "Dry Ice Fog"],
@@ -39,15 +39,25 @@
       "defaultLayout": "month",
       "enabledLayouts": ["month"]
     },
+    "bookingFields": [
+      {
+        "name": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
     "availability": {
       "timeZone": "America/Toronto",
       "schedules": [
         {
           "name": "Availability",
           "timeZone": "America/Toronto",
+          "isDefault": true,
           "availability": [
             {
-              "days": [1, 2, 3, 4, 5, 6, 7],
+              "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
               "startTime": "09:00",
               "endTime": "23:59"
             }
