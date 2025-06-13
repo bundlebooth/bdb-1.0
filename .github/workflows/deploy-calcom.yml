@@ -19,9 +19,8 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Debug script content
+      - name: Write event type script
         run: |
-          echo "Dumping script content for debugging:"
           cat <<'SCRIPT' > deploy.js
           const fs = require('fs');
           const https = require('https');
@@ -73,7 +72,7 @@ jobs:
               }
               return null;
             } catch (e) {
-              console.error('Error fetching event types: ' + JSON.stringify(e, null, 2));
+              console.error('Error fetching event types: ' + JSON.stringify(e));
               return null;
             }
           }
@@ -83,29 +82,12 @@ jobs:
               await apiRequest('DELETE', '/v2/event-types/' + id);
               console.log('Deleted event type with ID: ' + id);
             } catch (e) {
-              console.error('Error deleting event type with ID ' + id + ': ' + JSON.stringify(e.data || e.message, null, 2));
-            }
-          }
-          async function updatePaymentSettings(id, price, currency, metadata) {
-            try {
-              console.log('Updating payment settings for event type ID: ' + id);
-              const payload = {
-                price: price,
-                currency: currency,
-                metadata: metadata
-              };
-              const res = await apiRequest('PATCH', '/v2/event-types/' + id, payload);
-              console.log('Payment settings updated for ID ' + id + ': ' + JSON.stringify(res, null, 2));
-              return res;
-            } catch (e) {
-              console.error('Error updating payment settings for ID ' + id + ': ' + JSON.stringify(e.data || e.message, null, 2));
-              return null;
+              console.error('Error deleting event type with ID ' + id + ': ' + JSON.stringify(e));
             }
           }
           async function processEvents() {
             try {
               console.log('Reading packages.json...');
-              console.log('WARNING: Ensure Stripe is connected in Cal.com (Settings > Apps > Stripe) before running this workflow.');
               let packages = JSON.parse(fs.readFileSync('packages.json'));
               if (packages.some(pkg => Object.keys(pkg).length === 1)) {
                 packages = packages.map(pkg => Object.values(pkg)[0]);
@@ -113,7 +95,7 @@ jobs:
               for (let i = 0; i < packages.length; i++) {
                 const pkg = packages[i];
                 if (!pkg.slug || !pkg.name) {
-                  console.error('Invalid package: missing slug or name: ' + JSON.stringify(pkg, null, 2));
+                  console.error('Invalid package: missing slug or name: ' + JSON.stringify(pkg));
                   process.exit(1);
                 }
                 console.log('Processing package: ' + pkg.slug);
@@ -134,9 +116,7 @@ jobs:
                     startTime: pkg.startTime || '09:00',
                     endTime: pkg.endTime || '17:00'
                   },
-                  tags: [],
-                  price: 0,
-                  currency: pkg.currency?.toLowerCase() || 'cad'
+                  tags: []
                 };
                 if (Array.isArray(pkg.eventType)) {
                   transformed.tags = transformed.tags.concat(pkg.eventType);
@@ -144,82 +124,152 @@ jobs:
                 if (pkg.packageType) transformed.tags.push(pkg.packageType);
                 if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
                 if (pkg.New === 'Y') transformed.tags.push('New');
-                let paymentMetadata = {};
-                let paymentPrice = 0;
-                let paymentCurrency = pkg.currency?.toLowerCase() || 'cad';
-                if (pkg.price && pkg.price > 0) {
-                  paymentPrice = Math.round(pkg.price * 100);
-                  const currency = pkg.currency?.toLowerCase() || 'cad';
-                  const supportedCurrencies = ['cad', 'usd', 'eur', 'gbp'];
-                  if (!supportedCurrencies.includes(currency)) {
-                    console.warn('Unsupported currency ' + currency + ' for ' + pkg.slug + ', defaulting to cad');
-                    paymentCurrency = 'cad';
-                    paymentMetadata = {
-                      apps: {
-                        stripe: {
-                          enabled: true,
-                          price: paymentPrice,
-                          currency: 'cad'
-                        }
-                      }
-                    };
-                  } else {
-                    paymentMetadata = {
-                      apps: {
-                        stripe: {
-                          enabled: true,
-                          price: paymentPrice,
-                          currency: currency
-                        }
-                      }
-                    };
-                  }
-                  console.log('Stripe configuration prepared for ' + pkg.slug + ': ' + JSON.stringify(paymentMetadata, null, 2));
-                } else {
-                  console.log('No payment required for ' + pkg.slug);
-                }
-                console.log('Request payload for ' + pkg.slug + ': ' + JSON.stringify(transformed, null, 2));
+                console.log('Request payload for ' + pkg.slug + ': ' + JSON.stringify(transformed));
                 const existingEventTypeId = await getEventTypeId(transformed.slug);
                 if (existingEventTypeId) {
                   await deleteEventType(existingEventTypeId);
                 }
-                const method = 'POST';
-                const path = '/v2/event-types';
                 try {
-                  const result = await apiRequest(method, path, transformed);
-                  console.log('Success for ' + pkg.slug + ': ' + JSON.stringify(result, null, 2));
-                  if (pkg.price && pkg.price > 0) {
-                    const eventTypeId = result.data.id;
-                    const paymentResult = await updatePaymentSettings(eventTypeId, paymentPrice, paymentCurrency, paymentMetadata);
-                    if (!paymentResult || !paymentResult.data.metadata?.apps?.stripe || paymentResult.data.price !== paymentPrice || paymentResult.data.currency !== paymentCurrency) {
-                      console.error('Stripe metadata not applied for ' + pkg.slug + '. Please verify Stripe is connected in Cal.com and check API permissions.');
-                    }
-                  }
+                  const result = await apiRequest('POST', '/v2/event-types', transformed);
+                  console.log('Success for ' + pkg.slug + ': ' + JSON.stringify(result));
                 } catch (err) {
-                  console.error('Failed for ' + pkg.slug + ': ' + JSON.stringify(err, null, 2));
-                  console.error('Error details: ' + JSON.stringify(err.data || err.message, null, 2));
+                  console.error('Failed for ' + pkg.slug + ': ' + JSON.stringify(err));
+                  console.error('Error details: ' + JSON.stringify(err.data || err.message));
                 }
                 await new Promise(resolve => setTimeout(resolve, 2000));
               }
             } catch (e) {
-              console.error('Error processing events: ' + JSON.stringify(e, null, 2));
+              console.error('Error processing events: ' + JSON.stringify(e));
               process.exit(1);
             }
           }
           processEvents().catch(e => {
-            console.error('Uncaught error in processEvents: ' + JSON.stringify(e, null, 2));
+            console.error('Uncaught error in processEvents: ' + JSON.stringify(e));
             process.exit(1);
           });
           SCRIPT
           cat deploy.js
 
-      - name: Debug shell script
-        run: |
-          echo "Dumping temporary shell script for debugging:"
-          cat /home/runner/work/_temp/*.sh || echo "No shell script found"
-
-      - name: Map JSON and Push to Cal.com
+      - name: Create event types
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
+        run: node deploy.js
+
+      - name: Write payment configuration script
         run: |
-          node deploy.js
+          cat <<'SCRIPT' > configure-payments.js
+          const fs = require('fs');
+          const https = require('https');
+          function apiRequest(method, path, body = null) {
+            return new Promise((resolve, reject) => {
+              const options = {
+                hostname: 'api.cal.com',
+                path: path,
+                method: method,
+                headers: {
+                  'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
+                  'Content-Type': 'application/json',
+                  'cal-api-version': '2024-06-14'
+                }
+              };
+              const req = https.request(options, (res) => {
+                let data = '';
+                res.on('data', (chunk) => { data += chunk; });
+                res.on('end', () => {
+                  if (res.statusCode >= 200 && res.statusCode < 300) {
+                    try {
+                      resolve(JSON.parse(data));
+                    } catch (e) {
+                      resolve({});
+                    }
+                  } else {
+                    reject({ statusCode: res.statusCode, data: data });
+                  }
+                });
+              });
+              req.on('error', (e) => { reject(e); });
+              if (body) req.write(JSON.stringify(body));
+              req.end();
+            });
+          }
+          async function getEventTypeId(slug) {
+            try {
+              console.log('Fetching event type ID for slug: ' + slug);
+              const res = await apiRequest('GET', '/v2/event-types');
+              const eventTypes = res.event_types || [];
+              for (let i = 0; i < eventTypes.length; i++) {
+                if (eventTypes[i].slug === slug) {
+                  return eventTypes[i].id;
+                }
+              }
+              return null;
+            } catch (e) {
+              console.error('Error fetching event types: ' + JSON.stringify(e));
+              return null;
+            }
+          }
+          async function configurePayments() {
+            try {
+              console.log('Reading packages.json for payment configuration...');
+              let packages = JSON.parse(fs.readFileSync('packages.json'));
+              if (packages.some(pkg => Object.keys(pkg).length === 1)) {
+                packages = packages.map(pkg => Object.values(pkg)[0]);
+              }
+              for (let i = 0; i < packages.length; i++) {
+                const pkg = packages[i];
+                if (!pkg.slug || !pkg.name) {
+                  console.error('Invalid package: missing slug or name: ' + JSON.stringify(pkg));
+                  process.exit(1);
+                }
+                if (!pkg.price || pkg.price <= 0) {
+                  console.log('No payment configuration needed for ' + pkg.slug);
+                  continue;
+                }
+                console.log('Configuring payments for ' + pkg.slug);
+                const eventTypeId = await getEventTypeId(pkg.slug);
+                if (!eventTypeId) {
+                  console.error('Event type not found for slug: ' + pkg.slug);
+                  continue;
+                }
+                const paymentPayload = {
+                  price: Math.round(pkg.price * 100),
+                  currency: pkg.currency?.toLowerCase() || 'cad',
+                  metadata: {
+                    apps: {
+                      stripe: {
+                        enabled: true,
+                        price: Math.round(pkg.price * 100),
+                        currency: pkg.currency?.toLowerCase() || 'cad'
+                      }
+                    }
+                  }
+                };
+                console.log('Payment payload for ' + pkg.slug + ': ' + JSON.stringify(paymentPayload));
+                try {
+                  const result = await apiRequest('PATCH', '/v2/event-types/' + eventTypeId, paymentPayload);
+                  console.log('Payment configuration success for ' + pkg.slug + ': ' + JSON.stringify(result));
+                  if (!result.data.metadata?.apps?.stripe || result.data.price !== paymentPayload.price || result.data.currency !== paymentPayload.currency) {
+                    console.error('Stripe metadata not applied for ' + pkg.slug + '. Check Stripe configuration and API permissions.');
+                  }
+                } catch (err) {
+                  console.error('Payment configuration failed for ' + pkg.slug + ': ' + JSON.stringify(err));
+                  console.error('Error details: ' + JSON.stringify(err.data || err.message));
+                }
+                await new Promise(resolve => setTimeout(resolve, 2000));
+              }
+            } catch (e) {
+              console.error('Error configuring payments: ' + JSON.stringify(e));
+              process.exit(1);
+            }
+          }
+          configurePayments().catch(e => {
+            console.error('Uncaught error in configurePayments: ' + JSON.stringify(e));
+            process.exit(1);
+          });
+          SCRIPT
+          cat configure-payments.js
+
+      - name: Configure payments
+        env:
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
+        run: node configure-payments.js
