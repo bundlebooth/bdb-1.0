@@ -1,4 +1,5 @@
-name: deploy-calcom.yml NEW
+name: Map and Deploy JSON to Cal.com
+
 on:
   push:
     branches:
@@ -89,13 +90,17 @@ jobs:
                     console.error('Invalid package: missing slug or name', pkg);
                     process.exit(1);
                   }
-                  console.log('Processing package:', pkg.slug_targets);
+                  console.log('Processing package:', pkg.slug);
                   const transformed = {
                     title: pkg.name || 'Placeholder Title',
                     slug: pkg.slug || 'placeholder',
                     lengthInMinutes: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
                     description: pkg.description || 'No description provided',
-                    locations: [{ type: pkg.location === 'Online' ? 'integrations:online' : 'inPerson', address: pkg.location || 'Toronto, ON' }],
+                    locations: [
+                      pkg.location === 'Online' 
+                        ? { type: 'integration', integration: 'daily' } // Use 'daily' for Cal.com's default video conferencing
+                        : { type: 'address', address: pkg.location || 'Toronto, ON' }
+                    ],
                     availability: {
                       days: pkg.availabilityDays
                         ? pkg.availabilityDays.map(day => dayMap[day] || 1)
@@ -115,7 +120,6 @@ jobs:
                   // Add Stripe configuration to metadata if price is present
                   if (pkg.price && pkg.price > 0) {
                     const currency = pkg.currency?.toLowerCase() || 'cad';
-                    // Validate currency (optional, add more as needed)
                     const supportedCurrencies = ['cad', 'usd', 'eur', 'gbp'];
                     if (!supportedCurrencies.includes(currency)) {
                       console.warn(`Unsupported currency '${currency}' for ${pkg.slug}, defaulting to 'cad'`);
@@ -151,9 +155,9 @@ jobs:
                     console.log('Success for ' + transformed.slug + ':', result);
                   } catch (err) {
                     console.error('Failed for ' + transformed.slug + ':', err);
-                    console.error('Error details:', err.data || err.message);
+                    console.error('Error details:', JSON.stringify(err.data, null, 2));
                   }
-                  await new Promise(resolve => setTimeout(resolve, 1000)); // Increased delay to avoid rate limits
+                  await new Promise(resolve => setTimeout(resolve, 1000));
                 }
               } catch (e) {
                 console.error('Error processing events:', e);
