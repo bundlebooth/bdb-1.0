@@ -142,9 +142,8 @@ jobs:
                     console.log('Success for ' + transformed.slug + ':', result);
 
                     if (requiresPayment && eventTypeId) {
-                      // Enable Stripe App for this eventType
                       try {
-                        await apiRequest('POST', \`/v2/event-types/\${eventTypeId}/apps/stripe\`, {
+                        await apiRequest('POST', \`/internal/apps/event-types/stripe/\${eventTypeId}\`, {
                           price: priceCents,
                           currency: currency
                         });
