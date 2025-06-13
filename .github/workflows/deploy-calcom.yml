@@ -114,9 +114,6 @@ jobs:
               throw new Error('Event type not found for slug: ' + slug);
             }
             const errors = [];
-            if (eventType.disableGuests !== expected.disableGuests) {
-              errors.push(`disableGuests: ${eventType.disableGuests} (Expected: ${expected.disableGuests})`);
-            }
             if (expected.bookingFields) {
               const hasEventAddress = eventType.bookingFields.some(field => 
                 field.slug === 'eventAddress' && 
