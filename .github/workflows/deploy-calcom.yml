@@ -121,8 +121,17 @@ jobs:
                 field.required === true &&
                 field.label === 'Event Address'
               );
+              const hasPhoneNumber = eventType.bookingFields.some(field => 
+                field.slug === 'phoneNumber' && 
+                field.type === 'phone' && 
+                field.required === true &&
+                field.label === 'Phone Number'
+              );
               if (!hasEventAddress) {
                 errors.push('bookingFields: missing eventAddress field');
+              }
+              if (!hasPhoneNumber) {
+                errors.push('bookingFields: missing phoneNumber field');
               }
             }
             if (errors.length > 0) {
@@ -159,7 +168,7 @@ jobs:
                   lengthInMinutes: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
                   description: description,
                   locations: pkg.locations && Array.isArray(pkg.locations) && pkg.locations[0]?.location_type === 'ask'
-                    ? [{ type: 'address', address: 'To be provided by Client', public: true }]
+                    ? [{ type: 'address', address: 'To be provided by client', public: true }]
                     : [{ type: 'address', address: pkg.location || 'Toronto, ON', public: true }],
                   availability: pkg.availability || {
                     days: pkg.availabilityDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
