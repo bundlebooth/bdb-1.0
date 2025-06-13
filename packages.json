@@ -1,17 +1,32 @@
 [
   {
-    "slug": "test42",
-    "name": "Test42",
-    "description": "Illuminate your event with the Radiant Dance Bundle.",
+    "name": "Test45",
+    "slug": "test45",
+    "guests": 200,
     "maxDuration": 6,
-    "location": "Toronto, ON",
+    "price": 1200,
+    "currency": "cad",
+    "regPrice": 1500,
+    "discount": 20,
+    "description": "Illuminate your event with the Radiant Dance Bundle. Features Sparkler Boxes for dazzling moments and a Laser Effect for First Dance to create a memorable show.",
+    "equipment": [
+      "Sparkler Boxes",
+      "Laser Effect for First Dance"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Wedding",
+      "Anniversary Celebration"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/radiant-dance-bundle-wedding-anniversary#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "Sale": "Y",
+    "New": "Y",
+    "dateAdded": "06-12-2025",
     "availabilityDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
     "startTime": "09:00",
     "endTime": "17:00",
-    "eventType": ["Dance", "Event"],
-    "packageType": "Premium",
-    "Sale": "Y",
-    "New": "N",
-    "price": 100.00
+    "location": "Toronto, ON"
   }
 ]
