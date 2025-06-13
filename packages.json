@@ -42,6 +42,7 @@
     "bookingFields": [
       {
         "name": "eventAddress",
+        "slug": "eventAddress",
         "label": "Event Address",
         "type": "textarea",
         "required": true,
