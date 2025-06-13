@@ -1,4 +1,3 @@
-
 name: Map and Deploy JSON to Cal.com
 
 on:
@@ -50,7 +49,7 @@ jobs:
             7: 'Sunday'
           };
 
-          function apiRequest(method, path, body = null) {
+          function apiRequest(method, path, body = null, retries = 2) {
             return new Promise((resolve, reject) => {
               const options = {
                 hostname: 'api.cal.com',
@@ -58,8 +57,7 @@ jobs:
                 method: method,
                 headers: {
                   'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                  'Content-Type': 'application/json',
-                  'cal-api-version': '2024-06-14'
+                  'Content-Type': 'application/json'
                 }
               };
               const req = https.request(options, (res) => {
@@ -68,12 +66,16 @@ jobs:
                 res.on('end', () => {
                   if (res.statusCode >= 200 && res.statusCode < 300) {
                     try {
-                      resolve(JSON.parse(data));
+                      resolve(JSON.parse(data || '{}'));
                     } catch (e) {
                       reject(e);
                     }
+                  } else if (res.statusCode === 404 && retries > 0) {
+                    setTimeout(() => {
+                      apiRequest(method, path, body, retries - 1).then(resolve).catch(reject);
+                    }, 1000);
                   } else {
-                    reject({ statusCode: res.statusCode, data: data });
+                    reject({ statusCode: res.statusCode, data });
                   }
                 });
               });
@@ -85,7 +87,7 @@ jobs:
 
           async function getAllEventTypes() {
             try {
-              const res = await apiRequest('GET', '/v2/event-types');
+              const res = await apiRequest('GET', '/api/v2/event-types');
               return res.event_types || [];
             } catch (e) {
               console.error('Error fetching event types:', e);
@@ -95,7 +97,7 @@ jobs:
 
           async function getEventTypeId(slug) {
             try {
-              const res = await apiRequest('GET', '/v2/event-types?slug=' + encodeURIComponent(slug));
+              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
               const eventTypes = res.event_types || [];
               return eventTypes.length > 0 ? eventTypes[0].id : null;
             } catch (e) {
@@ -106,8 +108,8 @@ jobs:
 
           async function getEventType(id) {
             try {
-              const res = await apiRequest('GET', '/v2/event-types/' + id);
-              return res.data;
+              const res = await apiRequest('GET', `/api/v2/event-types/${id}`);
+              return res.data || res.event_type;
             } catch (e) {
               console.error(`Error fetching event type ${id}:`, e);
               return null;
@@ -116,7 +118,7 @@ jobs:
 
           async function deleteEventType(id) {
             try {
-              await apiRequest('DELETE', '/v2/event-types/' + id);
+              await apiRequest('DELETE', `/api/v2/event-types/${id}`);
               console.log(`Deleted event type with ID ${id}`);
             } catch (e) {
               console.error(`Error deleting event type ${id}:`, e);
@@ -135,7 +137,7 @@ jobs:
                 isDefault: scheduleData.isDefault !== undefined ? scheduleData.isDefault : true,
                 availability: mappedAvailability
               };
-              const result = await apiRequest('POST', '/v2/schedules', payload);
+              const result = await apiRequest('POST', '/api/v2/schedules', payload);
               return result.data.id;
             } catch (e) {
               throw new Error('Failed to create schedule: ' + JSON.stringify(e));
@@ -179,11 +181,55 @@ jobs:
             return { added, deleted };
           }
 
+          function compareObjects(obj1, obj2, path = '') {
+            const differences = [];
+            for (const key in obj1) {
+              const fullPath = path ? `${path}.${key}` : key;
+              if (typeof obj1[key] === 'object' && obj1[key] !== null && !Array.isArray(obj1[key])) {
+                const subDiffs = compareObjects(obj1[key], obj2[key] || {}, fullPath);
+                differences.push(...subDiffs);
+              } else if (Array.isArray(obj1[key])) {
+                if (!Array.isArray(obj2[key]) || JSON.stringify(obj1[key]) !== JSON.stringify(obj2[key])) {
+                  differences.push(`${fullPath}: ${JSON.stringify(obj1[key])} != ${JSON.stringify(obj2[key])}`);
+                }
+              } else if (obj1[key] !== obj2[key]) {
+                differences.push(`${fullPath}: ${obj1[key]} != ${obj2[key]}`);
+              }
+            }
+            for (const key in obj2) {
+              if (!(key in obj1)) {
+                const fullPath = path ? `${path}.${key}` : key;
+                differences.push(`${fullPath}: missing in new, present in old as ${obj2[key]}`);
+              }
+            }
+            return differences;
+          }
+
+          function deduplicatePackages(packages) {
+            const seenSlugs = new Set();
+            const uniquePackages = [];
+            for (const pkg of packages) {
+              if (seenSlugs.has(pkg.slug)) {
+                console.warn(`Duplicate slug detected: ${pkg.slug}. Skipping package: ${pkg.name}`);
+                continue;
+              }
+              seenSlugs.add(pkg.slug);
+              uniquePackages.push(pkg);
+            }
+            return uniquePackages;
+          }
+
           async function processEvents() {
             try {
               let packages = JSON.parse(fs.readFileSync('packages.json'));
               if (packages.some(pkg => Object.keys(pkg).length === 1)) {
-                packages = packages.map(p => Object.values(pkg)[0]);
+                packages = packages.map(p => Object.values(p)[0]);
+              }
+
+              // Deduplicate packages by slug
+              packages = deduplicatePackages(packages);
+              if (packages.length === 0) {
+                throw new Error('No valid packages found after deduplication');
               }
 
               // Fetch existing event types from Cal.com
@@ -254,29 +300,45 @@ jobs:
                 if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
                 if (pkg.New === 'Y') transformed.tags.push('New');
 
-                // Compare event types
-                const existingEventType = existingEventTypes.find(e => e.slug === pkg.slug);
-                if (existingEventType) {
-                  const existingEventTypeTags = existingEventType.tags || [];
-                  const newEventTypeTags = pkg.eventType || [];
-                  const { added, deleted } = compareEventTypes(existingEventTypeTags, newEventTypeTags);
-
-                  if (added.length > 0 || deleted.length > 0) {
-                    console.log(`Event type changes for slug: ${pkg.slug}`);
-                    if (added.length > 0) {
-                      console.log(`  Added event types: ${added.join(', ')}`);
+                const existingEventTypeId = await getEventTypeId(transformed.slug);
+                if (existingEventTypeId) {
+                  const existingEventType = await getEventType(existingEventTypeId);
+                  if (existingEventType) {
+                    // Compare existing and new event type
+                    const differences = compareObjects(transformed, existingEventType);
+                    const tagDiffs = compareEventTypes(existingEventType.tags || [], pkg.eventType || []);
+                    if (differences.length > 0 || tagDiffs.added.length > 0 || tagDiffs.deleted.length > 0) {
+                      console.log(`Differences detected for slug: ${pkg.slug}`);
+                      if (differences.length > 0) {
+                        console.log('  Field differences:');
+                        differences.forEach(diff => console.log(`    ${diff}`));
+                      }
+                      if (tagDiffs.added.length > 0) {
+                        console.log(`  Added event types: ${tagDiffs.added.join(', ')}`);
+                      }
+                      if (tagDiffs.deleted.length > 0) {
+                        console.log(`  Deleted event types: ${tagDiffs.deleted.join(', ')}`);
+                      }
+                      try {
+                        await apiRequest('PATCH', `/api/v2/event-types/${existingEventTypeId}`, transformed);
+                        console.log(`Updated event type for slug: ${transformed.slug}`);
+                      } catch (e) {
+                        console.error(`Failed to update event type for slug ${transformed.slug}:`, e);
+                      }
+                    } else {
+                      console.log(`No differences detected for slug: ${pkg.slug}`);
                     }
-                    if (deleted.length > 0) {
-                      console.log(`  Deleted event types: ${deleted.join(', ')}`);
-                    }
-                    // Update event type
-                    await apiRequest('PATCH', `/v2/event-types/${existingEventType.id}`, { tags: transformed.tags });
-                    console.log(`Updated event type tags for slug: ${pkg.slug}`);
-                  } else {
-                    console.log(`No event type changes for slug: ${pkg.slug}`);
                   }
                 } else {
-                  console.log(`Creating new event type for slug: ${pkg.slug} with event types: ${pkg.eventType.join(', ')}`);
+                  console.log(`Creating new event type for slug: ${pkg.slug} with event types: ${pkg.eventType ? pkg.eventType.join(', ') : 'None'}`);
+                  try {
+                    const result = await apiRequest('POST', '/api/v2/event-types', transformed);
+                    console.log(`Created event type for slug: ${transformed.slug}`);
+                    await verifyEventType(pkg.slug, transformed, result.data.id);
+                  } catch (e) {
+                    console.error(`Failed to create event type for slug ${pkg.slug}:`, e);
+                    throw e;
+                  }
                 }
 
                 if (pkg.availability && Array.isArray(pkg.availability.schedules)) {
@@ -287,17 +349,15 @@ jobs:
                   }
                   if (scheduleIds.length > 0) {
                     transformed.scheduleIds = scheduleIds;
+                    if (existingEventTypeId) {
+                      try {
+                        await apiRequest('PATCH', `/api/v2/event-types/${existingEventTypeId}`, { scheduleIds });
+                        console.log(`Updated schedule IDs for slug: ${pkg.slug}`);
+                      } catch (e) {
+                        console.error(`Failed to update schedule IDs for slug ${pkg.slug}:`, e);
+                      }
+                    }
                   }
-                }
-
-                const existingEventTypeId = await getEventTypeId(transformed.slug);
-                if (existingEventTypeId) {
-                  await apiRequest('PATCH', `/v2/event-types/${existingEventTypeId}`, transformed);
-                  console.log(`Updated event type for slug: ${transformed.slug}`);
-                } else {
-                  const result = await apiRequest('POST', '/v2/event-types', transformed);
-                  console.log(`Created event type for slug: ${transformed.slug}`);
-                  await verifyEventType(pkg.slug, transformed, result.data.id);
                 }
 
                 await new Promise(resolve => setTimeout(resolve, 5000));
@@ -330,8 +390,7 @@ jobs:
                 method: method,
                 headers: {
                   'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                  'Content-Type': 'application/json',
-                  'cal-api-version': '2024-06-14'
+                  'Content-Type': 'application/json'
                 }
               };
               const req = https.request(options, (res) => {
@@ -340,12 +399,12 @@ jobs:
                 res.on('end', () => {
                   if (res.statusCode >= 200 && res.statusCode < 300) {
                     try {
-                      resolve(JSON.parse(data));
+                      resolve(JSON.parse(data || '{}'));
                     } catch (e) {
                       reject(e);
                     }
                   } else {
-                    reject({ statusCode: res.statusCode, data: data });
+                    reject({ statusCode: res.statusCode, data });
                   }
                 });
               });
@@ -357,7 +416,7 @@ jobs:
 
           async function getEventTypeId(slug) {
             try {
-              const res = await apiRequest('GET', '/v2/event-types?slug=' + encodeURIComponent(slug));
+              const res = await apiRequest('GET', '/api/v2/event-types?slug=' + encodeURIComponent(slug));
               const event_types = res.event_types || [];
               return event_types.length > 0 ? event_types[0].id : null;
             } catch (e) {
@@ -371,6 +430,9 @@ jobs:
               if (packages.some(pkg => Object.keys(pkg).length === 1)) {
                 packages = packages.map(pkg => Object.values(pkg)[0]);
               }
+              packages = packages.filter((pkg, index, self) => 
+                index === self.findIndex(p => p.slug === pkg.slug)
+              );
               for (const pkg of packages) {
                 if (!pkg.slug || !pkg.name) {
                   throw new Error('Invalid package: missing slug or name');
@@ -395,7 +457,7 @@ jobs:
                     }
                   }
                 };
-                await apiRequest('PATCH', '/v2/event-types/' + eventTypeId, paymentPayload);
+                await apiRequest('PATCH', '/api/v2/event-types/' + eventTypeId, paymentPayload);
                 console.log(`Configured payment for slug: ${pkg.slug}`);
                 await new Promise(resolve => setTimeout(resolve, 2000));
               }
