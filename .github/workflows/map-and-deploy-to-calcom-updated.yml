@@ -1,4 +1,4 @@
-Map and Deploy JSON to Cal.com
+name: Map and Deploy JSON to Cal.com
 
 on:
   push:
