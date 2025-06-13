@@ -112,18 +112,37 @@ jobs:
               const id = await getEventTypeId(slug);
               if (!id) {
                 console.error('Cannot verify: Event type not found for slug: ' + slug);
-                return;
+                process.exit(1);
               }
               const res = await apiRequest('GET', '/v2/event-types/' + id);
               const eventType = res.data;
               console.log('Verifying event type: ' + slug);
-              console.log('disableGuests: ' + eventType.disableGuests + ' (Expected: ' + expected.disableGuests + ')');
-              console.log('disableGuestsCancelling: ' + (eventType.metadata?.disableGuestsCancelling || eventType.disableGuestsCancelling || false) + ' (Expected: ' + expected.metadata.disableGuestsCancelling + ')');
-              console.log('disableGuestsRescheduling: ' + (eventType.metadata?.disableGuestsRescheduling || eventType.disableGuestsRescheduling || false) + ' (Expected: ' + expected.metadata.disableGuestsRescheduling + ')');
-              console.log('disableCalVideoTranscription: ' + (eventType.metadata?.disableCalVideoTranscription || false) + ' (Expected: ' + expected.metadata.disableCalVideoTranscription + ')');
-              console.log('locations: ' + JSON.stringify(eventType.locations) + ' (Expected: ' + JSON.stringify(expected.locations) + ')');
+              const errors = [];
+              if (eventType.disableGuests !== expected.disableGuests) {
+                errors.push(`disableGuests: ${eventType.disableGuests} (Expected: ${expected.disableGuests})`);
+              }
+              if (eventType.disableGuestsCancelling !== expected.disableGuestsCancelling) {
+                errors.push(`disableGuestsCancelling: ${eventType.disableGuestsCancelling || false} (Expected: ${expected.disableGuestsCancelling})`);
+              }
+              if (eventType.disableGuestsRescheduling !== expected.disableGuestsRescheduling) {
+                errors.push(`disableGuestsRescheduling: ${eventType.disableGuestsRescheduling || false} (Expected: ${expected.disableGuestsRescheduling})`);
+              }
+              if (eventType.metadata?.disableCalVideoTranscription !== expected.metadata.disableCalVideoTranscription) {
+                errors.push(`disableCalVideoTranscription: ${eventType.metadata?.disableCalVideoTranscription || false} (Expected: ${expected.metadata.disableCalVideoTranscription})`);
+              }
+              if (JSON.stringify(eventType.locations) !== JSON.stringify(expected.locations)) {
+                errors.push(`locations: ${JSON.stringify(eventType.locations)} (Expected: ${JSON.stringify(expected.locations)})`);
+              }
+              if (errors.length > 0) {
+                console.error('Verification failed for ' + slug + ':');
+                errors.forEach(err => console.error(err));
+                process.exit(1);
+              } else {
+                console.log('Verification successful for ' + slug);
+              }
             } catch (e) {
               console.error('Error verifying event type ' + slug + ': ' + JSON.stringify(e));
+              process.exit(1);
             }
           }
           async function processEvents() {
@@ -155,6 +174,11 @@ jobs:
                 } else if (pkg.disableCalVideoTranscription !== true) {
                   console.warn('Warning: disableCalVideoTranscription is ' + pkg.disableCalVideoTranscription + ' for ' + pkg.slug);
                 }
+                if (!pkg.hasOwnProperty('disableGuests')) {
+                  console.warn('Warning: disableGuests not set for ' + pkg.slug + ', defaulting to false');
+                } else if (pkg.disableGuests !== true) {
+                  console.warn('Warning: disableGuests is ' + pkg.disableGuests + ' for ' + pkg.slug);
+                }
                 const priceText = pkg.discount > 0 
                   ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
                   : `**Price**: **$${pkg.price}**`;
@@ -174,13 +198,11 @@ jobs:
                   slug: pkg.slug || 'placeholder',
                   lengthInMinutes: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
                   description: description,
-                  locations: [
-                    pkg.location === 'Online' 
-                      ? { type: 'integration', integration: 'cal-video' }
-                      : pkg.location === 'Attendee Address'
-                        ? { type: 'attendeeInPerson' }
-                        : { type: 'address', address: pkg.location || 'Toronto, ON', public: true }
-                  ],
+                  locations: pkg.locations && Array.isArray(pkg.locations) && pkg.locations[0]?.location_type === 'ask'
+                    ? [{ type: 'attendeeInPerson' }]
+                    : pkg.location === 'Online'
+                      ? [{ type: 'integration', integration: 'cal-video' }]
+                      : [{ type: 'address', address: pkg.location || 'Toronto, ON', public: true }],
                   availability: pkg.availability || {
                     days: pkg.availabilityDays
                       ? pkg.availabilityDays.map(day => dayMap[day] || 1)
@@ -190,10 +212,15 @@ jobs:
                   },
                   tags: [],
                   disableGuests: pkg.disableGuests || false,
+                  disableGuestsCancelling: pkg.disableGuestsCancelling || false,
+                  disableGuestsRescheduling: pkg.disableGuestsRescheduling || false,
+                  successRedirectUrl: pkg.successRedirectUrl || undefined,
+                  color: pkg.color || undefined,
+                  bookingWindow: pkg.bookingWindow || undefined,
+                  minimumBookingNotice: pkg.minimumBookingNotice || undefined,
+                  bookerLayouts: pkg.bookerLayouts || undefined,
                   metadata: {
-                    disableCalVideoTranscription: pkg.disableCalVideoTranscription || false,
-                    disableGuestsCancelling: pkg.disableGuestsCancelling || false,
-                    disableGuestsRescheduling: pkg.disableGuestsRescheduling || false
+                    disableCalVideoTranscription: pkg.disableCalVideoTranscription || false
                   }
                 };
                 if (Array.isArray(pkg.eventType)) {
@@ -221,11 +248,12 @@ jobs:
                 }
                 try {
                   const result = await apiRequest('POST', '/v2/event-types', transformed);
-                  console.log('Success for ' + pkg.slug + ': ' + JSON.stringify(result));
+                  console.log('API response for ' + pkg.slug + ': ' + JSON.stringify(result));
                   await verifyEventType(pkg.slug, transformed);
                 } catch (err) {
                   console.error('Failed for ' + pkg.slug + ': ' + JSON.stringify(err));
                   console.error('Error details: ' + JSON.stringify(err.data || err.message));
+                  process.exit(1);
                 }
                 await new Promise(resolve => setTimeout(resolve, 2000));
               }
@@ -351,6 +379,7 @@ jobs:
                 } catch (err) {
                   console.error('Payment configuration failed for ' + pkg.slug + ': ' + JSON.stringify(err));
                   console.error('Error details: ' + JSON.stringify(err.data || err.message));
+                  process.exit(1);
                 }
                 await new Promise(resolve => setTimeout(resolve, 2000));
               }
