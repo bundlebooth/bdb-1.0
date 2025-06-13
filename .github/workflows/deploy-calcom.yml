@@ -98,8 +98,8 @@ jobs:
                     description: pkg.description || 'No description provided',
                     locations: [
                       pkg.location === 'Online' 
-                        ? { type: 'integration', integration: 'daily' } // Use 'daily' for Cal.com's default video conferencing
-                        : { type: 'address', address: pkg.location || 'Toronto, ON' }
+                        ? { type: 'integration', integration: 'cal-video' } // Use 'cal-video' for Cal.com's default video integration
+                        : { type: 'address', address: pkg.location || 'Toronto, ON', public: true } // Add public: true for address
                     ],
                     availability: {
                       days: pkg.availabilityDays
