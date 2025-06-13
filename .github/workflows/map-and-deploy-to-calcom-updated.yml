@@ -1,4 +1,4 @@
-name: Map and Deploy JSON to Cal.com
+name: Map and Deploy JSON to Cal.com (Fully Automated Stripe Enabled)
 
 on:
   push:
@@ -19,85 +19,75 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Validate Cal.com Stripe Integration
-        env:
-          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-        id: stripe-check
-        continue-on-error: true
-        run: |
-          node -e "
-            const https = require('https');
-            const options = {
-              hostname: 'api.cal.com',
-              path: '/v2/stripe/check',
-              method: 'GET',
-              headers: { Authorization: 'Bearer ' + process.env.CALCOM_API_KEY }
-            };
-            const req = https.request(options, (res) => {
-              let data = '';
-              res.on('data', (chunk) => data += chunk);
-              res.on('end', () => {
-                if (res.statusCode === 200) {
-                  console.log('Stripe integration is active:', data);
-                  process.env.STRIPE_ACTIVE = 'true';
-                } else {
-                  console.warn('Warning: Stripe integration check failed:', res.statusCode, data);
-                  process.env.STRIPE_ACTIVE = 'false';
-                }
-              });
-            });
-            req.on('error', (e) => {
-              console.warn('Error checking Stripe integration:', e.message);
-              process.env.STRIPE_ACTIVE = 'false';
-            });
-            req.end();
-          "
-
       - name: Map JSON and Push to Cal.com
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-          STRIPE_ACTIVE: ${{ env.STRIPE_ACTIVE }}
         run: |
           node <<EOF
             const fs = require('fs');
             const https = require('https');
+
             const dayMap = {
               'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
               'Friday': 5, 'Saturday': 6, 'Sunday': 7
             };
 
-            async function getEventTypeId(slug) {
-              return new Promise((resolve) => {
+            function apiRequest(method, path, body = null) {
+              return new Promise((resolve, reject) => {
                 const options = {
                   hostname: 'api.cal.com',
-                  path: '/v2/event-types',
-                  method: 'GET',
-                  headers: { Authorization: 'Bearer ' + process.env.CALCOM_API_KEY }
+                  path,
+                  method,
+                  headers: {
+                    'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
+                    'Content-Type': 'application/json'
+                  }
                 };
                 const req = https.request(options, (res) => {
                   let data = '';
                   res.on('data', (chunk) => data += chunk);
                   res.on('end', () => {
-                    try {
-                      const eventTypes = JSON.parse(data).event_types || [];
-                      const event = eventTypes.find(e => e.slug === slug);
-                      resolve(event ? event.id : null);
-                    } catch (e) {
-                      console.error('Error parsing event types:', e);
-                      resolve(null);
+                    if (res.statusCode >= 200 && res.statusCode < 300) {
+                      resolve(JSON.parse(data));
+                    } else {
+                      reject(\`API Error \${res.statusCode}: \${data}\`);
                     }
                   });
                 });
-                req.on('error', (e) => {
-                  console.error('Error fetching event types:', e);
-                  resolve(null);
-                });
+                req.on('error', (e) => reject(e));
+                if (body) req.write(JSON.stringify(body));
                 req.end();
               });
             }
 
+            async function getPaymentProviderId() {
+              try {
+                const providers = await apiRequest('GET', '/v2/payment-providers');
+                const stripe = providers.find(p => p.type === 'stripe');
+                if (!stripe) throw new Error('Stripe provider not found');
+                console.log('Using paymentProviderId:', stripe.id);
+                return stripe.id;
+              } catch (e) {
+                console.error('Error fetching payment providers:', e);
+                process.exit(1);
+              }
+            }
+
+            async function getEventTypeId(slug) {
+              try {
+                const res = await apiRequest('GET', '/v2/event-types');
+                const event = res.event_types.find(e => e.slug === slug);
+                return event ? event.id : null;
+              } catch (e) {
+                console.error('Error fetching event types:', e);
+                return null;
+              }
+            }
+
             async function processEvents() {
               try {
+                const paymentProviderId = await getPaymentProviderId();
+
                 console.log('Reading packages.json...');
                 let packages = JSON.parse(fs.readFileSync('packages.json'));
 
@@ -111,9 +101,6 @@ jobs:
                     process.exit(1);
                   }
                 }
-
-                const isStripeActive = process.env.STRIPE_ACTIVE === 'true';
-                console.log('Stripe active:', isStripeActive);
 
                 for (const pkg of packages) {
                   console.log('Processing package:', pkg.slug);
@@ -139,52 +126,29 @@ jobs:
                     ].filter(Boolean)
                   };
 
-                  if (isStripeActive && pkg.price > 0) {
+                  if (pkg.price > 0) {
                     transformed.requiresPayment = true;
                     transformed.payments = {
                       enabled: true,
                       price: pkg.price * 100,  // cents
                       paymentProvider: 'stripe',
+                      paymentProviderId: paymentProviderId,
                       currency: 'CAD'
                     };
                   }
 
-                  const slug = transformed.slug;
-                  const eventTypeId = await getEventTypeId(slug);
+                  const eventTypeId = await getEventTypeId(transformed.slug);
                   const method = eventTypeId ? 'PUT' : 'POST';
                   const path = eventTypeId ? \`/v2/event-types/\${eventTypeId}\` : '/v2/event-types';
-                  console.log('API call:', method, path);
 
-                  const options = {
-                    hostname: 'api.cal.com',
-                    path,
-                    method,
-                    headers: {
-                      'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                      'Content-Type': 'application/json'
-                    }
-                  };
+                  try {
+                    const result = await apiRequest(method, path, transformed);
+                    console.log(\`Success for \${transformed.slug}: \`, result);
+                  } catch (err) {
+                    console.error(\`Failed for \${transformed.slug}: \`, err);
+                  }
 
-                  const req = https.request(options, (res) => {
-                    let data = '';
-                    res.on('data', (chunk) => data += chunk);
-                    res.on('end', () => {
-                      if (res.statusCode >= 200 && res.statusCode < 300) {
-                        console.log(\`Success for \${slug}: \${res.statusCode}, Response: \${data}\`);
-                      } else {
-                        console.error(\`Failed for \${slug}: \${res.statusCode}, Response: \${data}\`);
-                      }
-                    });
-                  });
-
-                  req.on('error', (e) => {
-                    console.error(\`Error for \${slug}: \${e.message}\`);
-                  });
-
-                  req.write(JSON.stringify(transformed));
-                  req.end();
-
-                  await new Promise(resolve => setTimeout(resolve, 1000)); // Rate limit buffer
+                  await new Promise(resolve => setTimeout(resolve, 500)); // slight delay for rate limiting
                 }
               } catch (e) {
                 console.error('Error processing events:', e);
