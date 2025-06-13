@@ -39,7 +39,7 @@ jobs:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
         run: |
-          node <<EOF
+          node <<'EOF'
             const fs = require('fs');
             const https = require('https');
             const dayMap = {
@@ -54,7 +54,7 @@ jobs:
               while (page) {
                 const options = {
                   hostname: 'api.cal.com',
-                  path: `/v2/event-types?page=${page}`,
+                  path: '/v2/event-types?page=' + page,
                   method: 'GET',
                   headers: { Authorization: 'Bearer ' + process.env.CALCOM_API_KEY }
                 };
@@ -70,7 +70,7 @@ jobs:
                 });
 
                 if (response.status !== 200) {
-                  console.error(`Error fetching event types (page ${page}): Status ${response.status}, Response: ${response.data}`);
+                  console.error('Error fetching event types (page ' + page + '): Status ' + response.status + ', Response: ' + response.data);
                   return null;
                 }
 
@@ -84,7 +84,7 @@ jobs:
                   }
                   page = result.next_page || null;
                 } catch (e) {
-                  console.error(`Error parsing event types (page ${page}): ${e.message}`);
+                  console.error('Error parsing event types (page ' + page + '): ' + e.message);
                   return null;
                 }
 
@@ -111,33 +111,33 @@ jobs:
                     console.error('Invalid package: missing slug or name', pkg);
                     process.exit(1);
                   }
-                  if (pkg.price > 0 && !process.env.STRIPE_SECRET_KEY) {
-                    console.error('Error: STRIPE_SECRET_KEY missing for package with price:', pkg.slug);
+                  if (pkg.price && (isNaN(pkg.price) || pkg.price < 0)) {
+                    console.error('Invalid price for package ' + pkg.slug + ': ' + pkg.price);
                     process.exit(1);
                   }
-                  if (pkg.price && (isNaN(pkg.price) || pkg.price < 0)) {
-                    console.error(`Invalid price for package ${pkg.slug}: ${pkg.price}`);
+                  if (pkg.price > 0 && !process.env.STRIPE_SECRET_KEY) {
+                    console.error('Error: STRIPE_SECRET_KEY missing for package with price: ' + pkg.slug);
                     process.exit(1);
                   }
                 }
 
                 console.log('Processing packages with Stripe payments enabled...');
                 for (const pkg of packages) {
-                  console.log('Processing package:', pkg.slug);
+                  console.log('Processing package: ' + pkg.slug);
                   const description = [
                     pkg.description || 'No description provided',
-                    pkg.equipment && Array.isArray(pkg.equipment) ? `Equipment: ${pkg.equipment.join(', ')}` : '',
-                    pkg.note ? `Note: ${pkg.note}` : '',
-                    pkg.guests ? `Guests: ${pkg.guests}` : '',
-                    pkg.regPrice ? `Regular Price: $${pkg.regPrice}` : '',
-                    pkg.discount ? `Discount: ${pkg.discount}%` : ''
+                    pkg.equipment && Array.isArray(pkg.equipment) ? 'Equipment: ' + pkg.equipment.join(', ') : '',
+                    pkg.note ? 'Note: ' + pkg.note : '',
+                    pkg.guests ? 'Guests: ' + pkg.guests : '',
+                    pkg.regPrice ? 'Regular Price: $' + pkg.regPrice : '',
+                    pkg.discount ? 'Discount: ' + pkg.discount + '%' : ''
                   ].filter(Boolean).join('\n');
 
                   const transformed = {
                     title: pkg.name || 'Placeholder Title',
                     slug: pkg.slug || 'placeholder',
                     length: pkg.maxDuration ? pkg.maxDuration * 60 : 360,
-                    description,
+                    description: description,
                     locations: [{ type: 'inPerson', address: pkg.location || 'Toronto, ON' }],
                     availability: {
                       days: pkg.availabilityDays
@@ -146,19 +146,9 @@ jobs:
                       startTime: pkg.startTime || '10:00',
                       endTime: pkg.endTime || '22:00'
                     },
-                    ...(pkg.price > 0 ? {
-                      price: Math.round(pkg.price * 100), // Ensure integer cents
-                      currency: 'cad',
-                      requiresPayment: true,
-                      // Attempt to enable Stripe app (may need adjustment)
-                      apps: {
-                        stripe: {
-                          enabled: true,
-                          price: Math.round(pkg.price * 100),
-                          currency: 'cad'
-                        }
-                      }
-                    } : {}),
+                    price: pkg.price > 0 ? Math.round(pkg.price * 100) : undefined,
+                    currency: pkg.price > 0 ? 'cad' : undefined,
+                    requiresPayment: pkg.price > 0 ? true : undefined,
                     metadata: {
                       bookingUrl: pkg.bookingUrl || '',
                       dateAdded: pkg.dateAdded || ''
@@ -171,18 +161,18 @@ jobs:
                     ].filter(Boolean)
                   };
 
-                  console.log(`Payload for ${pkg.slug}:`, JSON.stringify(transformed, null, 2));
+                  console.log('Payload for ' + pkg.slug + ': ' + JSON.stringify(transformed, null, 2));
 
                   const slug = transformed.slug;
                   const eventTypeId = await getEventTypeId(slug);
                   const method = eventTypeId ? 'PUT' : 'POST';
-                  const path = eventTypeId ? `/v2/event-types/${eventTypeId}` : '/v2/event-types';
-                  console.log('API call:', method, path);
+                  const path = eventTypeId ? '/v2/event-types/' + eventTypeId : '/v2/event-types';
+                  console.log('API call: ' + method + ' ' + path);
 
                   const options = {
                     hostname: 'api.cal.com',
-                    path,
-                    method,
+                    path: path,
+                    method: method,
                     headers: {
                       'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
                       'Content-Type': 'application/json'
@@ -193,7 +183,7 @@ jobs:
                     const req = https.request(options, (res) => {
                       let data = '';
                       res.on('data', (chunk) => data += chunk);
-                      res.on('end', () => resolve({ status: res.statusCode, data }));
+                      res.on('end', () => resolve({ status: res.statusCode, data: data }));
                     });
                     req.on('error', (e) => reject(e));
                     req.write(JSON.stringify(transformed));
@@ -201,18 +191,18 @@ jobs:
                   });
 
                   if (response.status >= 200 && response.status < 300) {
-                    console.log(`Success for ${slug}: Status ${response.status}, Response: ${response.data}`);
+                    console.log('Success for ' + slug + ': Status ' + response.status + ', Response: ' + response.data);
                   } else if (response.status === 400 && response.data.includes('event type with this slug')) {
-                    console.warn(`Warning: Skipped ${slug} due to duplicate slug. Consider updating manually or changing the slug.`);
+                    console.warn('Warning: Skipped ' + slug + ' due to duplicate slug. Consider updating manually or changing the slug.');
                   } else {
-                    console.error(`Failed for ${slug}: Status ${response.status}, Response: ${response.data}`);
+                    console.error('Failed for ' + slug + ': Status ' + response.status + ', Response: ' + response.data);
                     process.exit(1);
                   }
 
                   await new Promise(resolve => setTimeout(resolve, 1000));
                 }
               } catch (e) {
-                console.error('Error processing events:', e.message);
+                console.error('Error processing events: ' + e.message);
                 process.exit(1);
               }
             }
