@@ -11,7 +11,7 @@
     "servicesIncluded": ["360 Video Booth", "Dry Ice Fog"],
     "equipment": ["360 Video Booth", "Dry Ice Fog"],
     "note": "Additional charges apply for extended hours or additional services.",
-    "location": "Custom attendee location",
+    "location": "attendeeAddress",
     "currency": "CAD",
     "availabilityDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
     "startTime": "09:00",
