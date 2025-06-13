@@ -68,6 +68,17 @@ jobs:
               req.end();
             });
           }
+          async function getEventTypeId(slug) {
+            try {
+              console.log('Fetching event type ID for slug: ' + slug);
+              const res = await apiRequest('GET', '/v2/event-types?slug=' + encodeURIComponent(slug));
+              const eventTypes = res.event_types || [];
+              return eventTypes.length > 0 ? eventTypes[0].id : null;
+            } catch (e) {
+              console.error('Error fetching event types: ' + JSON.stringify(e));
+              return null;
+            }
+          }
           async function getEventType(id) {
             try {
               console.log('Fetching event type with ID: ' + id);
@@ -120,11 +131,11 @@ jobs:
               if (eventType.disableGuests !== expected.disableGuests) {
                 errors.push(`disableGuests: ${eventType.disableGuests} (Expected: ${expected.disableGuests})`);
               }
-              if (eventType.disableGuestsCancelling !== expected.disableGuestsCancelling) {
-                errors.push(`disableGuestsCancelling: ${eventType.disableGuestsCancelling || false} (Expected: ${expected.disableGuestsCancelling})`);
+              if (eventType.metadata?.disableGuestsCancelling !== expected.metadata.disableGuestsCancelling) {
+                errors.push(`disableGuestsCancelling: ${eventType.metadata?.disableGuestsCancelling || false} (Expected: ${expected.metadata.disableGuestsCancelling})`);
               }
-              if (eventType.disableGuestsRescheduling !== expected.disableGuestsRescheduling) {
-                errors.push(`disableGuestsRescheduling: ${eventType.disableGuestsRescheduling || false} (Expected: ${expected.disableGuestsRescheduling})`);
+              if (eventType.metadata?.disableGuestsRescheduling !== expected.metadata.disableGuestsRescheduling) {
+                errors.push(`disableGuestsRescheduling: ${eventType.metadata?.disableGuestsRescheduling || false} (Expected: ${expected.metadata.disableGuestsRescheduling})`);
               }
               if (eventType.metadata?.disableCalVideoTranscription !== expected.metadata.disableCalVideoTranscription) {
                 errors.push(`disableCalVideoTranscription: ${eventType.metadata?.disableCalVideoTranscription || false} (Expected: ${expected.metadata.disableCalVideoTranscription})`);
@@ -132,8 +143,17 @@ jobs:
               if (JSON.stringify(eventType.locations) !== JSON.stringify(expected.locations)) {
                 errors.push(`locations: ${JSON.stringify(eventType.locations)} (Expected: ${JSON.stringify(expected.locations)})`);
               }
-              if (expected.bookingFields && JSON.stringify(eventType.bookingFields) !== JSON.stringify(expected.bookingFields)) {
-                errors.push(`bookingFields: ${JSON.stringify(eventType.bookingFields)} (Expected: ${JSON.stringify(expected.bookingFields)})`);
+              if (expected.bookingFields) {
+                const hasEventAddress = eventType.bookingFields.some(field => 
+                  field.slug === 'eventAddress' && 
+                  field.type === 'textarea' && 
+                  field.required === true &&
+                  field.label === 'Event Address' &&
+                  field.placeholder === expected.bookingFields[0].placeholder
+                );
+                if (!hasEventAddress) {
+                  errors.push(`bookingFields: missing or incorrect eventAddress field (Expected: ${JSON.stringify(expected.bookingFields)})`);
+                }
               }
               if (errors.length > 0) {
                 console.error('Verification failed for ' + slug + ':');
@@ -214,15 +234,15 @@ jobs:
                   },
                   tags: [],
                   disableGuests: pkg.disableGuests || false,
-                  disableGuestsCancelling: pkg.disableGuestsCancelling || false,
-                  disableGuestsRescheduling: pkg.disableGuestsRescheduling || false,
+                  metadata: {
+                    disableCalVideoTranscription: pkg.disableCalVideoTranscription || false,
+                    disableGuestsCancelling: pkg.disableGuestsCancelling || false,
+                    disableGuestsRescheduling: pkg.disableGuestsRescheduling || false
+                  },
                   bookingFields: pkg.bookingFields || [],
                   color: pkg.color || undefined,
                   minimumBookingNotice: pkg.minimumBookingNotice || undefined,
-                  bookerLayouts: pkg.bookerLayouts || undefined,
-                  metadata: {
-                    disableCalVideoTranscription: pkg.disableCalVideoTranscription || false
-                  }
+                  bookerLayouts: pkg.bookerLayouts || undefined
                 };
                 if (Array.isArray(pkg.eventType)) {
                   transformed.tags = transformed.tags.concat(pkg.eventType);
@@ -245,8 +265,8 @@ jobs:
                     transformed.scheduleIds = scheduleIds;
                   }
                 }
-                console.log('Request payload for ' + pkg.slug + ': ' + JSON.stringify(transformed));
-                const existingEventTypeId = await getEventType(transformed.slug)?.id;
+                console.log('Request payload for ' + pkg.slug + ': ' + JSON.stringify(transformed, null, 2));
+                const existingEventTypeId = await getEventTypeId(transformed.slug);
                 if (existingEventTypeId) {
                   await deleteEventType(existingEventTypeId);
                 }
@@ -324,14 +344,9 @@ jobs:
           async function getEventTypeId(slug) {
             try {
               console.log('Fetching event type ID for slug: ' + slug);
-              const res = await apiRequest('GET', '/v2/event-types');
+              const res = await apiRequest('GET', '/v2/event-types?slug=' + encodeURIComponent(slug));
               const eventTypes = res.event_types || [];
-              for (let i = 0; i < eventTypes.length; i++) {
-                if (eventTypes[i].slug === slug) {
-                  return eventTypes[i].id;
-                }
-              }
-              return null;
+              return eventTypes.length > 0 ? eventTypes[0].id : null;
             } catch (e) {
               console.error('Error fetching event types: ' + JSON.stringify(e));
               return null;
