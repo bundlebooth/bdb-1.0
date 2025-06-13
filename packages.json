@@ -453,7 +453,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/photo-booth-classic",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -475,7 +475,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/photo-booth-deluxe",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -497,7 +497,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/360-video-booth",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -519,7 +519,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/audio-guest-book",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -541,7 +541,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/magazine-photo-booth",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -563,7 +563,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-50",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -585,7 +585,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-100",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -607,7 +607,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-150",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -629,7 +629,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-200",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -651,7 +651,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-50",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -673,7 +673,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-100",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -695,7 +695,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-150",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -717,7 +717,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-200",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -739,7 +739,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-50",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -761,7 +761,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-100",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -783,7 +783,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-150",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -805,7 +805,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-200",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -827,7 +827,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-classic",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -849,7 +849,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-deluxe",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -871,7 +871,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-red-carpet",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -893,7 +893,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/dry-ice-fog",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
@@ -915,7 +915,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/laser-first-dance",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025"
   },
