@@ -86,6 +86,22 @@ jobs:
               console.error('Error deleting event type with ID ' + id + ': ' + JSON.stringify(e.data || e.message, null, 2));
             }
           }
+          async function updatePaymentSettings(id, price, currency, metadata) {
+            try {
+              console.log('Updating payment settings for event type ID: ' + id);
+              const payload = {
+                price: price,
+                currency: currency,
+                metadata: metadata
+              };
+              const res = await apiRequest('PATCH', '/v2/event-types/' + id, payload);
+              console.log('Payment settings updated for ID ' + id + ': ' + JSON.stringify(res, null, 2));
+              return res;
+            } catch (e) {
+              console.error('Error updating payment settings for ID ' + id + ': ' + JSON.stringify(e.data || e.message, null, 2));
+              return null;
+            }
+          }
           async function processEvents() {
             try {
               console.log('Reading packages.json...');
@@ -116,11 +132,10 @@ jobs:
                       ? pkg.availabilityDays.map(day => dayMap[day] || 1)
                       : [1, 2, 3, 4, 5],
                     startTime: pkg.startTime || '09:00',
-                    endTime: pkg.endTime || '16:00'
+                    endTime: pkg.endTime || '17:00'
                   },
                   tags: [],
-                  metadata: {},
-                  price: pkg.price && pkg.price > 0 ? Math.round(pkg.price * 100) : 0,
+                  price: 0,
                   currency: pkg.currency?.toLowerCase() || 'cad'
                 };
                 if (Array.isArray(pkg.eventType)) {
@@ -129,33 +144,37 @@ jobs:
                 if (pkg.packageType) transformed.tags.push(pkg.packageType);
                 if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
                 if (pkg.New === 'Y') transformed.tags.push('New');
+                let paymentMetadata = {};
+                let paymentPrice = 0;
+                let paymentCurrency = pkg.currency?.toLowerCase() || 'cad';
                 if (pkg.price && pkg.price > 0) {
+                  paymentPrice = Math.round(pkg.price * 100);
                   const currency = pkg.currency?.toLowerCase() || 'cad';
                   const supportedCurrencies = ['cad', 'usd', 'eur', 'gbp'];
                   if (!supportedCurrencies.includes(currency)) {
                     console.warn('Unsupported currency ' + currency + ' for ' + pkg.slug + ', defaulting to cad');
-                    transformed.currency = 'cad';
-                    transformed.metadata = {
+                    paymentCurrency = 'cad';
+                    paymentMetadata = {
                       apps: {
                         stripe: {
                           enabled: true,
-                          price: Math.round(pkg.price * 100),
+                          price: paymentPrice,
                           currency: 'cad'
                         }
                       }
                     };
                   } else {
-                    transformed.metadata = {
+                    paymentMetadata = {
                       apps: {
                         stripe: {
                           enabled: true,
-                          price: Math.round(pkg.price * 100),
+                          price: paymentPrice,
                           currency: currency
                         }
                       }
                     };
                   }
-                  console.log('Stripe configuration added for ' + pkg.slug + ': ' + JSON.stringify(transformed.metadata, null, 2));
+                  console.log('Stripe configuration prepared for ' + pkg.slug + ': ' + JSON.stringify(paymentMetadata, null, 2));
                 } else {
                   console.log('No payment required for ' + pkg.slug);
                 }
@@ -169,8 +188,12 @@ jobs:
                 try {
                   const result = await apiRequest(method, path, transformed);
                   console.log('Success for ' + pkg.slug + ': ' + JSON.stringify(result, null, 2));
-                  if (pkg.price && pkg.price > 0 && (!result.data.metadata?.apps?.stripe || result.data.price !== Math.round(pkg.price * 100) || result.data.currency !== transformed.currency)) {
-                    console.error('Stripe metadata not applied for ' + pkg.slug + '. Please verify Stripe is connected in Cal.com and check API permissions.');
+                  if (pkg.price && pkg.price > 0) {
+                    const eventTypeId = result.data.id;
+                    const paymentResult = await updatePaymentSettings(eventTypeId, paymentPrice, paymentCurrency, paymentMetadata);
+                    if (!paymentResult || !paymentResult.data.metadata?.apps?.stripe || paymentResult.data.price !== paymentPrice || paymentResult.data.currency !== paymentCurrency) {
+                      console.error('Stripe metadata not applied for ' + pkg.slug + '. Please verify Stripe is connected in Cal.com and check API permissions.');
+                    }
                   }
                 } catch (err) {
                   console.error('Failed for ' + pkg.slug + ': ' + JSON.stringify(err, null, 2));
@@ -189,6 +212,11 @@ jobs:
           });
           SCRIPT
           cat deploy.js
+
+      - name: Debug shell script
+        run: |
+          echo "Dumping temporary shell script for debugging:"
+          cat /home/runner/work/_temp/*.sh || echo "No shell script found"
 
       - name: Map JSON and Push to Cal.com
         env:
