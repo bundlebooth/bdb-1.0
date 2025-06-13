@@ -140,7 +140,8 @@ jobs:
               const result = await apiRequest('POST', '/api/v2/schedules', payload);
               return result.data.id;
             } catch (e) {
-              throw new Error('Failed to create schedule: ' + JSON.stringify(e));
+              console.error('Failed to create schedule:', e);
+              return null;
             }
           }
 
@@ -185,6 +186,7 @@ jobs:
             const differences = [];
             for (const key in obj1) {
               const fullPath = path ? `${path}.${key}` : key;
+              if (key === 'scheduleIds') continue; // Skip scheduleIds as they are handled separately
               if (typeof obj1[key] === 'object' && obj1[key] !== null && !Array.isArray(obj1[key])) {
                 const subDiffs = compareObjects(obj1[key], obj2[key] || {}, fullPath);
                 differences.push(...subDiffs);
@@ -197,7 +199,7 @@ jobs:
               }
             }
             for (const key in obj2) {
-              if (!(key in obj1)) {
+              if (!(key in obj1) && key !== 'id' && key !== 'scheduleIds') {
                 const fullPath = path ? `${path}.${key}` : key;
                 differences.push(`${fullPath}: missing in new, present in old as ${obj2[key]}`);
               }
@@ -232,24 +234,16 @@ jobs:
                 throw new Error('No valid packages found after deduplication');
               }
 
-              // Fetch existing event types from Cal.com
+              // Step 1: Fetch existing event types
               const existingEventTypes = await getAllEventTypes();
-              const existingSlugs = existingEventTypes.map(e => e.slug);
+              const existingSlugs = new Set(existingEventTypes.map(e => e.slug));
 
-              // Track all slugs in the new JSON
-              const newSlugs = new Set(packages.map(p => p.slug));
-
-              // Delete event types that no longer exist in the JSON
-              for (const existingEvent of existingEventTypes) {
-                if (!newSlugs.has(existingEvent.slug)) {
-                  await deleteEventType(existingEvent.id);
-                  console.log(`Deleted event type with slug: ${existingEvent.slug} as it is not in the new JSON`);
-                }
-              }
-
+              // Step 2: Prepare new event types from packages.json
+              const newEventTypes = [];
               for (const pkg of packages) {
                 if (!pkg.slug || !pkg.name) {
-                  throw new Error('Invalid package: missing slug or name');
+                  console.warn(`Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
+                  continue;
                 }
 
                 const priceText = pkg.discount > 0 
@@ -270,7 +264,7 @@ jobs:
                 const transformed = {
                   title: pkg.name,
                   slug: pkg.slug,
-                  lengthInMinutes: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
+                  length: pkg.maxDuration ? pkg.maxDuration * 60 : 180, // Changed to 'length' for Cal.com API
                   description: description,
                   locations: pkg.locations && Array.isArray(pkg.locations) && pkg.locations[0]?.location_type === 'ask'
                     ? [{ type: 'address', address: 'To be provided by client', public: true }]
@@ -300,67 +294,76 @@ jobs:
                 if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
                 if (pkg.New === 'Y') transformed.tags.push('New');
 
-                const existingEventTypeId = await getEventTypeId(transformed.slug);
-                if (existingEventTypeId) {
-                  const existingEventType = await getEventType(existingEventTypeId);
-                  if (existingEventType) {
-                    // Compare existing and new event type
-                    const differences = compareObjects(transformed, existingEventType);
-                    const tagDiffs = compareEventTypes(existingEventType.tags || [], pkg.eventType || []);
-                    if (differences.length > 0 || tagDiffs.added.length > 0 || tagDiffs.deleted.length > 0) {
-                      console.log(`Differences detected for slug: ${pkg.slug}`);
-                      if (differences.length > 0) {
-                        console.log('  Field differences:');
-                        differences.forEach(diff => console.log(`    ${diff}`));
-                      }
-                      if (tagDiffs.added.length > 0) {
-                        console.log(`  Added event types: ${tagDiffs.added.join(', ')}`);
-                      }
-                      if (tagDiffs.deleted.length > 0) {
-                        console.log(`  Deleted event types: ${tagDiffs.deleted.join(', ')}`);
-                      }
-                      try {
-                        await apiRequest('PATCH', `/api/v2/event-types/${existingEventTypeId}`, transformed);
-                        console.log(`Updated event type for slug: ${transformed.slug}`);
-                      } catch (e) {
-                        console.error(`Failed to update event type for slug ${transformed.slug}:`, e);
-                      }
-                    } else {
-                      console.log(`No differences detected for slug: ${pkg.slug}`);
+                newEventTypes.push(transformed);
+              }
+
+              // Step 3: Process differences and updates
+              for (const transformed of newEventTypes) {
+                const existingEventType = existingEventTypes.find(e => e.slug === transformed.slug);
+                if (existingEventType) {
+                  const differences = compareObjects(transformed, existingEventType);
+                  const tagDiffs = compareEventTypes(existingEventType.tags || [], transformed.tags || []);
+                  if (differences.length > 0 || tagDiffs.added.length > 0 || tagDiffs.deleted.length > 0) {
+                    console.log(`Differences detected for slug: ${transformed.slug}`);
+                    if (differences.length > 0) {
+                      console.log('  Field differences:');
+                      differences.forEach(diff => console.log(`    ${diff}`));
                     }
+                    if (tagDiffs.added.length > 0) {
+                      console.log(`  Added event types: ${tagDiffs.added.join(', ')}`);
+                    }
+                    if (tagDiffs.deleted.length > 0) {
+                      console.log(`  Deleted event types: ${tagDiffs.deleted.join(', ')}`);
+                    }
+                    try {
+                      await apiRequest('PATCH', `/api/v2/event-types/${existingEventType.id}`, transformed);
+                      console.log(`Updated event type for slug: ${transformed.slug}`);
+                    } catch (e) {
+                      console.error(`Failed to update event type for slug ${transformed.slug}:`, e);
+                    }
+                  } else {
+                    console.log(`No differences detected for slug: ${transformed.slug}`);
                   }
                 } else {
-                  console.log(`Creating new event type for slug: ${pkg.slug} with event types: ${pkg.eventType ? pkg.eventType.join(', ') : 'None'}`);
+                  console.log(`Creating new event type for slug: ${transformed.slug} with event types: ${transformed.tags ? transformed.tags.join(', ') : 'None'}`);
                   try {
                     const result = await apiRequest('POST', '/api/v2/event-types', transformed);
                     console.log(`Created event type for slug: ${transformed.slug}`);
-                    await verifyEventType(pkg.slug, transformed, result.data.id);
+                    await verifyEventType(transformed.slug, transformed, result.data.id);
                   } catch (e) {
-                    console.error(`Failed to create event type for slug ${pkg.slug}:`, e);
-                    throw e;
+                    console.error(`Failed to create event type for slug ${transformed.slug}:`, e);
                   }
                 }
 
-                if (pkg.availability && Array.isArray(pkg.availability.schedules)) {
+                // Update schedules if necessary
+                if (transformed.availability && Array.isArray(transformed.availability.schedules)) {
                   const scheduleIds = [];
-                  for (const schedule of pkg.availability.schedules) {
+                  for (const schedule of transformed.availability.schedules) {
                     const scheduleId = await createSchedule(schedule);
-                    scheduleIds.push(scheduleId);
+                    if (scheduleId) scheduleIds.push(scheduleId);
                   }
                   if (scheduleIds.length > 0) {
-                    transformed.scheduleIds = scheduleIds;
+                    const existingEventTypeId = await getEventTypeId(transformed.slug);
                     if (existingEventTypeId) {
                       try {
                         await apiRequest('PATCH', `/api/v2/event-types/${existingEventTypeId}`, { scheduleIds });
-                        console.log(`Updated schedule IDs for slug: ${pkg.slug}`);
+                        console.log(`Updated schedule IDs for slug: ${transformed.slug}`);
                       } catch (e) {
-                        console.error(`Failed to update schedule IDs for slug ${pkg.slug}:`, e);
+                        console.error(`Failed to update schedule IDs for slug ${transformed.slug}:`, e);
                       }
                     }
                   }
                 }
 
                 await new Promise(resolve => setTimeout(resolve, 5000));
+              }
+
+              // Step 4: Delete obsolete event types
+              for (const existingEvent of existingEventTypes) {
+                if (!newEventTypes.some(t => t.slug === existingEvent.slug)) {
+                  await deleteEventType(existingEvent.id);
+                  console.log(`Deleted event type with slug: ${existingEvent.slug} as it is not in the new JSON`);
+                }
               }
             } catch (e) {
               console.error('Error: ' + (e.message || JSON.stringify(e)));
@@ -420,6 +423,7 @@ jobs:
               const event_types = res.event_types || [];
               return event_types.length > 0 ? event_types[0].id : null;
             } catch (e) {
+              console.error(`Error fetching event type ID for slug ${slug}:`, e);
               return null;
             }
           }
@@ -435,13 +439,15 @@ jobs:
               );
               for (const pkg of packages) {
                 if (!pkg.slug || !pkg.name) {
-                  throw new Error('Invalid package: missing slug or name');
+                  console.warn(`Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
+                  continue;
                 }
                 if (!pkg.price || pkg.price <= 0) {
                   continue;
                 }
                 const eventTypeId = await getEventTypeId(pkg.slug);
                 if (!eventTypeId) {
+                  console.warn(`No event type found for slug ${pkg.slug}, skipping payment configuration`);
                   continue;
                 }
                 const paymentPayload = {
@@ -457,8 +463,12 @@ jobs:
                     }
                   }
                 };
-                await apiRequest('PATCH', '/api/v2/event-types/' + eventTypeId, paymentPayload);
-                console.log(`Configured payment for slug: ${pkg.slug}`);
+                try {
+                  await apiRequest('PATCH', '/api/v2/event-types/' + eventTypeId, paymentPayload);
+                  console.log(`Configured payment for slug: ${pkg.slug}`);
+                } catch (e) {
+                  console.error(`Failed to configure payment for slug ${pkg.slug}:`, e);
+                }
                 await new Promise(resolve => setTimeout(resolve, 2000));
               }
             } catch (e) {
