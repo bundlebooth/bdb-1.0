@@ -1,7 +1,7 @@
 [
   {
     "slug": "consultation1",
-    "name": "Consultation1",
+    "name": "Consultation",
     "maxDuration": 60,
     "description": "A one-hour consultation session",
     "location": "Toronto, ON",
@@ -17,7 +17,7 @@
   },
   {
     "slug": "free-workshop1",
-    "name": "Free Workshop1",
+    "name": "Free Workshop",
     "maxDuration": 30,
     "description": "A free 30-minute workshop",
     "location": "Online",
