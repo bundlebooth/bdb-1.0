@@ -116,7 +116,12 @@ jobs:
                     startTime: pkg.startTime || '09:00',
                     endTime: pkg.endTime || '17:00'
                   },
-                  tags: []
+                  tags: [],
+                  disableGuests: pkg.disableGuestsCancelling || false,
+                  requiresConfirmation: pkg.disableGuestsRescheduling || false,
+                  metadata: {
+                    disableCalVideoTranscription: pkg.disableCalVideoTranscription || false
+                  }
                 };
                 if (Array.isArray(pkg.eventType)) {
                   transformed.tags = transformed.tags.concat(pkg.eventType);
