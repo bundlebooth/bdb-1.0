@@ -1,7 +1,7 @@
 [
   {
-    "slug": "consultation1",
-    "name": "Consultation",
+    "slug": "consultation2",
+    "name": "Consultation2",
     "maxDuration": 60,
     "description": "A one-hour consultation session",
     "location": "Toronto, ON",
@@ -16,8 +16,8 @@
     "currency": "cad"
   },
   {
-    "slug": "free-workshop1",
-    "name": "Free Workshop",
+    "slug": "free-workshop2",
+    "name": "Free Workshop2",
     "maxDuration": 30,
     "description": "A free 30-minute workshop",
     "location": "Online",
