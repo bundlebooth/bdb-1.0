@@ -23,7 +23,7 @@ jobs:
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
         run: |
-          node <<EOF
+          node <<'EOF'
           const fs = require('fs');
           const https = require('https');
 
@@ -67,12 +67,10 @@ jobs:
               console.log('Reading packages.json...');
               let packages = JSON.parse(fs.readFileSync('packages.json'));
 
-              // Flatten nested packages if needed
               if (packages.some(pkg => Object.keys(pkg).length === 1)) {
                 packages = packages.map(pkg => Object.values(pkg)[0]);
               }
 
-              // Validate packages
               for (const pkg of packages) {
                 if (!pkg.slug || !pkg.name) {
                   console.error('Invalid package: missing slug or name', pkg);
@@ -97,7 +95,6 @@ jobs:
                     endTime: pkg.endTime || '17:00'
                   },
 
-                  // Payment fields at root level:
                   price: pkg.price && pkg.price > 0 ? Math.round(pkg.price * 100) : 0,
                   currency: 'cad',
                   requiresPayment: pkg.price && pkg.price > 0 ? true : false,
@@ -113,8 +110,8 @@ jobs:
 
                 const slug = transformed.slug;
                 const eventTypeId = await getEventTypeId(slug);
-                const method = eventTypeId ? 'PUT' : 'POST';
                 const path = eventTypeId ? `/v2/event-types/${eventTypeId}` : '/v2/event-types';
+                const method = eventTypeId ? 'PUT' : 'POST';
 
                 console.log('API call:', method, path);
 
@@ -150,7 +147,6 @@ jobs:
                   req.end();
                 });
 
-                // Delay 1 second to avoid API rate limits
                 await new Promise(r => setTimeout(r, 1000));
               }
             } catch (e) {
