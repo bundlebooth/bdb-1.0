@@ -2085,6 +2085,134 @@
     "Sale": "Y",
     "New": "Y",
     "dateAdded": "06-13-2025"
+  }, {
+    "name": "🎥 Foggy Fiesta Bundle",
+    "slug": "foggy-fiesta-bundle",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 1760,
+    "regPrice": 2200,
+    "discount": 20,
+    "description": "Create a vibrant and mystical atmosphere with the Foggy Fiesta Bundle. Features a 360 Video Booth for immersive captures, Dry Ice Fog for a dreamy effect, and Sparkler Boxes for a dazzling finale.",
+    "equipment": [
+      "360 Video Booth",
+      "Dry Ice Fog",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Birthday",
+      "Prom"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/foggy-fiesta-bundle-birthday-prom#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "Sale": "Y",
+    "New": "Y",
+    "dateAdded": "06-13-2025"
+  },
+  {
+    "name": "☕ Sweet Glam Bundle",
+    "slug": "sweet-glam-bundle",
+    "guests": 100,
+    "maxDuration": 4,
+    "price": 1680,
+    "regPrice": 2100,
+    "discount": 20,
+    "description": "Indulge in style with the Sweet Glam Bundle. Includes an Espresso & Coffee Booth for cozy drinks, a Magazine Photo Booth Box for chic photos, and Sparkler Boxes for a sparkling touch.",
+    "equipment": [
+      "Espresso & Coffee Booth",
+      "Magazine Photo Booth Box",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Corporate",
+      "Bridal Shower"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sweet-glam-bundle-corporate-bridal-shower#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "Sale": "Y",
+    "New": "Y",
+    "dateAdded": "06-13-2025"
+  },
+  {
+    "name": "🧇 Laser Treats Bundle",
+    "slug": "laser-treats-bundle",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 2000,
+    "regPrice": 2500,
+    "discount": 20,
+    "description": "Combine delicious fun with a spectacular show using the Laser Treats Bundle. Features a Waffle Booth for tasty treats, a Laser Effect for First Dance for a stunning display, and an Audio Guest Book for heartfelt messages.",
+    "equipment": [
+      "Waffle Booth",
+      "Laser Effect for First Dance",
+      "Audio Guest Book"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Wedding",
+      "Anniversary Celebration"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/laser-treats-bundle-wedding-anniversary#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "Sale": "Y",
+    "New": "Y",
+    "dateAdded": "06-13-2025"
+  },
+  {
+    "name": "🥤 Smooth Snap Bundle",
+    "slug": "smooth-snap-bundle",
+    "guests": 200,
+    "maxDuration": 6,
+    "price": 2320,
+    "regPrice": 2900,
+    "discount": 20,
+    "description": "Refresh and capture the moment with the Smooth Snap Bundle. Includes a Smoothies Booth for vibrant drinks, a Photo Booth for fun snapshots, and a Laser Effect for First Dance for a dazzling experience.",
+    "equipment": [
+      "Smoothies Booth",
+      "Photo Booth",
+      "Laser Effect for First Dance"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Graduation",
+      "Corporate"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smooth-snap-bundle-graduation-corporate#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "Sale": "Y",
+    "New": "Y",
+    "dateAdded": "06-13-2025"
+  },
+  {
+    "name": "🌫️ Dreamy Dance Bundle",
+    "slug": "dreamy-dance-bundle",
+    "guests": 200,
+    "maxDuration": 6,
+    "price": 1840,
+    "regPrice": 2300,
+    "discount": 20,
+    "description": "Create an enchanting evening with the Dreamy Dance Bundle. Features Dry Ice Fog for a mystical ambiance, a Laser Effect for First Dance for a breathtaking show, and Sparkler Boxes for a sparkling finale.",
+    "equipment": [
+      "Dry Ice Fog",
+      "Laser Effect for First Dance",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Wedding",
+      "Prom"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/dreamy-dance-bundle-wedding-prom#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "Sale": "Y",
+    "New": "Y",
+    "dateAdded": "06-13-2025"
   }
-]
 ]
