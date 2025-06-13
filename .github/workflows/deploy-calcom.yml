@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'packages.json' # Ensure this matches the exact path to packages.json in your repository
+      - 'packages.json'
 
 jobs:
   deploy:
@@ -118,8 +118,8 @@ jobs:
               const eventType = res.data;
               console.log('Verifying event type: ' + slug);
               console.log('disableGuests: ' + eventType.disableGuests + ' (Expected: ' + expected.disableGuests + ')');
-              console.log('disableGuestsCancelling: ' + eventType.disableGuestsCancelling + ' (Expected: ' + expected.disableGuestsCancelling + ')');
-              console.log('disableGuestsRescheduling: ' + eventType.disableGuestsRescheduling + ' (Expected: ' + expected.disableGuestsRescheduling + ')');
+              console.log('disableGuestsCancelling: ' + (eventType.metadata?.disableGuestsCancelling || eventType.disableGuestsCancelling || false) + ' (Expected: ' + expected.metadata.disableGuestsCancelling + ')');
+              console.log('disableGuestsRescheduling: ' + (eventType.metadata?.disableGuestsRescheduling || eventType.disableGuestsRescheduling || false) + ' (Expected: ' + expected.metadata.disableGuestsRescheduling + ')');
               console.log('disableCalVideoTranscription: ' + (eventType.metadata?.disableCalVideoTranscription || false) + ' (Expected: ' + expected.metadata.disableCalVideoTranscription + ')');
               console.log('locations: ' + JSON.stringify(eventType.locations) + ' (Expected: ' + JSON.stringify(expected.locations) + ')');
             } catch (e) {
@@ -140,7 +140,6 @@ jobs:
                   process.exit(1);
                 }
                 console.log('Processing package: ' + pkg.slug);
-                // Validate disable properties
                 if (!pkg.hasOwnProperty('disableGuestsCancelling')) {
                   console.warn('Warning: disableGuestsCancelling not set for ' + pkg.slug + ', defaulting to false');
                 } else if (pkg.disableGuestsCancelling !== true) {
@@ -178,7 +177,7 @@ jobs:
                   locations: [
                     pkg.location === 'Online' 
                       ? { type: 'integration', integration: 'cal-video' }
-                      : pkg.location === 'Custom attendee location'
+                      : pkg.location === 'Attendee Address'
                         ? { type: 'attendeeInPerson' }
                         : { type: 'address', address: pkg.location || 'Toronto, ON', public: true }
                   ],
@@ -191,15 +190,10 @@ jobs:
                   },
                   tags: [],
                   disableGuests: pkg.disableGuests || false,
-                  disableGuestsCancelling: pkg.disableGuestsCancelling || false,
-                  disableGuestsRescheduling: pkg.disableGuestsRescheduling || false,
-                  successRedirectUrl: pkg.successRedirectUrl || undefined,
-                  color: pkg.color || undefined,
-                  bookingWindow: pkg.bookingWindow || undefined,
-                  minimumBookingNotice: pkg.minimumBookingNotice || undefined,
-                  bookerLayouts: pkg.bookerLayouts || undefined,
                   metadata: {
-                    disableCalVideoTranscription: pkg.disableCalVideoTranscription || false
+                    disableCalVideoTranscription: pkg.disableCalVideoTranscription || false,
+                    disableGuestsCancelling: pkg.disableGuestsCancelling || false,
+                    disableGuestsRescheduling: pkg.disableGuestsRescheduling || false
                   }
                 };
                 if (Array.isArray(pkg.eventType)) {
@@ -228,7 +222,6 @@ jobs:
                 try {
                   const result = await apiRequest('POST', '/v2/event-types', transformed);
                   console.log('Success for ' + pkg.slug + ': ' + JSON.stringify(result));
-                  // Verify the created event type
                   await verifyEventType(pkg.slug, transformed);
                 } catch (err) {
                   console.error('Failed for ' + pkg.slug + ': ' + JSON.stringify(err));
