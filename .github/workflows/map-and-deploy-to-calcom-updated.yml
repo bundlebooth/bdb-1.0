@@ -40,13 +40,14 @@ jobs:
                 method: method,
                 headers: {
                   'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                  'Content-Type': 'application/json'
+                  'Content-Type': 'application/json, charset=utf-8'
                 }
               };
               const req = https.request(options, (res) => {
                 let data = '';
                 res.on('data', (chunk) => { data += chunk; });
                 res.on('end', () => {
+                  console.log('Raw API response:', data); // Log raw response
                   if (res.statusCode >= 200 && res.statusCode < 300) {
                     try {
                       resolve(JSON.parse(data));
@@ -110,7 +111,16 @@ jobs:
                     startTime: pkg.startTime || '09:00',
                     endTime: pkg.endTime || '17:00'
                   },
-                  tags: []
+                  tags: [],
+                  // Alternative payment fields
+                  paymentPrice: pkg.price ? Math.round(pkg.price * 100) : 0,
+                  paymentCurrency: pkg.currency || 'cad',
+                  payment: {
+                    enabled: pkg.price && pkg.price > 0,
+                    provider: 'stripe',
+                    price: pkg.price ? Math.round(pkg.price * 100) : 0,
+                    currency: pkg.currency || 'cad'
+                  }
                 };
                 if (Array.isArray(pkg.eventType)) {
                   transformed.tags = transformed.tags.concat(pkg.eventType);
@@ -118,35 +128,21 @@ jobs:
                 if (pkg.packageType) transformed.tags.push(pkg.packageType);
                 if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
                 if (pkg.New === 'Y') transformed.tags.push('New');
-                // START PAYMENT BLOCK FIX
+                // Log payment settings
                 if (pkg.price && pkg.price > 0) {
-                  console.log(`Setting payment for ${pkg.slug}: price=${pkg.price}, currency=cad`);
-                  transformed.price = Math.round(pkg.price * 100); // Set price in cents
-                  transformed.currency = 'cad';
-                  transformed.payments = {
-                    enabled: true,
-                    provider: 'stripe',
-                    price: Math.round(pkg.price * 100),
-                    currency: 'cad'
-                  };
+                  console.log(`Setting payment for ${pkg.slug}: price=${pkg.price}, currency=${pkg.currency || 'cad'}`);
                   transformed.requiresPayment = true;
                 } else {
                   console.log(`No payment set for ${pkg.slug}: price=${pkg.price || 'undefined'}`);
-                  transformed.price = 0;
-                  transformed.currency = 'cad';
-                  transformed.payments = {
-                    enabled: false
-                  };
                   transformed.requiresPayment = false;
                 }
-                // END PAYMENT BLOCK FIX
                 const eventTypeId = await getEventTypeId(transformed.slug);
                 const method = eventTypeId ? 'PUT' : 'POST';
                 const path = eventTypeId ? '/v2/event-types/' + eventTypeId : '/v2/event-types';
                 try {
                   console.log('Transformed payload:', JSON.stringify(transformed, null, 2));
                   const result = await apiRequest(method, path, transformed);
-                  console.log('Success for ' + transformed.slug + ':', result);
+                  console.log('Success for ' + transformed.slug + ':', JSON.stringify(result, null, 2));
                 } catch (err) {
                   console.error('Failed for ' + transformed.slug + ':', JSON.stringify(err, null, 2));
                 }
