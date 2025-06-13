@@ -54,7 +54,7 @@ jobs:
               while (page) {
                 const options = {
                   hostname: 'api.cal.com',
-                  path: \`/v2/event-types?page=\${page}\`,
+                  path: `/v2/event-types?page=${page}`,
                   method: 'GET',
                   headers: { Authorization: 'Bearer ' + process.env.CALCOM_API_KEY }
                 };
@@ -70,7 +70,7 @@ jobs:
                 });
 
                 if (response.status !== 200) {
-                  console.error(\`Error fetching event types (page \${page}): Status \${response.status}, Response: \${response.data}\`);
+                  console.error(`Error fetching event types (page ${page}): Status ${response.status}, Response: ${response.data}`);
                   return null;
                 }
 
@@ -82,14 +82,12 @@ jobs:
                     eventTypeId = event.id;
                     break;
                   }
-                  // Check for next page (assuming API uses 'next_page' or similar)
                   page = result.next_page || null;
                 } catch (e) {
-                  console.error(\`Error parsing event types (page \${page}): \${e.message}\`);
+                  console.error(`Error parsing event types (page ${page}): ${e.message}`);
                   return null;
                 }
 
-                // Avoid rate limiting
                 if (page) await new Promise(resolve => setTimeout(resolve, 500));
               }
 
@@ -100,14 +98,13 @@ jobs:
               try {
                 console.log('Reading packages.json...');
                 let packages = JSON.parse(fs.readFileSync('packages.json'));
-                // Ensure packages is an array
                 if (!Array.isArray(packages)) {
                   packages = [packages];
                 }
-                // Handle nested package structure if present
                 if (packages.some(pkg => Object.keys(pkg).length === 1)) {
                   packages = packages.map(pkg => Object.values(pkg)[0]);
                 }
+
                 // Validate packages.json
                 for (const pkg of packages) {
                   if (!pkg.slug || !pkg.name) {
@@ -118,38 +115,49 @@ jobs:
                     console.error('Error: STRIPE_SECRET_KEY missing for package with price:', pkg.slug);
                     process.exit(1);
                   }
+                  if (pkg.price && (isNaN(pkg.price) || pkg.price < 0)) {
+                    console.error(`Invalid price for package ${pkg.slug}: ${pkg.price}`);
+                    process.exit(1);
+                  }
                 }
 
                 console.log('Processing packages with Stripe payments enabled...');
                 for (const pkg of packages) {
                   console.log('Processing package:', pkg.slug);
-                  // Build enhanced description with additional fields
                   const description = [
                     pkg.description || 'No description provided',
-                    pkg.equipment && Array.isArray(pkg.equipment) ? \`Equipment: \${pkg.equipment.join(', ')}\` : '',
-                    pkg.note ? \`Note: \${pkg.note}\` : '',
-                    pkg.guests ? \`Guests: \${pkg.guests}\` : '',
-                    pkg.regPrice ? \`Regular Price: \$\${pkg.regPrice}\` : '',
-                    pkg.discount ? \`Discount: \${pkg.discount}%\` : ''
+                    pkg.equipment && Array.isArray(pkg.equipment) ? `Equipment: ${pkg.equipment.join(', ')}` : '',
+                    pkg.note ? `Note: ${pkg.note}` : '',
+                    pkg.guests ? `Guests: ${pkg.guests}` : '',
+                    pkg.regPrice ? `Regular Price: $${pkg.regPrice}` : '',
+                    pkg.discount ? `Discount: ${pkg.discount}%` : ''
                   ].filter(Boolean).join('\n');
 
                   const transformed = {
                     title: pkg.name || 'Placeholder Title',
                     slug: pkg.slug || 'placeholder',
-                    length: pkg.maxDuration ? pkg.maxDuration * 60 : 360, // Convert hours to seconds
+                    length: pkg.maxDuration ? pkg.maxDuration * 60 : 360,
                     description,
                     locations: [{ type: 'inPerson', address: pkg.location || 'Toronto, ON' }],
                     availability: {
                       days: pkg.availabilityDays
                         ? pkg.availabilityDays.map(day => dayMap[day] || 1)
-                        : [1, 2, 3, 4, 5, 6], // Default to Mon-Sat
+                        : [1, 2, 3, 4, 5, 6],
                       startTime: pkg.startTime || '10:00',
                       endTime: pkg.endTime || '22:00'
                     },
                     ...(pkg.price > 0 ? {
-                      price: pkg.price * 100, // Convert to cents
+                      price: Math.round(pkg.price * 100), // Ensure integer cents
                       currency: 'cad',
-                      requiresPayment: true
+                      requiresPayment: true,
+                      // Attempt to enable Stripe app (may need adjustment)
+                      apps: {
+                        stripe: {
+                          enabled: true,
+                          price: Math.round(pkg.price * 100),
+                          currency: 'cad'
+                        }
+                      }
                     } : {}),
                     metadata: {
                       bookingUrl: pkg.bookingUrl || '',
@@ -163,10 +171,12 @@ jobs:
                     ].filter(Boolean)
                   };
 
+                  console.log(`Payload for ${pkg.slug}:`, JSON.stringify(transformed, null, 2));
+
                   const slug = transformed.slug;
                   const eventTypeId = await getEventTypeId(slug);
                   const method = eventTypeId ? 'PUT' : 'POST';
-                  const path = eventTypeId ? \`/v2/event-types/\${eventTypeId}\` : '/v2/event-types';
+                  const path = eventTypeId ? `/v2/event-types/${eventTypeId}` : '/v2/event-types';
                   console.log('API call:', method, path);
 
                   const options = {
@@ -191,15 +201,14 @@ jobs:
                   });
 
                   if (response.status >= 200 && response.status < 300) {
-                    console.log(\`Success for \${slug}: Status \${response.status}, Response: \${response.data}\`);
+                    console.log(`Success for ${slug}: Status ${response.status}, Response: ${response.data}`);
                   } else if (response.status === 400 && response.data.includes('event type with this slug')) {
-                    console.warn(\`Warning: Skipped \${slug} due to duplicate slug. Consider updating manually or changing the slug.\`);
+                    console.warn(`Warning: Skipped ${slug} due to duplicate slug. Consider updating manually or changing the slug.`);
                   } else {
-                    console.error(\`Failed for \${slug}: Status \${response.status}, Response: \${response.data}\`);
+                    console.error(`Failed for ${slug}: Status ${response.status}, Response: ${response.data}`);
                     process.exit(1);
                   }
 
-                  // Delay to avoid rate limiting
                   await new Promise(resolve => setTimeout(resolve, 1000));
                 }
               } catch (e) {
