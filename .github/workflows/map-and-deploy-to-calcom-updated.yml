@@ -150,21 +150,4 @@ jobs:
                 }
                 const eventTypeId = await getEventTypeId(transformed.slug);
                 const method = eventTypeId ? 'PUT' : 'POST';
-                const path = eventTypeId ? '/v2/event-types/' + eventTypeId : '/v2/event-types';
-                try {
-                  console.log('Transformed payload:', JSON.stringify(transformed, null, 2));
-                  const result = await apiRequest(method, path, transformed);
-                  console.log('Success for ' + transformed.slug + ':', JSON.stringify(result, null, 2));
-                } catch (err) {
-                  console.error('Failed for ' + transformed.slug + ':', JSON.stringify(err, null, 2));
-                }
-                await new Promise(resolve => setTimeout(resolve, 500));
-              }
-            } catch (e) {
-              console.error('Error processing events:', e);
-              process.exit(1);
-            }
-          }
-
-          processEvents().catch(console.error);
-          EOF
+                const path = eventTypeId ? '/v2/event-types/' + eventTypeId : '/v2/event-types
