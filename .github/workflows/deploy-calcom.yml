@@ -107,6 +107,25 @@ jobs:
               return null;
             }
           }
+          async function verifyEventType(slug, expected) {
+            try {
+              const id = await getEventTypeId(slug);
+              if (!id) {
+                console.error('Cannot verify: Event type not found for slug: ' + slug);
+                return;
+              }
+              const res = await apiRequest('GET', '/v2/event-types/' + id);
+              const eventType = res.data;
+              console.log('Verifying event type: ' + slug);
+              console.log('disableGuests: ' + eventType.disableGuests + ' (Expected: ' + expected.disableGuests + ')');
+              console.log('disableGuestsCancelling: ' + eventType.disableGuestsCancelling + ' (Expected: ' + expected.disableGuestsCancelling + ')');
+              console.log('disableGuestsRescheduling: ' + eventType.disableGuestsRescheduling + ' (Expected: ' + expected.disableGuestsRescheduling + ')');
+              console.log('disableCalVideoTranscription: ' + (eventType.metadata?.disableCalVideoTranscription || false) + ' (Expected: ' + expected.metadata.disableCalVideoTranscription + ')');
+              console.log('locations: ' + JSON.stringify(eventType.locations) + ' (Expected: ' + JSON.stringify(expected.locations) + ')');
+            } catch (e) {
+              console.error('Error verifying event type ' + slug + ': ' + JSON.stringify(e));
+            }
+          }
           async function processEvents() {
             try {
               console.log('Reading packages.json...');
@@ -121,6 +140,22 @@ jobs:
                   process.exit(1);
                 }
                 console.log('Processing package: ' + pkg.slug);
+                // Validate disable properties
+                if (!pkg.hasOwnProperty('disableGuestsCancelling')) {
+                  console.warn('Warning: disableGuestsCancelling not set for ' + pkg.slug + ', defaulting to false');
+                } else if (pkg.disableGuestsCancelling !== true) {
+                  console.warn('Warning: disableGuestsCancelling is ' + pkg.disableGuestsCancelling + ' for ' + pkg.slug);
+                }
+                if (!pkg.hasOwnProperty('disableGuestsRescheduling')) {
+                  console.warn('Warning: disableGuestsRescheduling not set for ' + pkg.slug + ', defaulting to false');
+                } else if (pkg.disableGuestsRescheduling !== true) {
+                  console.warn('Warning: disableGuestsRescheduling is ' + pkg.disableGuestsRescheduling + ' for ' + pkg.slug);
+                }
+                if (!pkg.hasOwnProperty('disableCalVideoTranscription')) {
+                  console.warn('Warning: disableCalVideoTranscription not set for ' + pkg.slug + ', defaulting to false');
+                } else if (pkg.disableCalVideoTranscription !== true) {
+                  console.warn('Warning: disableCalVideoTranscription is ' + pkg.disableCalVideoTranscription + ' for ' + pkg.slug);
+                }
                 const priceText = pkg.discount > 0 
                   ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
                   : `**Price**: **$${pkg.price}**`;
@@ -143,7 +178,9 @@ jobs:
                   locations: [
                     pkg.location === 'Online' 
                       ? { type: 'integration', integration: 'cal-video' }
-                      : { type: 'address', address: pkg.location || 'Toronto, ON', public: true }
+                      : pkg.location === 'Custom attendee location'
+                        ? { type: 'attendeeInPerson' }
+                        : { type: 'address', address: pkg.location || 'Toronto, ON', public: true }
                   ],
                   availability: pkg.availability || {
                     days: pkg.availabilityDays
@@ -191,6 +228,8 @@ jobs:
                 try {
                   const result = await apiRequest('POST', '/v2/event-types', transformed);
                   console.log('Success for ' + pkg.slug + ': ' + JSON.stringify(result));
+                  // Verify the created event type
+                  await verifyEventType(pkg.slug, transformed);
                 } catch (err) {
                   console.error('Failed for ' + pkg.slug + ': ' + JSON.stringify(err));
                   console.error('Error details: ' + JSON.stringify(err.data || err.message));
