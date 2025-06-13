@@ -1,7 +1,7 @@
 [
   {
-    "name": "Test36",
-    "slug": "test36",
+    "name": "Test37",
+    "slug": "test37",
     "guests": 200,
     "maxDuration": 6,
     "price": 1200,
@@ -28,5 +28,23 @@
     "startTime": "09:00",
     "endTime": "17:00",
     "location": "Toronto, ON"
-  }
+  }, 
+  {
+  "title": "Test38",
+  "slug": "test38",
+  "length": 360,
+  "description": "...",
+  "locations": [{ "type": "inPerson", "address": "Toronto, ON" }],
+  "availability": { "days": [1, 2, 3, 4, 5], "startTime": "09:00", "endTime": "17:00" },
+  "tags": ["All", "Wedding", "Anniversary Celebration", "Bundle", "On Sale", "New"],
+  "paymentPrice": 120000,
+  "paymentCurrency": "cad",
+  "payment": {
+    "enabled": true,
+    "provider": "stripe",
+    "price": 120000,
+    "currency": "cad"
+  },
+  "requiresPayment": true
+}
 ]
