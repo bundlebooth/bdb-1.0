@@ -64,13 +64,13 @@ jobs:
                       const event = eventTypes.find(e => e.slug === slug);
                       resolve(event ? event.id : null);
                     } catch (e) {
-                      console.error('Error parsing event types:', e);
+                      console.error('Error parsing event types:', e.message);
                       resolve(null);
                     }
                   });
                 });
                 req.on('error', (e) => {
-                  console.error('Error fetching event types:', e);
+                  console.error('Error fetching event types:', e.message);
                   resolve(null);
                 });
                 req.end();
@@ -107,11 +107,11 @@ jobs:
                   // Build enhanced description with additional fields
                   const description = [
                     pkg.description || 'No description provided',
-                    pkg.equipment ? `Equipment: ${pkg.equipment.join(', ')}` : '',
-                    pkg.note ? `Note: ${pkg.note}` : '',
-                    pkg.guests ? `Guests: ${pkg.guests}` : '',
-                    pkg.regPrice ? `Regular Price: $${pkg.regPrice}` : '',
-                    pkg.discount ? `Discount: ${pkg.discount}%` : ''
+                    pkg.equipment && Array.isArray(pkg.equipment) ? \`Equipment: \${pkg.equipment.join(', ')}\` : '',
+                    pkg.note ? \`Note: \${pkg.note}\` : '',
+                    pkg.guests ? \`Guests: \${pkg.guests}\` : '',
+                    pkg.regPrice ? \`Regular Price: \$\${pkg.regPrice}\` : '',
+                    pkg.discount ? \`Discount: \${pkg.discount}%\` : ''
                   ].filter(Boolean).join('\n');
 
                   const transformed = {
@@ -124,13 +124,13 @@ jobs:
                       days: pkg.availabilityDays
                         ? pkg.availabilityDays.map(day => dayMap[day] || 1)
                         : [1, 2, 3, 4, 5, 6], // Default to Mon-Sat
-                      startTime: pkg.startTime || '10:00', // Adjusted for events
-                      endTime: pkg.endTime || '22:00' // Adjusted for events
+                      startTime: pkg.startTime || '10:00',
+                      endTime: pkg.endTime || '22:00'
                     },
                     // Always include payment details if price is specified
                     ...(pkg.price > 0 ? {
                       price: pkg.price * 100, // Convert to cents
-                      currency: 'cad', // Based on your context
+                      currency: 'cad',
                       requiresPayment: true
                     } : {}),
                     metadata: {
@@ -148,7 +148,7 @@ jobs:
                   const slug = transformed.slug;
                   const eventTypeId = await getEventTypeId(slug);
                   const method = eventTypeId ? 'PUT' : 'POST';
-                  const path = eventTypeId ? `/v2/event-types/${eventTypeId}` : '/v2/event-types';
+                  const path = eventTypeId ? \`/v2/event-types/\${eventTypeId}\` : '/v2/event-types';
                   console.log('API call:', method, path);
 
                   const options = {
@@ -166,16 +166,16 @@ jobs:
                     res.on('data', (chunk) => data += chunk);
                     res.on('end', () => {
                       if (res.statusCode >= 200 && res.statusCode < 300) {
-                        console.log(`Success for ${slug}: ${res.statusCode}, Response: ${data}`);
+                        console.log(\`Success for \${slug}: Status \${res.statusCode}, Response: \${data}\`);
                       } else {
-                        console.error(`Failed for ${slug}: ${res.statusCode}, Response: ${data}`);
+                        console.error(\`Failed for \${slug}: Status \${res.statusCode}, Response: \${data}\`);
                         process.exit(1);
                       }
                     });
                   });
 
                   req.on('error', (e) => {
-                    console.error(`Error for ${slug}: ${e.message}`);
+                    console.error(\`Error for \${slug}: \${e.message}\`);
                     process.exit(1);
                   });
 
@@ -186,7 +186,7 @@ jobs:
                   await new Promise(resolve => setTimeout(resolve, 1000));
                 }
               } catch (e) {
-                console.error('Error processing events:', e);
+                console.error('Error processing events:', e.message);
                 process.exit(1);
               }
             }
