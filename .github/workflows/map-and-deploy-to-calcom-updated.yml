@@ -40,14 +40,14 @@ jobs:
                 method: method,
                 headers: {
                   'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                  'Content-Type': 'application/json, charset=utf-8'
+                  'Content-Type': 'application/json'
                 }
               };
               const req = https.request(options, (res) => {
                 let data = '';
                 res.on('data', (chunk) => { data += chunk; });
                 res.on('end', () => {
-                  console.log('Raw API response:', data); // Log raw response
+                  console.log('Raw API response:', data);
                   if (res.statusCode >= 200 && res.statusCode < 300) {
                     try {
                       resolve(JSON.parse(data));
@@ -60,7 +60,11 @@ jobs:
                 });
               });
               req.on('error', (e) => { reject(e); });
-              if (body) req.write(JSON.stringify(body));
+              if (body) {
+                const bodyString = JSON.stringify(body);
+                console.log('Serialized payload:', bodyString);
+                req.write(bodyString);
+              }
               req.end();
             });
           }
@@ -99,9 +103,9 @@ jobs:
                 const pkg = packages[i];
                 console.log('Processing package:', pkg.slug);
                 const transformed = {
-                  title: pkg.name || 'Placeholder Title',
-                  slug: pkg.slug || 'placeholder',
-                  length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
+                  title: String(pkg.name || 'Placeholder Title'),
+                  slug: String(pkg.slug || 'placeholder'),
+                  length: Number(pkg.maxDuration ? pkg.maxDuration * 60 : 180),
                   description: pkg.description || 'No description provided',
                   locations: [{ type: 'inPerson', address: pkg.location || 'Toronto, ON' }],
                   availability: {
@@ -111,16 +115,7 @@ jobs:
                     startTime: pkg.startTime || '09:00',
                     endTime: pkg.endTime || '17:00'
                   },
-                  tags: [],
-                  // Alternative payment fields
-                  paymentPrice: pkg.price ? Math.round(pkg.price * 100) : 0,
-                  paymentCurrency: pkg.currency || 'cad',
-                  payment: {
-                    enabled: pkg.price && pkg.price > 0,
-                    provider: 'stripe',
-                    price: pkg.price ? Math.round(pkg.price * 100) : 0,
-                    currency: pkg.currency || 'cad'
-                  }
+                  tags: []
                 };
                 if (Array.isArray(pkg.eventType)) {
                   transformed.tags = transformed.tags.concat(pkg.eventType);
@@ -128,12 +123,25 @@ jobs:
                 if (pkg.packageType) transformed.tags.push(pkg.packageType);
                 if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
                 if (pkg.New === 'Y') transformed.tags.push('New');
-                // Log payment settings
+                // Payment block
                 if (pkg.price && pkg.price > 0) {
                   console.log(`Setting payment for ${pkg.slug}: price=${pkg.price}, currency=${pkg.currency || 'cad'}`);
+                  transformed.price = Math.round(pkg.price * 100);
+                  transformed.currency = pkg.currency || 'cad';
+                  transformed.payments = {
+                    enabled: true,
+                    provider: 'stripe',
+                    price: Math.round(pkg.price * 100),
+                    currency: pkg.currency || 'cad'
+                  };
                   transformed.requiresPayment = true;
                 } else {
                   console.log(`No payment set for ${pkg.slug}: price=${pkg.price || 'undefined'}`);
+                  transformed.price = 0;
+                  transformed.currency = pkg.currency || 'cad';
+                  transformed.payments = {
+                    enabled: false
+                  };
                   transformed.requiresPayment = false;
                 }
                 const eventTypeId = await getEventTypeId(transformed.slug);
