@@ -1956,5 +1956,135 @@
     "Sale": "Y",
     "New": "Y",
     "dateAdded": "06-13-2025"
+  }, 
+  [
+  {
+    "name": "🎉 Festive Feast Bundle",
+    "slug": "festive-feast-bundle",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 2000,
+    "regPrice": 2500,
+    "discount": 20,
+    "description": "Delight your guests with the Festive Feast Bundle. Combines a Waffle Booth for sweet treats, a Smoothies Booth for refreshing drinks, and Sparkler Boxes for a dazzling finale.",
+    "equipment": [
+      "Waffle Booth",
+      "Smoothies Booth",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Birthday",
+      "Corporate"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/festive-feast-bundle-birthday-corporate#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "Sale": "Y",
+    "New": "Y",
+    "dateAdded": "06-13-2025"
+  },
+  {
+    "name": "📸 Cinematic Glam Bundle",
+    "slug": "cinematic-glam-bundle",
+    "guests": 200,
+    "maxDuration": 6,
+    "price": 1840,
+    "regPrice": 2300,
+    "discount": 20,
+    "description": "Elevate your event with the Cinematic Glam Bundle. Features a Magazine Photo Booth Box for chic photos, Dry Ice Fog for a dramatic effect, and a Laser Effect for First Dance for a stunning show.",
+    "equipment": [
+      "Magazine Photo Booth Box",
+      "Dry Ice Fog",
+      "Laser Effect for First Dance"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Wedding",
+      "Prom"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/cinematic-glam-bundle-wedding-prom#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "Sale": "Y",
+    "New": "Y",
+    "dateAdded": "06-13-2025"
+  },
+  {
+    "name": "☕ Sip & Snap Bundle",
+    "slug": "sip-snap-bundle",
+    "guests": 100,
+    "maxDuration": 4,
+    "price": 1680,
+    "regPrice": 2100,
+    "discount": 20,
+    "description": "Enjoy a cozy and fun experience with the Sip & Snap Bundle. Includes an Espresso & Coffee Booth for warm drinks and a Magazine Photo Booth Box for stylish photos.",
+    "equipment": [
+      "Espresso & Coffee Booth",
+      "Magazine Photo Booth Box"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Corporate",
+      "Bridal Shower"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sip-snap-bundle-corporate-bridal-shower#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "Sale": "Y",
+    "New": "Y",
+    "dateAdded": "06-13-2025"
+  },
+  {
+    "name": "🥤 Refreshing Memories Bundle",
+    "slug": "refreshing-memories-bundle",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 1600,
+    "regPrice": 2000,
+    "discount": 20,
+    "description": "Keep the vibes fresh with the Refreshing Memories Bundle. Features a Smoothies Booth for healthy drinks and an Audio Guest Book for capturing heartfelt messages.",
+    "equipment": [
+      "Smoothies Booth",
+      "Audio Guest Book"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Graduation",
+      "Baby Shower"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/refreshing-memories-bundle-graduation-baby-shower#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "Sale": "Y",
+    "New": "Y",
+    "dateAdded": "06-13-2025"
+  },
+  {
+    "name": "🪩 Dazzling Moments Bundle",
+    "slug": "dazzling-moments-bundle",
+    "guests": 200,
+    "maxDuration": 6,
+    "price": 2160,
+    "regPrice": 2700,
+    "discount": 20,
+    "description": "Make every moment shine with the Dazzling Moments Bundle. Includes a 360 Video Booth, Sparkler Boxes, and a Laser Effect for First Dance for a vibrant and unforgettable event.",
+    "equipment": [
+      "360 Video Booth",
+      "Sparkler Boxes",
+      "Laser Effect for First Dance"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All",
+      "Wedding",
+      "Anniversary Celebration"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/dazzling-moments-bundle-wedding-anniversary#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "Sale": "Y",
+    "New": "Y",
+    "dateAdded": "06-13-2025"
   }
+]
 ]
