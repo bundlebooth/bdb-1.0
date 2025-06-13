@@ -99,21 +99,21 @@ jobs:
                   process.exit(1);
                 }
                 console.log('Processing package: ' + pkg.slug);
-                // Construct the description by concatenating fields
+                // Construct the description by concatenating fields with spacing
                 const priceText = pkg.discount > 0 
-                  ? `Price: $${pkg.price} (Reg. $${pkg.regularPrice}) - ${pkg.discount}% OFF!`
-                  : `Price: $${pkg.price}`;
+                  ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
+                  : `**Price**: **$${pkg.price}**`;
                 const servicesText = pkg.servicesIncluded && Array.isArray(pkg.servicesIncluded)
-                  ? `Services Included:\n${pkg.servicesIncluded.map(s => `- ${s}`).join('\n')}`
-                  : 'Services Included: None';
+                  ? `**Services Included**:\n${pkg.servicesIncluded.map(s => `- ${s}`).join('\n')}`
+                  : `**Services Included**: None`;
                 const description = [
                   priceText,
-                  `Description: ${pkg.description || 'No description provided'}`,
-                  `Guests: ${pkg.guests || 'Not specified'}`,
-                  `Duration: ${pkg.duration || 'Not specified'}`,
+                  `**Description**: ${pkg.description || 'No description provided'}`,
+                  `**Guests**: ${pkg.guests || 'Not specified'}`,
+                  `**Duration**: Up to ${pkg.maxDuration || 3} hours`,
                   servicesText,
-                  `Note: ${pkg.note || 'No additional notes'}`
-                ].join('\n');
+                  `**Note**: ${pkg.note || 'No additional notes'}`
+                ].join('\n\n');
                 const transformed = {
                   title: pkg.name || 'Placeholder Title',
                   slug: pkg.slug || 'placeholder',
