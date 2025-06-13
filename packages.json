@@ -1,16 +1,17 @@
-{
-  "title": "Test41",
-  "slug": "test41",
-  "length": 360,
-  "description": "Illuminate your event with the Radiant Dance Bundle. Features Sparkler Boxes for dazzling moments and a Laser Effect for First Dance to create a memorable show.",
-  "locations": [{ "type": "inPerson", "address": "Toronto, ON" }],
-  "availability": {
-    "days": [1, 2, 3, 4, 5],
+[
+  {
+    "slug": "test42",
+    "name": "Test42",
+    "description": "Illuminate your event with the Radiant Dance Bundle.",
+    "maxDuration": 6,
+    "location": "Toronto, ON",
+    "availabilityDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
     "startTime": "09:00",
-    "endTime": "17:00"
-  },
-  "tags": ["Dance", "Event", "Premium", "On Sale"],
-  "price": 10000, // $100.00 in cents
-  "currency": "cad",
-  "requiresPayment": true
-}
+    "endTime": "17:00",
+    "eventType": ["Dance", "Event"],
+    "packageType": "Premium",
+    "Sale": "Y",
+    "New": "N",
+    "price": 100.00
+  }
+]
