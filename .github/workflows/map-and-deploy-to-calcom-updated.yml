@@ -140,6 +140,7 @@ jobs:
                   };
 
                   if (isStripeActive && pkg.price > 0) {
+                    transformed.requiresPayment = true;
                     transformed.payments = {
                       enabled: true,
                       price: pkg.price * 100,  // cents
