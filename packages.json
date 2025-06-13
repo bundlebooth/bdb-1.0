@@ -1,8 +1,29 @@
 {
-  "name": "Glow & Go Mini Bundle (Up to 100 Guests)",
+  "name": "🔥 Glow & Go Mini Bundle (Up to 100 Guests)",
   "slug": "glow-and-go-mini-bundle",
+  "price": 1020,
+  "regularPrice": 1250,
+  "discount": 18,
   "description": "Create maximum impact with minimal setup using the Glow & Go Mini Bundle. Perfect for smaller gatherings, this bundle combines the immersive 360 Video Booth with a mesmerizing Dry Ice Fog effect to elevate your event's ambiance.",
-  "lengthInMinutes": 180,
+  "guests": "Up to 100",
+  "maxDuration": 3,
+  "servicesIncluded": ["360 Video Booth", "Dry Ice Fog"],
+  "equipment": ["360 Video Booth", "Dry Ice Fog"],
+  "note": "Additional charges apply for extended hours or additional services.",
+  "location": "Custom attendee location",
+  "currency": "CAD",
+  "availabilityDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+  "startTime": "09:00",
+  "endTime": "23:59",
+  "eventType": ["Event Bundle", "Special Effects", "All", "Corporate"],
+  "packageType": "Bundle",
+  "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+  "Sale": "Y",
+  "New": "N",
+  "dateAdded": "05-31-2025",
+  "disableGuestsCancelling": true,
+  "disableGuestsRescheduling": true,
+  "disableCalVideoTranscription": true,
   "successRedirectUrl": "https://bundlebooth.ca/",
   "disableGuests": true,
   "color": {
@@ -18,39 +39,25 @@
     "defaultLayout": "month",
     "enabledLayouts": ["month"]
   },
-  "timeZone": "America/Toronto",
-  "schedules": [
+  "availability": [
     {
-      "name": "Availability",
-      "timeZone": "America/Toronto",
-      "availability": [
-        {
-          "days": [1, 2, 3, 4, 5, 6, 7],
-          "startTime": "09:00",
-          "endTime": "23:59"
-        }
-      ]
-    }
-  ],
-  "disableGuestsCancelling": true,
-  "disableGuestsRescheduling": true,
-  "disableCalVideoTranscription": true,
-  "metadata": {
-    "price": 1020,
-    "regularPrice": 1250,
-    "discount": 18,
-    "guests": "Up to 100",
-    "maxDuration": 3,
-    "servicesIncluded": ["360 Video Booth", "Dry Ice Fog"],
-    "equipment": ["360 Video Booth", "Dry Ice Fog"],
-    "note": "Additional charges apply for extended hours or additional services.",
-    "location": "Custom attendee location",
-    "currency": "CAD",
-    "eventType": ["Event Bundle", "Special Effects", "All", "Corporate"],
-    "packageType": "Bundle",
-    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
-    "Sale": "Y",
-    "New": "N",
-    "dateAdded": "05-31-2025"
-  }
+      "days": [1, 2, 3, 4, 5, 6, 7],
+      "startTime": "09:00",
+      "endTime": "23:59"
+    },
+    "timeZone": "America/Toronto",
+    "schedules": [
+      {
+        "name": "Availability",
+        "timeZone": "America/New_York",
+        "availability": [
+          {
+            "days": [1, 2, 3, 4, 5, 6, 7],
+            "startTime": "09:00",
+            "endTime": "23:59"
+          }
+        ]
+      }
+    ]
+  ]
 }
