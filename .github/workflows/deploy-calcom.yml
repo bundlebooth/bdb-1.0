@@ -1,0 +1,164 @@
+name: deploy-calcom.yml NEW
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Map JSON and Push to Cal.com
+        env:
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
+        run: |
+          node <<EOF
+            const fs = require('fs');
+            const https = require('https');
+            const dayMap = {
+              'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
+              'Friday': 5, 'Saturday': 6, 'Sunday': 7
+            };
+            function apiRequest(method, path, body = null) {
+              return new Promise((resolve, reject) => {
+                const options = {
+                  hostname: 'api.cal.com',
+                  path: path,
+                  method: method,
+                  headers: {
+                    'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
+                    'Content-Type': 'application/json',
+                    'cal-api-version': '2024-06-14'
+                  }
+                };
+                const req = https.request(options, (res) => {
+                  let data = '';
+                  res.on('data', (chunk) => { data += chunk; });
+                  res.on('end', () => {
+                    if (res.statusCode >= 200 && res.statusCode < 300) {
+                      try {
+                        resolve(JSON.parse(data));
+                      } catch (e) {
+                        resolve({});
+                      }
+                    } else {
+                      reject({ statusCode: res.statusCode, data: data });
+                    }
+                  });
+                });
+                req.on('error', (e) => { reject(e); });
+                if (body) req.write(JSON.stringify(body));
+                req.end();
+              });
+            }
+            async function getEventTypeId(slug) {
+              try {
+                const res = await apiRequest('GET', '/v2/event-types');
+                const eventTypes = res.event_types || [];
+                for (let i = 0; i < eventTypes.length; i++) {
+                  if (eventTypes[i].slug === slug) {
+                    return eventTypes[i].id;
+                  }
+                }
+                return null;
+              } catch (e) {
+                console.error('Error fetching event types:', e);
+                return null;
+              }
+            }
+            async function processEvents() {
+              try {
+                console.log('Reading packages.json...');
+                let packages = JSON.parse(fs.readFileSync('packages.json'));
+                if (packages.some(pkg => Object.keys(pkg).length === 1)) {
+                  packages = packages.map(pkg => Object.values(pkg)[0]);
+                }
+                for (let i = 0; i < packages.length; i++) {
+                  const pkg = packages[i];
+                  if (!pkg.slug || !pkg.name) {
+                    console.error('Invalid package: missing slug or name', pkg);
+                    process.exit(1);
+                  }
+                  console.log('Processing package:', pkg.slug_targets);
+                  const transformed = {
+                    title: pkg.name || 'Placeholder Title',
+                    slug: pkg.slug || 'placeholder',
+                    lengthInMinutes: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
+                    description: pkg.description || 'No description provided',
+                    locations: [{ type: pkg.location === 'Online' ? 'integrations:online' : 'inPerson', address: pkg.location || 'Toronto, ON' }],
+                    availability: {
+                      days: pkg.availabilityDays
+                        ? pkg.availabilityDays.map(day => dayMap[day] || 1)
+                        : [1, 2, 3, 4, 5],
+                      startTime: pkg.startTime || '09:00',
+                      endTime: pkg.endTime || '17:00'
+                    },
+                    tags: [],
+                    metadata: {}
+                  };
+                  if (Array.isArray(pkg.eventType)) {
+                    transformed.tags = transformed.tags.concat(pkg.eventType);
+                  }
+                  if (pkg.packageType) transformed.tags.push(pkg.packageType);
+                  if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
+                  if (pkg.New === 'Y') transformed.tags.push('New');
+                  // Add Stripe configuration to metadata if price is present
+                  if (pkg.price && pkg.price > 0) {
+                    const currency = pkg.currency?.toLowerCase() || 'cad';
+                    // Validate currency (optional, add more as needed)
+                    const supportedCurrencies = ['cad', 'usd', 'eur', 'gbp'];
+                    if (!supportedCurrencies.includes(currency)) {
+                      console.warn(`Unsupported currency '${currency}' for ${pkg.slug}, defaulting to 'cad'`);
+                      transformed.metadata = {
+                        apps: {
+                          stripe: {
+                            enabled: true,
+                            price: Math.round(pkg.price * 100),
+                            currency: 'cad'
+                          }
+                        }
+                      };
+                    } else {
+                      transformed.metadata = {
+                        apps: {
+                          stripe: {
+                            enabled: true,
+                            price: Math.round(pkg.price * 100),
+                            currency: currency
+                          }
+                        }
+                      };
+                    }
+                    console.log('Stripe configuration added for ' + pkg.slug + ':', transformed.metadata);
+                  } else {
+                    console.log('No payment required for ' + pkg.slug);
+                  }
+                  const existingEventTypeId = await getEventTypeId(transformed.slug);
+                  const method = existingEventTypeId ? 'PATCH' : 'POST';
+                  const path = existingEventTypeId ? '/v2/event-types/' + existingEventTypeId : '/v2/event-types';
+                  try {
+                    const result = await apiRequest(method, path, transformed);
+                    console.log('Success for ' + transformed.slug + ':', result);
+                  } catch (err) {
+                    console.error('Failed for ' + transformed.slug + ':', err);
+                    console.error('Error details:', err.data || err.message);
+                  }
+                  await new Promise(resolve => setTimeout(resolve, 1000)); // Increased delay to avoid rate limits
+                }
+              } catch (e) {
+                console.error('Error processing events:', e);
+                process.exit(1);
+              }
+            }
+            processEvents().catch(console.error);
+          EOF
