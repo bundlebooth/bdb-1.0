@@ -1,4 +1,4 @@
-name: Map and Deploy JSON to Cal.com (SaaS Stripe Ready)
+name: Map and Deploy JSON to Cal.com
 
 on:
   push:
@@ -124,14 +124,22 @@ jobs:
                   if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
                   if (pkg.New === 'Y') transformed.tags.push('New');
 
-                  if (pkg.price > 0) {
+                  // START PAYMENT BLOCK FIX
+                  if (pkg.price && pkg.price > 0) {
                     transformed.payments = {
                       enabled: true,
-                      price: pkg.price * 100,
-                      paymentProvider: 'stripe',
-                      currency: 'CAD'
+                      price: Math.round(pkg.price * 100),  // price in cents
+                      currency: 'cad',
+                      paymentProvider: 'stripe'
                     };
+                    transformed.requiresPayment = true;
+                  } else {
+                    transformed.payments = {
+                      enabled: false
+                    };
+                    transformed.requiresPayment = false;
                   }
+                  // END PAYMENT BLOCK FIX
 
                   const eventTypeId = await getEventTypeId(transformed.slug);
                   const method = eventTypeId ? 'PUT' : 'POST';
