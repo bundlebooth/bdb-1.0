@@ -1,26 +1,30 @@
 [
 {
-    "name": "🔥 Glow & Go Mini Bundle (Up to 100 Guests)",
-    "slug": "glow-go-mini-bundle",
-    "guests": 100,
-    "maxDuration": 3,
-    "price": 1020,
-    "regPrice": 1250,
-    "discount": 18,
-    "description": "Create maximum impact with minimal setup using the Glow & Go Mini Bundle. Perfect for smaller gatherings, this bundle combines the immersive 360 Video Booth with a mesmerizing Dry Ice Fog effect to elevate your event's ambiance.",
-    "equipment": [
-      "360 Video Booth",
-      "Dry Ice Fog"
-    ],
-    "note": "Additional charges apply for extended hours or additional services.",
-    "eventType": [
-      "All",
-      "Corporate"
-    ],
-    "packageType": "Bundle",
-    "bookingUrl": "https://cal.com/bundlebooth/placeholder",
-    "Sale": "Y",
-    "New": "N",
-    "dateAdded": "05-31-2025"
-  }
+    
+"name": "🔥 Glow & Go Mini Bundle (Up to 100 Guests)",
+"slug": "glow-and-go-mini-bundle",
+  "price": 1020,
+  "regularPrice": 1250,
+  "discount": 18,
+  "description": "Create maximum impact with minimal setup using the Glow & Go Mini Bundle. Perfect for smaller gatherings, this bundle combines the immersive 360 Video Booth with a mesmerizing Dry Ice Fog effect to elevate your event's ambiance.",
+  "guests": "Up to 100",
+  "maxDuration": 3,
+  "servicesIncluded": ["360 Video Booth", "Dry Ice Fog"],
+  "equipment": ["360 Video Booth", "Dry Ice Fog"],
+  "note": "Additional charges apply for extended hours or additional services.",
+  "location": "Custom attendee location",
+  "currency": "CAD",
+  "availabilityDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+  "startTime": "09:00",
+  "endTime": "23:59",
+  "eventType": ["Event Bundle", "Special Effects", "All", "Corporate"],
+  "packageType": "Bundle",
+  "bookingUrl": "https://cal.com/bundlebooth/placeholder",
+  "Sale": "Y",
+  "New": "N",
+  "dateAdded": "05-31-2025",
+  "disableGuestsCancelling": true,
+  "disableGuestsRescheduling": true,
+  "disableCalVideoTranscription": true
+}
 ]
