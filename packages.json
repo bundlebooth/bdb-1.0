@@ -25,7 +25,6 @@
     "disableGuestsCancelling": true,
     "disableGuestsRescheduling": true,
     "disableCalVideoTranscription": true,
-    "successRedirectUrl": "https://bundlebooth.ca/",
     "disableGuests": true,
     "color": {
       "lightThemeHex": "#292929"
