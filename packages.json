@@ -1,11 +1,11 @@
 [
   {
-    "name": "🔥 Glow & Go Mini Bundle (Up to 100 Guests)",
+    "name": "🔥 Glow & Go Mini Bundle (Up to 100 Guests)!",
     "slug": "glow-and-go-mini-bundle",
     "price": 1020,
     "regularPrice": 1250,
     "discount": 18,
-    "description": "Create maximum impact with minimal setup using the Glow & Go Mini Bundle. Perfect for smaller gatherings, this bundle combines the immersive 360 Video Booth with a mesmerizing Dry Ice Fog effect to elevate your event's ambiance.\n\n**Please provide the event address in the booking form.**",
+    "description": "Create maximum impact with minimal setup using the Glow & Go Mini Bundle. Perfect for smaller gatherings, this bundle combines the immersive 360 Video Booth with a mesmerizing Dry Ice Fog effect to elevate your event's ambiance.\n\n**Please provide the event address and phone number in the booking form.**",
     "guests": "Up to 100",
     "maxDuration": 3,
     "servicesIncluded": ["360 Video Booth", "Dry Ice Fog"],
@@ -40,6 +40,14 @@
       "enabledLayouts": ["month"]
     },
     "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
       {
         "name": "eventAddress",
         "slug": "eventAddress",
