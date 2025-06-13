@@ -1,32 +1,34 @@
 [
   {
-    "name": "Test49",
-    "slug": "test49",
-    "guests": 200,
-    "maxDuration": 6,
-    "price": 1200,
-    "currency": "cad",
-    "regPrice": 1500,
-    "discount": 20,
-    "description": "Illuminate your event with the Radiant Dance Bundle. Features Sparkler Boxes for dazzling moments and a Laser Effect for First Dance to create a memorable show.",
-    "equipment": [
-      "Sparkler Boxes",
-      "Laser Effect for First Dance"
-    ],
-    "note": "Additional charges apply for extended hours or additional services.",
-    "eventType": [
-      "All",
-      "Wedding",
-      "Anniversary Celebration"
-    ],
-    "packageType": "Bundle",
-    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/radiant-dance-bundle-wedding-anniversary#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
-    "Sale": "Y",
-    "New": "Y",
-    "dateAdded": "06-12-2025",
-    "availabilityDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    "slug": "consultation",
+    "name": "Consultation",
+    "maxDuration": 60,
+    "description": "A one-hour consultation session",
+    "location": "Toronto, ON",
+    "availabilityDays": ["Monday", "Wednesday", "Friday"],
     "startTime": "09:00",
     "endTime": "17:00",
-    "location": "Toronto, ON"
+    "eventType": ["consulting"],
+    "packageType": "Standard",
+    "Sale": "N",
+    "New": "Y",
+    "price": 99.99,
+    "currency": "cad"
+  },
+  {
+    "slug": "free-workshop",
+    "name": "Free Workshop",
+    "maxDuration": 30,
+    "description": "A free 30-minute workshop",
+    "location": "Online",
+    "availabilityDays": ["Tuesday", "Thursday"],
+    "startTime": "10:00",
+    "endTime": "16:00",
+    "eventType": ["workshop"],
+    "packageType": "Free",
+    "Sale": "Y",
+    "New": "N",
+    "price": 0,
+    "currency": "cad"
   }
 ]
