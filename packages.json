@@ -1,6 +1,7 @@
 [
   {
-    "name": "Glow & Go Mini Bundle",
+    "name": "Glow & Go Mini Bundle!",
+    "slug": "glow-go-mini-bundle",
     "guests": 100,
     "maxDuration": 3,
     "price": 1020,
@@ -23,7 +24,8 @@
     "dateAdded": "05-31-2025"
   },
   {
-    "name": "Essential Celebration Bundle",
+    "name": "Essential Celebration Bundle!",
+    "slug": "essential-celebration-bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 1160,
@@ -47,6 +49,7 @@
   },
   {
     "name": "Ultimate Photo Experience Bundle",
+    "slug": "ultimate-photo-experience-bundle",
     "guests": 200,
     "maxDuration": 6,
     "price": 1680,
@@ -70,6 +73,7 @@
   },
   {
     "name": "Elegant Engagement Bundle",
+    "slug": "elegant-engagement-bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 1440,
@@ -94,6 +98,7 @@
   },
   {
     "name": "Chill & Capture Bundle",
+    "slug": "chill-capture-bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 1680,
@@ -117,6 +122,7 @@
   },
   {
     "name": "Glam Booth Experience",
+    "slug": "glam-booth-experience",
     "guests": 150,
     "maxDuration": 6,
     "price": 1980,
@@ -140,6 +146,7 @@
   },
   {
     "name": "Signature Experience Bundle",
+    "slug": "signature-experience-bundle",
     "guests": 200,
     "maxDuration": 8,
     "price": 2760,
@@ -164,6 +171,7 @@
   },
   {
     "name": "Social Soirée Bundle",
+    "slug": "social-soiree-bundle",
     "guests": 200,
     "maxDuration": 8,
     "price": 2760,
@@ -187,6 +195,7 @@
   },
   {
     "name": "First Dance Fantasy Bundle",
+    "slug": "first-dance-fantasy-bundle",
     "guests": 150,
     "maxDuration": 8,
     "price": 1920,
@@ -211,6 +220,7 @@
   },
   {
     "name": "Corporate Kickoff Bundle",
+    "slug": "corporate-kickoff-bundle",
     "guests": 300,
     "maxDuration": 8,
     "price": 3360,
@@ -235,6 +245,7 @@
   },
   {
     "name": "Milestone Magic Bundle",
+    "slug": "milestone-magic-bundle",
     "guests": 200,
     "maxDuration": 6,
     "price": 1680,
@@ -258,6 +269,7 @@
   },
   {
     "name": "Morning Mixer Bundle",
+    "slug": "morning-mixer-bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 1320,
@@ -280,6 +292,7 @@
   },
   {
     "name": "Café & Chill Bundle",
+    "slug": "cafe-chill-bundle",
     "guests": 50,
     "maxDuration": 3,
     "price": 720,
@@ -302,6 +315,7 @@
   },
   {
     "name": "Cool Crowd Bundle",
+    "slug": "cool-crowd-bundle",
     "guests": 200,
     "maxDuration": 6,
     "price": 1680,
@@ -324,6 +338,7 @@
   },
   {
     "name": "Luxury Romance Bundle",
+    "slug": "luxury-romance-bundle",
     "guests": 200,
     "maxDuration": 6,
     "price": 1920,
@@ -348,6 +363,7 @@
   },
   {
     "name": "Corporate Connect Bundle",
+    "slug": "corporate-connect-bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 1680,
@@ -371,6 +387,7 @@
   },
   {
     "name": "The Grand Wedding Experience",
+    "slug": "grand-wedding-experience",
     "guests": 300,
     "maxDuration": 10,
     "price": 3840,
@@ -395,6 +412,7 @@
   },
   {
     "name": "All-in-One Party Bundle",
+    "slug": "all-in-one-party-bundle",
     "guests": 250,
     "maxDuration": 8,
     "price": 3120,
@@ -419,6 +437,7 @@
   },
   {
     "name": "Photo Booth - Classic Package",
+    "slug": "photo-booth-classic",
     "guests": 200,
     "maxDuration": 3,
     "price": 500,
@@ -440,6 +459,7 @@
   },
   {
     "name": "Photo Booth - Deluxe Package",
+    "slug": "photo-booth-deluxe",
     "guests": 200,
     "maxDuration": 3,
     "price": 600,
@@ -461,6 +481,7 @@
   },
   {
     "name": "360 Video Booth - Classic Package",
+    "slug": "360-video-booth-classic",
     "guests": 200,
     "maxDuration": 3,
     "price": 600,
@@ -482,6 +503,7 @@
   },
   {
     "name": "Audio Guest Book - Classic Package",
+    "slug": "audio-guest-book-classic",
     "guests": 200,
     "maxDuration": 6,
     "price": 350,
@@ -503,6 +525,7 @@
   },
   {
     "name": "Magazine Photo Booth Box - Classic Package",
+    "slug": "magazine-photo-booth-box-classic",
     "guests": 200,
     "maxDuration": 6,
     "price": 600,
@@ -524,6 +547,7 @@
   },
   {
     "name": "Espresso & Coffee Booth",
+    "slug": "espresso-coffee-booth-50-guests",
     "guests": 50,
     "maxDuration": 2,
     "price": 700,
@@ -545,6 +569,7 @@
   },
   {
     "name": "Espresso & Coffee Booth",
+    "slug": "espresso-coffee-booth-100-guests",
     "guests": 100,
     "maxDuration": 2,
     "price": 1100,
@@ -566,6 +591,7 @@
   },
   {
     "name": "Espresso & Coffee Booth",
+    "slug": "espresso-coffee-booth-150-guests",
     "guests": 150,
     "maxDuration": 2,
     "price": 1500,
@@ -587,6 +613,7 @@
   },
   {
     "name": "Espresso & Coffee Booth",
+    "slug": "espresso-coffee-booth-200-guests",
     "guests": 200,
     "maxDuration": 2,
     "price": 1900,
@@ -608,6 +635,7 @@
   },
   {
     "name": "Waffle Booth",
+    "slug": "waffle-booth-50-guests",
     "guests": 50,
     "maxDuration": 2,
     "price": 800,
@@ -629,6 +657,7 @@
   },
   {
     "name": "Waffle Booth",
+    "slug": "waffle-booth-100-guests",
     "guests": 100,
     "maxDuration": 2,
     "price": 1200,
@@ -650,6 +679,7 @@
   },
   {
     "name": "Waffle Booth",
+    "slug": "waffle-booth-150-guests",
     "guests": 150,
     "maxDuration": 2,
     "price": 1600,
@@ -671,6 +701,7 @@
   },
   {
     "name": "Waffle Booth",
+    "slug": "waffle-booth-200-guests",
     "guests": 200,
     "maxDuration": 2,
     "price": 2000,
@@ -692,6 +723,7 @@
   },
   {
     "name": "Smoothies Booth",
+    "slug": "smoothies-booth-50-guests",
     "guests": 50,
     "maxDuration": 2,
     "price": 900,
@@ -713,6 +745,7 @@
   },
   {
     "name": "Smoothies Booth",
+    "slug": "smoothies-booth-100-guests",
     "guests": 100,
     "maxDuration": 2,
     "price": 1300,
@@ -734,6 +767,7 @@
   },
   {
     "name": "Smoothies Booth",
+    "slug": "smoothies-booth-150-guests",
     "guests": 150,
     "maxDuration": 2,
     "price": 1700,
@@ -755,6 +789,7 @@
   },
   {
     "name": "Smoothies Booth",
+    "slug": "smoothies-booth-200-guests",
     "guests": 200,
     "maxDuration": 2,
     "price": 2100,
@@ -776,6 +811,7 @@
   },
   {
     "name": "Sparkler Boxes - Classic Package",
+    "slug": "sparkler-boxes-classic",
     "guests": 200,
     "maxDuration": 1,
     "price": 400,
@@ -797,6 +833,7 @@
   },
   {
     "name": "Sparkler Boxes - Deluxe Package",
+    "slug": "sparkler-boxes-deluxe",
     "guests": 200,
     "maxDuration": 1,
     "price": 600,
@@ -818,6 +855,7 @@
   },
   {
     "name": "Sparkler Boxes - Red Carpet Package",
+    "slug": "sparkler-boxes-red-carpet",
     "guests": 200,
     "maxDuration": 1,
     "price": 800,
@@ -839,6 +877,7 @@
   },
   {
     "name": "Dry Ice Fog - Classic Package",
+    "slug": "dry-ice-fog-classic",
     "guests": 200,
     "maxDuration": 1,
     "price": 400,
@@ -860,6 +899,7 @@
   },
   {
     "name": "Laser First Dance - Classic Package",
+    "slug": "laser-first-dance-classic",
     "guests": 200,
     "maxDuration": 1,
     "price": 900,
@@ -881,6 +921,7 @@
   },
   {
     "name": "Memorable Moments Bundle",
+    "slug": "memorable-moments-bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 1280,
@@ -905,6 +946,7 @@
   },
   {
     "name": "Glamour & Fog Bundle",
+    "slug": "glamour-fog-bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 1520,
@@ -929,6 +971,7 @@
   },
   {
     "name": "Sweet Snapshots Bundle",
+    "slug": "sweet-snapshots-bundle",
     "guests": 100,
     "maxDuration": 4,
     "price": 1440,
@@ -953,6 +996,7 @@
   },
   {
     "name": "Vibrant Vibes Bundle",
+    "slug": "vibrant-vibes-bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 1840,
@@ -977,6 +1021,7 @@
   },
   {
     "name": "Heartfelt Connections Bundle",
+    "slug": "heartfelt-connections-bundle",
     "guests": 100,
     "maxDuration": 4,
     "price": 1360,
@@ -1001,6 +1046,7 @@
   },
   {
     "name": "Sparkle & Sweets Bundle",
+    "slug": "sparkle-sweets-bundle",
     "guests": 100,
     "maxDuration": 4,
     "price": 1520,
@@ -1025,6 +1071,7 @@
   },
   {
     "name": "Refresh & Reveal Bundle",
+    "slug": "refresh-reveal-bundle",
     "guests": 150,
     "maxDuration": 4,
     "price": 1760,
@@ -1049,6 +1096,7 @@
   },
   {
     "name": "Network & Snap Bundle",
+    "slug": "network-snap-bundle",
     "guests": 200,
     "maxDuration": 6,
     "price": 2400,
@@ -1074,6 +1122,7 @@
   },
   {
     "name": "Fresh Capture Bundle",
+    "slug": "fresh-capture-bundle",
     "guests": 100,
     "maxDuration": 4,
     "price": 1520,
@@ -1098,6 +1147,7 @@
   },
   {
     "name": "Dynamic Treats Bundle",
+    "slug": "dynamic-treats-bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 1440,
@@ -1122,6 +1172,7 @@
   },
   {
     "name": "Heartfelt Snaps Bundle",
+    "slug": "heartfelt-snaps-bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 880,
@@ -1146,6 +1197,7 @@
   },
   {
     "name": "Sparkle Snap Bundle",
+    "slug": "sparkle-snap-bundle",
     "guests": 200,
     "maxDuration": 6,
     "price": 920,
@@ -1170,6 +1222,7 @@
   },
   {
     "name": "Trendy Video Bundle",
+    "slug": "trendy-video-bundle",
     "guests": 200,
     "maxDuration": 6,
     "price": 1120,
@@ -1194,6 +1247,7 @@
   },
   {
     "name": "Dance Floor Magic Bundle",
+    "slug": "dance-floor-magic-bundle",
     "guests": 200,
     "maxDuration": 6,
     "price": 1440,
@@ -1218,6 +1272,7 @@
   },
   {
     "name": "Sentimental Sparkle Bundle",
+    "slug": "sentimental-sparkle-bundle",
     "guests": 100,
     "maxDuration": 4,
     "price": 680,
@@ -1242,6 +1297,7 @@
   },
   {
     "name": "Fashion Messages Bundle",
+    "slug": "fashion-messages-bundle",
     "guests": 150,
     "maxDuration": 6,
     "price": 880,
@@ -1266,6 +1322,7 @@
   },
   {
     "name": "Dramatic Flair Bundle",
+    "slug": "dramatic-flair-bundle",
     "guests": 200,
     "maxDuration": 6,
     "price": 760,
@@ -1290,6 +1347,7 @@
   },
   {
     "name": "Radiant Dance Bundle",
+    "slug": "radiant-dance-bundle",
     "guests": 200,
     "maxDuration": 6,
     "price": 1200,
