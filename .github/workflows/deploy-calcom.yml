@@ -118,6 +118,27 @@ jobs:
             }
           }
 
+          async function deleteAllEventTypes() {
+            console.log('[INFO] Deleting all existing event types');
+            try {
+              const eventTypes = await getAllEventTypes();
+              for (const eventType of eventTypes) {
+                if (eventType.id) {
+                  console.log(`[INFO] Deleting event type: ${eventType.slug} (ID: ${eventType.id})`);
+                  try {
+                    await apiRequest('DELETE', `/api/v2/event-types/${eventType.id}`);
+                    console.log(`[SUCCESS] Deleted event type: ${eventType.slug}`);
+                  } catch (e) {
+                    console.error(`[ERROR] Failed to delete event type ${eventType.slug}:`, e);
+                  }
+                }
+              }
+              console.log('[SUCCESS] All event types deleted');
+            } catch (e) {
+              console.error('[ERROR] Error during deletion of event types:', e);
+            }
+          }
+
           async function getEventTypeId(slug) {
             console.log(`[INFO] Fetching event type ID for slug: ${slug}`);
             try {
@@ -438,7 +459,10 @@ jobs:
           async function processEvents() {
             try {
               console.log('[INFO] Starting event processing pipeline');
-              await checkDiscrepancies();
+              // Step 1: Delete all existing event types
+              await deleteAllEventTypes();
+              // Step 2: Since all event types are deleted, skip discrepancy check
+              // Step 3: Insert new event types
               await insertNewEventTypes();
               console.log('[SUCCESS] Event processing pipeline completed');
             } catch (e) {
@@ -450,7 +474,7 @@ jobs:
           processEvents();
           SCRIPT
 
-      - name: Process event types (Check discrepancies and insert new)
+      - name: Process event types (Delete all, then insert new)
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
         run: |
