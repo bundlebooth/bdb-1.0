@@ -24,8 +24,20 @@ jobs:
       - name: Install dependencies
         run: npm install axios
 
+      # Verify that CALCOM_API_KEY is set
+      - name: Check for CALCOM_API_KEY
+        run: |
+          if [ -z "$CALCOM_API_KEY" ]; then
+            echo "Error: CALCOM_API_KEY is not set"
+            exit 1
+          else
+            echo "CALCOM_API_KEY is set"
+          fi
+        env:
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}  # Store API key in GitHub Secrets
+
       # Run script to read packages-delete.json and delete event types
       - name: Delete Cal.com Event Types
         env:
-          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}  # Store API key in GitHub Secrets
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}  # Ensure API key is available
         run: node delete-event-types.js
