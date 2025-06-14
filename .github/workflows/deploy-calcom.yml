@@ -25,6 +25,7 @@ jobs:
             echo "Error: packages.json not found"
             exit 1
           fi
+
       - name: Write event type script
         run: |
           cat <<'SCRIPT' > deploy.js
@@ -97,7 +98,7 @@ jobs:
               }));
               const payload = {
                 name: scheduleData.name,
-                timeZone: scheduleData.timeZone,
+                timeZone: scheduleData.timeZone || "America/Toronto",
                 isDefault: scheduleData.isDefault !== undefined ? scheduleData.isDefault : true,
                 availability: mappedAvailability
               };
@@ -208,6 +209,7 @@ jobs:
           }
           processEvents();
           SCRIPT
+
       - name: Create event types
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
@@ -299,6 +301,7 @@ jobs:
           }
           configurePayments();
           SCRIPT
+
       - name: Configure payments
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
