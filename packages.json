@@ -41,6 +41,14 @@
     },
     "bookingFields": [
       {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
         "name": "eventAddress",
         "slug": "eventAddress",
         "label": "Event Address",
