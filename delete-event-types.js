@@ -5,6 +5,9 @@ const fs = require('fs').promises;
 const API_BASE_URL = 'https://api.cal.com/v1';
 const JSON_FILE_PATH = 'packages-delete.json';
 const LOG_FILE_PATH = 'delete-event-types.log';
+const REQUEST_DELAY_MS = 1000; // 1 second delay between requests
+const MAX_RETRIES = 3; // Maximum retry attempts for 429 errors
+const BASE_RETRY_DELAY_MS = 5000; // Base delay for retries (5 seconds)
 
 // Helper function to log messages to console and file
 async function logMessage(message) {
@@ -30,8 +33,11 @@ async function readJsonFile(filePath) {
     }
 }
 
-// Helper function to fetch all event types and match by slug
-async function fetchEventTypes(apiKey, slug) {
+// Helper function to add delay
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Helper function to fetch all event types and match by slug with retry logic
+async function fetchEventTypes(apiKey, slug, retryCount = 0) {
     try {
         // Validate and log API key
         await logMessage(`API Key present: ${!!apiKey}, Length: ${apiKey ? apiKey.length : 0}`);
@@ -57,19 +63,29 @@ async function fetchEventTypes(apiKey, slug) {
             };
             await logMessage(`Request config: ${JSON.stringify(config, (key, value) => key === 'Authorization' || key === 'apiKey' ? '***' : value, 2)}`);
 
-            const response = await axios.get(`${API_BASE_URL}/event-types`, config);
-            await logMessage(`API Response status: ${response.status}, Page: ${page}`);
-            await logMessage(`Full API response: ${JSON.stringify(response.data, null, 2)}`);
+            try {
+                const response = await axios.get(`${API_BASE_URL}/event-types`, config);
+                await logMessage(`API Response status: ${response.status}, Page: ${page}`);
+                await logMessage(`Full API response: ${JSON.stringify(response.data, null, 2)}`);
 
-            // Handle flat event_types array
-            const eventTypes = response.data.event_types || [];
-            allEventTypes = allEventTypes.concat(eventTypes);
+                const eventTypes = response.data.event_types || [];
+                allEventTypes = allEventTypes.concat(eventTypes);
 
-            await logMessage(`Pagination: ${JSON.stringify(response.data.pagination || {})}`);
-            if (!response.data.pagination?.nextPage && (!response.data.pagination?.total || allEventTypes.length >= response.data.pagination.total)) {
-                break;
+                await logMessage(`Pagination: ${JSON.stringify(response.data.pagination || {})}`);
+                if (!response.data.pagination?.nextPage && (!response.data.pagination?.total || allEventTypes.length >= response.data.pagination.total)) {
+                    break;
+                }
+                page++;
+                await delay(REQUEST_DELAY_MS); // Delay between pagination requests
+            } catch (error) {
+                if (error.response?.status === 429 && retryCount < MAX_RETRIES) {
+                    const retryAfter = error.response.headers['retry-after'] ? parseInt(error.response.headers['retry-after']) * 1000 : BASE_RETRY_DELAY_MS;
+                    await logMessage(`Rate limit exceeded, retrying after ${retryAfter}ms (Attempt ${retryCount + 1}/${MAX_RETRIES})`);
+                    await delay(retryAfter);
+                    return fetchEventTypes(apiKey, slug, retryCount + 1);
+                }
+                throw error;
             }
-            page++;
         }
 
         await logMessage(`Found ${allEventTypes.length} event types`);
@@ -124,8 +140,8 @@ async function fetchEventTypes(apiKey, slug) {
     }
 }
 
-// Helper function to delete an event type
-async function deleteEventType(apiKey, eventId, slug) {
+// Helper function to delete an event type with retry logic
+async function deleteEventType(apiKey, eventId, slug, retryCount = 0) {
     try {
         await logMessage(`API Key present for deletion: ${!!apiKey}, Length: ${apiKey ? apiKey.length : 0}`);
         await logMessage(`Deleting event type: ID ${eventId}, Slug ${slug}`);
@@ -139,6 +155,12 @@ async function deleteEventType(apiKey, eventId, slug) {
         await logMessage(`Successfully deleted event type: ${slug} (ID: ${eventId})`);
         return response.data;
     } catch (error) {
+        if (error.response?.status === 429 && retryCount < MAX_RETRIES) {
+            const retryAfter = error.response.headers['retry-after'] ? parseInt(error.response.headers['retry-after']) * 1000 : BASE_RETRY_DELAY_MS;
+            await logMessage(`Rate limit exceeded, retrying after ${retryAfter}ms (Attempt ${retryCount + 1}/${MAX_RETRIES})`);
+            await delay(retryAfter);
+            return deleteEventType(apiKey, eventId, slug, retryCount + 1);
+        }
         await logMessage(`Error deleting event type ${slug} (ID: ${eventId}): ${error.message}`);
         if (error.response) {
             await logMessage(`Response data: ${JSON.stringify(error.response.data, null, 2)}`);
@@ -175,6 +197,7 @@ async function main() {
             }
 
             await deleteEventType(apiKey, targetEvent.id, slug);
+            await delay(REQUEST_DELAY_MS); // Delay between event type deletions
         }
 
         await logMessage('Deletion process completed successfully');
