@@ -46,7 +46,8 @@ jobs:
                 method,
                 headers: {
                   Authorization: `Bearer ${process.env.CALCOM_API_KEY || 'MISSING_API_KEY'}`,
-                  'Content-Type': 'application/json'
+                  'Content-Type': 'application/json',
+                  'cal-api-version': '2024-06-14'
                 }
               };
               console.log(`[DEBUG] API request: ${method} ${path}`);
@@ -87,7 +88,7 @@ jobs:
               let eventTypes = [];
               let page = 1;
               while (true) {
-                const res = await apiRequest('GET', `/api/v2/event-types?page=${page}&limit=100`);
+                const res = await apiRequest('GET', `/v2/event-types?page=${page}&limit=100`);
                 console.log(`[DEBUG] Event types response for page ${page}: ${JSON.stringify(res, null, 2)}`);
                 const types = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
                 if (!Array.isArray(types)) {
@@ -142,34 +143,36 @@ jobs:
           const { apiRequest, getAllEventTypes, loadPackages } = require('./utils');
 
           const dayMap = {
-            Monday: 'Monday', Tuesday: 'Tuesday', Wednesday: 'Wednesday',
-            Thursday: 'Thursday', Friday: 'Friday', Saturday: 'Saturday', Sunday: 'Sunday',
-            1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 7: 'Sunday'
+            Monday: 'MONDAY', Tuesday: 'TUESDAY', Wednesday: 'WEDNESDAY',
+            Thursday: 'THURSDAY', Friday: 'FRIDAY', Saturday: 'SATURDAY', Sunday: 'SUNDAY',
+            1: 'MONDAY', 2: 'TUESDAY', 3: 'WEDNESDAY', 4: 'THURSDAY', 5: 'FRIDAY', 6: 'SATURDAY', 7: 'SUNDAY'
           };
 
-          async function createSchedule(scheduleData) {
+          async function createSchedule(pkg) {
             try {
               const payload = {
-                name: scheduleData.name || 'Default Schedule',
-                timeZone: scheduleData.timeZone || 'America/Toronto',
-                isDefault: scheduleData.isDefault ?? true,
-                availability: scheduleData.availability.map(slot => ({
-                  ...slot,
-                  days: slot.days.map(day => dayMap[day] || day)
-                }))
+                name: `${pkg.name} Schedule`,
+                timeZone: pkg.timeZone || 'America/Toronto',
+                isDefault: true,
+                availability: [{
+                  days: (pkg.availabilityDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']).map(day => dayMap[day] || day),
+                  startTime: pkg.startTime || '09:00:00',
+                  endTime: pkg.endTime || '23:59:00'
+                }]
               };
-              console.log(`[DEBUG] Creating schedule with payload: ${JSON.stringify(payload)}`);
-              const result = await apiRequest('POST', '/api/v2/schedules', payload);
+              console.log(`[DEBUG] Creating schedule for ${pkg.slug}: ${JSON.stringify(payload)}`);
+              const result = await apiRequest('POST', '/v2/schedules', payload);
+              console.log(`[INFO] Created schedule ID: ${result.data.id} for ${pkg.slug}`);
               return result.data.id;
             } catch (e) {
-              console.error(`[ERROR] Failed to create schedule: ${e.message}`);
+              console.error(`[ERROR] Failed to create schedule for ${pkg.slug}: ${e.message}`);
               return null;
             }
           }
 
           async function getEventTypeId(slug) {
             try {
-              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
+              const res = await apiRequest('GET', `/v2/event-types?slug=${encodeURIComponent(slug)}`);
               const eventTypes = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
               console.log(`[DEBUG] Fetched event type for slug ${slug}: ${JSON.stringify(eventTypes[0])}`);
               return eventTypes.length ? eventTypes[0].id : null;
@@ -181,7 +184,7 @@ jobs:
 
           async function inspectEventType(slug) {
             try {
-              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
+              const res = await apiRequest('GET', `/v2/event-types?slug=${encodeURIComponent(slug)}`);
               const eventTypes = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
               console.log(`[DEBUG] Inspected event type ${slug}: ${JSON.stringify(eventTypes[0], null, 2)}`);
               return eventTypes[0] || null;
@@ -221,36 +224,30 @@ jobs:
                 const transformed = {
                   title: pkg.name,
                   slug: pkg.slug,
-                  length: (pkg.maxDuration || 3) * 60,
+                  lengthInMinutes: (pkg.maxDuration || 3) * 60,
                   description,
+                  bookingFields: pkg.bookingFields.map(field => ({
+                    type: field.type,
+                    label: field.label,
+                    required: field.required,
+                    placeholder: field.placeholder
+                  })),
                   locations: pkg.locations?.length ? pkg.locations.map(loc => ({
                     type: loc.location_type || 'address',
                     address: loc.location || 'To be provided by client',
                     public: true
-                  })) : [{ type: 'address', address: 'Toronto, ON', public: true }],
-                  timeZone: pkg.timeZone || 'America/Toronto',
-                  availability: pkg.available || {
-                    days: pkg.availabilityDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                    startTime: pkg.startTime || '09:00',
-                    endTime: pkg.endTime || '23:59'
-                  },
-                  tags: [
-                    ...(Array.isArray(pkg.eventType) ? pkg.eventType : []),
-                    ...(pkg.packageType ? [pkg.packageType] : []),
-                    ...(pkg.Sale === 'Y' ? ['On Sale'] : []),
-                    ...(pkg.New === 'Y' ? ['New'] : [])
-                  ],
-                  disableGuests: pkg.disableGuests || false,
-                  metadata: {
-                    disableCalVideoTranscription: pkg.disableCalVideoTranscription || false,
-                    disableGuestsCancelling: pkg.disableGuestsCancelling || false,
-                    disableGuestsRescheduling: pkg.disableGuestsRescheduling || false
-                  },
-                  bookingFields: pkg.bookingFields || [],
-                  color: pkg.color,
-                  minimumBookingNotice: pkg.minimumBookingNotice || 120,
-                  bookerLayouts: pkg.bookerLayouts
+                  })) : [{ type: 'address', address: 'To be provided by client', public: true }],
+                  minimumBookingNotice: pkg.minimumBookingNotice || 20160,
+                  bookerLayouts: pkg.bookerLayouts || { defaultLayout: 'month', enabledLayouts: ['month'] },
+                  color: pkg.color || { lightThemeHex: '#292929' },
+                  disableGuests: pkg.disableGuests || true
                 };
+                let scheduleId = await createSchedule(pkg);
+                if (!scheduleId) {
+                  console.warn(`[WARN] Skipping event type ${pkg.slug} due to schedule creation failure`);
+                  continue;
+                }
+                transformed.scheduleId = scheduleId;
                 if (existingSlugs.has(pkg.slug)) {
                   console.log(`[INFO] Event type ${pkg.slug} already exists, inspecting and updating`);
                   await inspectEventType(pkg.slug);
@@ -261,7 +258,7 @@ jobs:
                   }
                   try {
                     console.log(`[DEBUG] Updating event type ${pkg.slug} with payload: ${JSON.stringify(transformed)}`);
-                    await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, transformed);
+                    await apiRequest('PATCH', `/v2/event-types/${eventTypeId}`, transformed);
                     console.log(`[INFO] Updated event type: ${pkg.slug}`);
                     await inspectEventType(pkg.slug);
                   } catch (e) {
@@ -271,23 +268,9 @@ jobs:
                 } else {
                   try {
                     console.log(`[DEBUG] Creating event type ${pkg.slug} with payload: ${JSON.stringify(transformed)}`);
-                    const result = await apiRequest('POST', '/api/v2/event-types', transformed);
-                    const eventTypeId = result.data.id;
-                    console.log(`[INFO] Created event type: ${pkg.slug}`);
-                    if (transformed.availability && Array.isArray(transformed.availability.schedules)) {
-                      const scheduleIds = [];
-                      for (const schedule of transformed.availability.schedules) {
-                        const scheduleId = await createSchedule({
-                          ...schedule,
-                          timeZone: pkg.timeZone || 'America/Toronto'
-                        });
-                        if (scheduleId) scheduleIds.push(scheduleId);
-                      }
-                      if (scheduleIds.length) {
-                        await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, { scheduleIds });
-                        console.log(`[INFO] Updated schedule IDs for: ${pkg.slug}`);
-                      }
-                    }
+                    const result = await apiRequest('POST', '/v2/event-types', transformed);
+                    console.log(`[INFO] Created event type: ${pkg.slug} with ID: ${result.data.id}`);
+                    await inspectEventType(pkg.slug);
                   } catch (e) {
                     console.error(`[ERROR] Failed to create event type ${pkg.slug}: ${e.message}`);
                     if (e.message.includes('already has an event type with this slug')) {
@@ -327,11 +310,8 @@ jobs:
 
           async function getEventTypeId(slug) {
             try {
-              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
-              const eventTypes = Array.isArray(res) ? res :
-                res.eventTypes && Array.isArray(res.eventTypes) ? res.eventTypes :
-                res.event_types && Array.isArray(res.event_types) ? res.event_types :
-                res.data && Array.isArray(res.data) ? res.data : [];
+              const res = await apiRequest('GET', `/v2/event-types?slug=${encodeURIComponent(slug)}`);
+              const eventTypes = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
               return eventTypes.length ? eventTypes[0].id : null;
             } catch (e) {
               console.error(`Error fetching event type ID for ${slug}: ${e.message}`);
@@ -369,7 +349,7 @@ jobs:
                     }
                   }
                 };
-                await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, paymentPayload);
+                await apiRequest('PATCH', `/v2/event-types/${eventTypeId}`, paymentPayload);
                 console.log(`Configured payment for: ${pkg.slug}`);
                 await new Promise(resolve => setTimeout(resolve, 2000));
               }
