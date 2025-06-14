@@ -91,7 +91,7 @@ jobs:
               let eventTypes = [];
               let page = 1;
               while (true) {
-                const res = await apiRequest('GET', `/api/v2/event-types?page=${page}&limit=100`);
+                const res = await apiRequest('GET', `/api/v2/event-types?page=${page}&limit=100&userId=1580301`);
                 console.log(`[DEBUG] Event types response for page ${page}: ${JSON.stringify(res, null, 2)}`);
                 const types = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
                 if (!Array.isArray(types)) {
@@ -107,6 +107,17 @@ jobs:
             } catch (e) {
               console.error(`[ERROR] Error fetching event types: ${e.message}`);
               throw e;
+            }
+          }
+
+          async function getCurrentUser() {
+            try {
+              const res = await apiRequest('GET', '/api/v2/me');
+              console.log(`[DEBUG] Current user: ${JSON.stringify(res.data, null, 2)}`);
+              return res.data;
+            } catch (e) {
+              console.error(`[ERROR] Error fetching current user: ${e.message}`);
+              return null;
             }
           }
 
@@ -138,13 +149,13 @@ jobs:
             }
           }
 
-          module.exports = { apiRequest, getAllEventTypes, deduplicatePackages, loadPackages };
+          module.exports = { apiRequest, getAllEventTypes, getCurrentUser, deduplicatePackages, loadPackages };
           SCRIPT
 
       - name: Write event type insertion script
         run: |
           cat <<'SCRIPT' > insert-event-types.js
-          const { apiRequest, getAllEventTypes, loadPackages } = require('./utils');
+          const { apiRequest, getAllEventTypes, getCurrentUser, loadPackages } = require('./utils');
 
           const dayMap = {
             Monday: 'MONDAY', Tuesday: 'TUESDAY', Wednesday: 'WEDNESDAY',
@@ -176,7 +187,7 @@ jobs:
 
           async function getEventTypeId(slug) {
             try {
-              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
+              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}&userId=1580301`);
               const eventTypes = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
               console.log(`[DEBUG] Fetched event type for slug ${slug}: ${JSON.stringify(eventTypes[0])}`);
               return eventTypes.length ? eventTypes[0].id : null;
@@ -188,7 +199,7 @@ jobs:
 
           async function inspectEventType(slug) {
             try {
-              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
+              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}&userId=1580301`);
               const eventTypes = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
               console.log(`[DEBUG] Inspected event type ${slug}: ${JSON.stringify(eventTypes[0], null, 2)}`);
               return eventTypes[0] || null;
@@ -200,6 +211,9 @@ jobs:
 
           async function insertNewEventTypes() {
             try {
+              const user = await getCurrentUser();
+              if (!user) throw new Error('Failed to fetch current user');
+              console.log(`[INFO] Authenticated as user ID: ${user.id}, slug: ${user.profile?.slug}`);
               const packages = loadPackages();
               if (!packages.length) throw new Error('No valid packages found');
               console.log(`[INFO] Processing ${packages.length} packages`);
@@ -242,9 +256,8 @@ jobs:
                     address: loc.location || 'To be provided by client'
                   })) : [{ type: 'address', address: 'To be provided by client' }],
                   minimumBookingNotice: pkg.minimumBookingNotice || 20160,
-                  bookerLayouts: pkg.bookerLayouts || { defaultLayout: 'month', enabledLayouts: ['month'] },
-                  color: pkg.color || { lightThemeHex: '#292929' },
-                  disableGuests: pkg.disableGuests || true
+                  disableGuests: pkg.disableGuests || true,
+                  scheduleId: null
                 };
                 let scheduleId = await createSchedule(pkg);
                 if (!scheduleId) {
@@ -267,6 +280,12 @@ jobs:
                     await inspectEventType(pkg.slug);
                   } catch (e) {
                     console.error(`[ERROR] Failed to update event type ${pkg.slug}: ${e.message}`);
+                    try {
+                      const errorData = JSON.parse(e.message.split(': ')[1] || '{}');
+                      console.error(`[DEBUG] API error details: ${JSON.stringify(errorData, null, 2)}`);
+                    } catch (parseError) {
+                      console.error(`[DEBUG] Failed to parse API error: ${parseError.message}`);
+                    }
                     continue;
                   }
                 } else {
@@ -277,6 +296,12 @@ jobs:
                     await inspectEventType(pkg.slug);
                   } catch (e) {
                     console.error(`[ERROR] Failed to create event type ${pkg.slug}: ${e.message}`);
+                    try {
+                      const errorData = JSON.parse(e.message.split(': ')[1] || '{}');
+                      console.error(`[DEBUG] API error details: ${JSON.stringify(errorData, null, 2)}`);
+                    } catch (parseError) {
+                      console.error(`[DEBUG] Failed to parse API error: ${parseError.message}`);
+                    }
                     if (e.message.includes('already has an event type with this slug')) {
                       console.log(`[INFO] Duplicate slug detected for ${pkg.slug}, attempting update`);
                       const eventTypeId = await getEventTypeId(pkg.slug);
@@ -324,7 +349,7 @@ jobs:
 
           async function getEventTypeId(slug) {
             try {
-              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
+              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}&userId=1580301`);
               const eventTypes = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
               return eventTypes.length ? eventTypes[0].id : null;
             } catch (e) {
