@@ -89,10 +89,7 @@ jobs:
               while (true) {
                 const res = await apiRequest('GET', `/api/v2/event-types?page=${page}&limit=100`);
                 console.log(`[DEBUG] Event types response for page ${page}: ${JSON.stringify(res, null, 2)}`);
-                const types = Array.isArray(res) ? res :
-                  res.eventTypes && Array.isArray(res.eventTypes) ? res.eventTypes :
-                  res.event_types && Array.isArray(res.event_types) ? res.event_types :
-                  res.data && Array.isArray(res.data) ? res.data : [];
+                const types = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
                 if (!Array.isArray(types)) {
                   throw new Error(`Invalid event types response structure: ${JSON.stringify(res, null, 2)}`);
                 }
@@ -197,169 +194,12 @@ jobs:
                   servicesText,
                   `**Note**: ${pkg.note || 'No additional notes'}`
                 ].join('\n\n');
+                const hasPhoneNumberField = pkg.bookingFields?.some(field => field.name === 'phoneNumber');
+                const hasEventLocationField = pkg.bookingFields?.some(field => field.name === 'eventLocation');
                 const transformed = {
                   title: pkg.name,
                   slug: pkg.slug,
                   length: (pkg.maxDuration || 3) * 60,
                   description,
                   locations: pkg.locationTypes && Array.isArray(pkg.types) && pkg.types[0]?.location_type
-                    ? [{ type: 'address', address: 'To be provided by client', public: true }]
-                    : [{ type: 'address', address: pkg.type || 'Toronto, ON', public: true }],
-                  availability: pkg.available || {
-                    days: pkg.days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                    startTime: pkg.startTime || '09:00',
-                    endTime: pkg.endTime || '23:59'
-                  },
-                  tags: [
-                    ...(Array.isArray(pkg.eventType) ? pkg.eventType : []),
-                    ...(pkg.packageType ? [pkg.packageType] : []),
-                    ...(pkg.Sale === 'Y' ? ['On Sale'] : []),
-                    ...(pkg.New === 'Y' ? ['New'] : [])
-                  ],
-                  disableGuests: pkg.disableGuests || false,
-                  metadata: {
-                    disableCalVideoTranscription: pkg.disableCalVideo || false,
-                    disableGuestsCancelling: pkg.disableGuestsCancel || false,
-                    disableGuestsRescheduling: pkg.disableGuestsReschedule || false
-                  },
-                  bookingFields: [
-                    ...(pkg.bookingFields || []),
-                    {
-                      name: "phoneNumber",
-                      slug: "phoneNumber",
-                      label: "Phone Number",
-                      type: "phone",
-                      required: true,
-                      placeholder: "Please enter your phone number (e.g., +1 123-456-7890)"
-                    },
-                    {
-                      name: "eventLocation",
-                      slug: "eventLocation",
-                      label: "Event Location",
-                      type: "text",
-                      required: true,
-                      placeholder: "Please provide the address where the event will be held"
-                    }
-                  ],
-                  color: pkg.color,
-                  minimumBookingNotice: pkg.minimumNotice,
-                  bookerLayouts: pkg.layouts
-                };
-                const result = await apiRequest('POST', '/api/v2/event-types', transformed);
-                const eventTypeId = result.data.id;
-                console.log(`Created event type: ${pkg.slug}`);
-                if (transformed.availability && Array.isArray(transformed.availability.schedules)) {
-                  const scheduleIds = [];
-                  for (const schedule of transformed.availability.schedules) {
-                    const scheduleId = await createSchedule(schedule);
-                    if (scheduleId) scheduleIds.push(scheduleId);
-                  }
-                  if (scheduleIds.length) {
-                    await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, { scheduleIds });
-                    console.log(`Updated schedule IDs for: ${pkg.slug}`);
-                  }
-                }
-                await new Promise(resolve => setTimeout(resolve, 5000));
-              }
-              console.log('Event type insertion completed');
-            } catch (e) {
-              console.error(`Fatal error during insertion: ${e.message}`);
-              process.exit(1);
-            }
-          }
-
-          insertNewEventTypes();
-          SCRIPT
-
-      - name: Insert new event types
-        env:
-          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-        run: |
-          node insert-event-types.js > insert-log.txt 2>&1 || {
-            echo "Insertion script failed. Check logs for details."
-            cat insert-log.txt
-            exit 1
-          }
-
-      - name: Write payment configuration script
-        run: |
-          cat <<'SCRIPT' > configure-payments.js
-          const { apiRequest, loadPackages } = require('./utils');
-
-          async function getEventTypeId(slug) {
-            try {
-              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
-              const eventTypes = Array.isArray(res) ? res :
-                res.eventTypes && Array.isArray(res.eventTypes) ? res.eventTypes :
-                res.event_types && Array.isArray(res.event_types) ? res.event_types :
-                res.data && Array.isArray(res.data) ? res.data : [];
-              return eventTypes.length ? eventTypes[0].id : null;
-            } catch (e) {
-              console.error(`Error fetching event type ID for ${slug}: ${e.message}`);
-              return null;
-            }
-          }
-
-          async function configurePayments() {
-            try {
-              const packages = loadPackages();
-              for (const pkg of packages) {
-                if (!pkg.slug || !pkg.name) {
-                  console.warn(`Invalid package: ${JSON.stringify(pkg)}`);
-                  continue;
-                }
-                if (!pkg.price || pkg.price <= 0) {
-                  console.log(`Skipping payment for ${pkg.slug}: invalid price`);
-                  continue;
-                }
-                const eventTypeId = await getEventTypeId(pkg.slug);
-                if (!eventTypeId) {
-                  console.warn(`No event type found for ${pkg.slug}`);
-                  continue;
-                }
-                const paymentPayload = {
-                  price: Math.round(pkg.price * 100),
-                  currency: pkg.currency?.toLowerCase() || 'cad',
-                  metadata: {
-                    apps: {
-                      stripe: {
-                        enabled: true,
-                        price: Math.round(pkg.price * 100),
-                        currency: pkg.currency?.toLowerCase() || 'cad'
-                      }
-                    }
-                  }
-                };
-                await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, paymentPayload);
-                console.log(`Configured payment for: ${pkg.slug}`);
-                await new Promise(resolve => setTimeout(resolve, 2000));
-              }
-              console.log('Payment configuration completed');
-            } catch (e) {
-              console.error(`Fatal error during payment configuration: ${e.message}`);
-              process.exit(1);
-            }
-          }
-
-          configurePayments();
-          SCRIPT
-
-      - name: Configure payments for event types
-        env:
-          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-        run: |
-          node configure-payments.js > payment-log.txt 2>&1 || {
-            echo "Payment configuration failed. Check logs for details."
-            cat payment-log.txt
-            exit 1
-          }
-
-      - name: Archive logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: deploy-logs
-          path: |
-            *.log
-            *.txt
-          retention-days: 7
+                    ? [{
