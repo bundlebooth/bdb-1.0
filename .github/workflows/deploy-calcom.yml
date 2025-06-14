@@ -61,18 +61,20 @@ jobs:
                   'Content-Type': 'application/json'
                 }
               };
+              console.log(`[INFO] Request options: ${JSON.stringify(options, null, 2)}`);
               const req = https.request(options, (res) => {
                 let data = '';
                 res.on('data', (chunk) => { data += chunk; });
                 res.on('end', () => {
                   console.log(`[INFO] Response status: ${res.statusCode} for ${path}`);
+                  console.log(`[INFO] Response data: ${data}`);
                   if (res.statusCode >= 200 && res.statusCode < 300) {
                     try {
                       const parsedData = JSON.parse(data || '{}');
-                      console.log(`[SUCCESS] Parsed response for ${path}`);
+                      console.log(`[SUCCESS] Parsed response for ${path}: ${JSON.stringify(parsedData, null, 2)}`);
                       resolve(parsedData);
                     } catch (e) {
-                      console.error(`[ERROR] Failed to parse response for ${path}:`, e);
+                      console.error(`[ERROR] Failed to parse response for ${path}: ${e.message}`);
                       reject(e);
                     }
                   } else if (res.statusCode === 404 && retries > 0) {
@@ -81,17 +83,17 @@ jobs:
                       apiRequest(method, path, body, retries - 1).then(resolve).catch(reject);
                     }, 1000);
                   } else {
-                    console.error(`[ERROR] Request failed for ${path} with status ${res.statusCode}`);
+                    console.error(`[ERROR] Request failed for ${path} with status ${res.statusCode}: ${data}`);
                     reject({ statusCode: res.statusCode, data });
                   }
                 });
               });
               req.on('error', (e) => { 
-                console.error(`[ERROR] Request error for ${path}:`, e);
+                console.error(`[ERROR] Request error for ${path}: ${e.message}`);
                 reject(e); 
               });
               if (body) {
-                console.log(`[INFO] Sending body for ${path}:`, JSON.stringify(body));
+                console.log(`[INFO] Sending body for ${path}: ${JSON.stringify(body, null, 2)}`);
                 req.write(JSON.stringify(body));
               }
               req.end();
@@ -99,13 +101,13 @@ jobs:
           }
 
           async function getAllEventTypes() {
-            console.log('[INFO] Fetching all event types');
+            console.log('[INFO] Starting fetch of all event types from Cal.com');
             try {
               const res = await apiRequest('GET', '/api/v2/event-types');
-              console.log('[SUCCESS] Retrieved event types:', res.event_types.length);
+              console.log(`[SUCCESS] Retrieved ${res.event_types?.length || 0} event types`);
               return res.event_types || [];
             } catch (e) {
-              console.error('[ERROR] Error fetching event types:', e);
+              console.error(`[ERROR] Error fetching event types: ${e.message}`);
               return [];
             }
           }
@@ -118,7 +120,7 @@ jobs:
               console.log(`[SUCCESS] Found ${eventTypes.length} event types for slug: ${slug}`);
               return eventTypes.length > 0 ? eventTypes[0].id : null;
             } catch (e) {
-              console.error(`[ERROR] Error fetching event type ID for slug ${slug}:`, e);
+              console.error(`[ERROR] Error fetching event type ID for slug ${slug}: ${e.message}`);
               return null;
             }
           }
@@ -127,16 +129,16 @@ jobs:
             console.log(`[INFO] Fetching event type with ID: ${id}`);
             try {
               const res = await apiRequest('GET', `/api/v2/event-types/${id}`);
-              console.log(`[SUCCESS] Retrieved event type for ID: ${id}`);
+              console.log(`[SUCCESS] Retrieved event type for ID: ${id}: ${JSON.stringify(res.data || res.event_type, null, 2)}`);
               return res.data || res.event_type;
             } catch (e) {
-              console.error(`[ERROR] Error fetching event type ${id}:`, e);
+              console.error(`[ERROR] Error fetching event type ${id}: ${e.message}`);
               return null;
             }
           }
 
           async function createSchedule(scheduleData) {
-            console.log('[INFO] Creating schedule:', scheduleData.name);
+            console.log(`[INFO] Creating schedule: ${scheduleData.name}`);
             try {
               const mappedAvailability = scheduleData.availability.map(slot => ({
                 ...slot,
@@ -148,25 +150,26 @@ jobs:
                 isDefault: scheduleData.isDefault !== undefined ? scheduleData.isDefault : true,
                 availability: mappedAvailability
               };
-              console.log('[INFO] Schedule payload:', payload);
+              console.log(`[INFO] Schedule payload: ${JSON.stringify(payload, null, 2)}`);
               const result = await apiRequest('POST', '/api/v2/schedules', payload);
               console.log(`[SUCCESS] Created schedule with ID: ${result.data.id}`);
               return result.data.id;
             } catch (e) {
-              console.error('[ERROR] Failed to create schedule:', e);
+              console.error(`[ERROR] Failed to create schedule: ${e.message}`);
               return null;
             }
           }
 
           async function verifyEventType(slug, expected, eventTypeId) {
-            console.log(`[INFO] Verifying event type for slug: ${slug}`);
+            console.log(`[INFO] Verifying event type for slug: ${slug} with ID: ${eventTypeId}`);
             const eventType = await getEventType(eventTypeId);
             if (!eventType || eventType.slug !== slug) {
               console.error(`[ERROR] Event type not found for slug: ${slug}`);
-              throw new Error('Event type not found for slug: ' + slug);
+              throw new Error(`Event type not found for slug: ${slug}`);
             }
             const errors = [];
             if (expected.bookingFields) {
+              console.log(`[INFO] Checking booking fields for slug: ${slug}`);
               const hasEventAddress = eventType.bookingFields.some(field => 
                 field.slug === 'eventAddress' && 
                 field.type === 'textarea' && 
@@ -188,14 +191,16 @@ jobs:
             }
             if (errors.length > 0) {
               console.error(`[ERROR] Verification failed for ${slug}: ${errors.join('; ')}`);
-              throw new Error('Verification failed for ' + slug + ': ' + errors.join('; '));
+              throw new Error(`Verification failed for ${slug}: ${errors.join('; ')}`);
             }
             console.log(`[SUCCESS] Verification passed for slug: ${slug}`);
           }
 
           function compareEventTypes(oldTypes, newTypes) {
+            console.log(`[INFO] Comparing event type tags: old=${JSON.stringify(oldTypes)}, new=${JSON.stringify(newTypes)}`);
             const added = newTypes.filter(type => !oldTypes.includes(type));
             const deleted = oldTypes.filter(type => !newTypes.includes(type));
+            console.log(`[INFO] Tag comparison results: added=${added.join(', ')}, deleted=${deleted.join(', ')}`);
             return { added, deleted };
           }
 
@@ -205,6 +210,7 @@ jobs:
             for (const key in obj1) {
               if (key === 'description' || key === 'scheduleIds') continue;
               const fullPath = path ? `${path}.${key}` : key;
+              console.log(`[INFO] Checking field: ${fullPath}`);
               if (typeof obj1[key] === 'object' && obj1[key] !== null && !Array.isArray(obj1[key])) {
                 const subDiffs = compareObjects(obj1[key], obj2[key] || {}, fullPath);
                 differences.push(...subDiffs);
@@ -223,7 +229,7 @@ jobs:
               }
             }
             if (differences.length > 0) {
-              console.log(`[INFO] Differences found:`, differences);
+              console.log(`[INFO] Differences found: ${differences.join('; ')}`);
             } else {
               console.log(`[INFO] No differences found at path: ${path}`);
             }
@@ -231,12 +237,13 @@ jobs:
           }
 
           function deduplicatePackages(packages) {
-            console.log('[INFO] Deduplicating packages');
+            console.log('[INFO] Starting deduplication of packages');
             const seenSlugs = new Set();
             const uniquePackages = [];
             for (const pkg of packages) {
+              console.log(`[INFO] Checking package: ${pkg.slug || 'no-slug'}`);
               if (seenSlugs.has(pkg.slug)) {
-                console.warn(`[WARN] Duplicate slug detected: ${pkg.slug}. Skipping package: ${pkg.name}`);
+                console.warn(`[WARN] Duplicate slug detected: ${pkg.slug}. Skipping package: ${pkg.name || 'no-name'}`);
                 continue;
               }
               seenSlugs.add(pkg.slug);
@@ -249,11 +256,18 @@ jobs:
           async function processEvents() {
             try {
               console.log('[INFO] Starting event processing');
+              console.log('[INFO] Reading packages.json');
               let packages = JSON.parse(fs.readFileSync('packages.json'));
-              console.log(`[INFO] Loaded ${packages.length} packages from packages.json`);
-              if (packages.some(pkg => Object.keys(pkg).length === 1)) {
-                packages = packages.map(p => Object.values(p)[0]);
-                console.log('[INFO] Flattened nested package structure');
+              console.log(`[SUCCESS] Loaded ${packages.length} packages from packages.json`);
+              // Improved flattening logic
+              if (Array.isArray(packages) && packages.some(pkg => Object.keys(pkg).length === 1 && typeof Object.values(pkg)[0] === 'object')) {
+                console.log('[INFO] Detected nested package structure, flattening');
+                packages = packages.map(p => {
+                  const inner = Object.values(p)[0];
+                  console.log(`[INFO] Flattening package: ${inner.slug || 'no-slug'}`);
+                  return inner;
+                }).filter(pkg => pkg && typeof pkg === 'object' && pkg.slug);
+                console.log('[SUCCESS] Flattened nested package structure');
               }
 
               // Deduplicate packages by slug
@@ -264,25 +278,52 @@ jobs:
               }
 
               // Step 1: Fetch existing event types for comparison
+              console.log('[INFO] Fetching existing event types from Cal.com');
               const existingEventTypes = await getAllEventTypes();
               const existingSlugs = new Set(existingEventTypes.map(e => e.slug));
-              console.log(`[INFO] Existing event type slugs:`, Array.from(existingSlugs));
+              console.log(`[INFO] Existing event type slugs: ${Array.from(existingSlugs).join(', ')}`);
 
               // Step 2: Prepare new event types from packages.json
               const newEventTypes = [];
               for (const pkg of packages) {
+                console.log(`[INFO] Processing package: ${pkg.name || 'no-name'} (${pkg.slug || 'no-slug'})`);
                 if (!pkg.slug || !pkg.name) {
                   console.warn(`[WARN] Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
                   continue;
                 }
-                console.log(`[INFO] Processing package: ${pkg.name} (${pkg.slug})`);
 
-                const priceText = pkg.discount > 0 
-                  ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice || pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
-                  : `**Price**: **$${pkg.price}**`;
+                // Validate critical fields
+                console.log(`[INFO] Validating fields for package: ${pkg.slug}`);
+                console.log(`[INFO] Price: ${pkg.price}, Discount: ${pkg.discount}, regPrice: ${pkg.regPrice || pkg.regularPrice}, Equipment: ${JSON.stringify(pkg.equipment)}`);
+                if (typeof pkg.price !== 'number' || pkg.price <= 0) {
+                  console.warn(`[WARN] Invalid price for ${pkg.slug}: ${pkg.price}`);
+                  continue;
+                }
+                if (!pkg.equipment || !Array.isArray(pkg.equipment) || pkg.equipment.length === 0) {
+                  console.warn(`[WARN] Invalid or missing equipment for ${pkg.slug}: ${JSON.stringify(pkg.equipment)}`);
+                }
+
+                // Generate price text
+                console.log(`[INFO] Generating price text for package: ${pkg.slug}`);
+                let priceText;
+                const regPrice = pkg.regPrice || pkg.regularPrice;
+                if (pkg.discount > 0 && typeof regPrice === 'number' && regPrice > 0 && !isNaN(regPrice)) {
+                  console.log(`[INFO] Discount applied: ${pkg.discount}%, regular price: $${regPrice}`);
+                  priceText = `**Price**: **$${pkg.price}** (Reg. ~~$${regPrice}~~) - ${pkg.discount}% OFF!`;
+                } else {
+                  if (pkg.discount > 0) {
+                    console.warn(`[WARN] Discount specified (${pkg.discount}%) but no valid regular price for ${pkg.slug}; using price: $${pkg.price}`);
+                  }
+                  priceText = `**Price**: **$${pkg.price}**`;
+                }
+                console.log(`[SUCCESS] Generated price text: ${priceText}`);
+
+                // Generate description
+                console.log('[INFO] Generating description for package');
                 const servicesText = pkg.equipment && Array.isArray(pkg.equipment) && pkg.equipment.length > 0
                   ? `**Services Included**:\n${pkg.equipment.map(e => `- ${e}`).join('\n')}`
                   : `**Services Included**: None`;
+                console.log(`[INFO] Services text: ${servicesText}`);
                 const description = [
                   priceText,
                   `**Description**: ${pkg.description || 'No description provided'}`,
@@ -291,8 +332,9 @@ jobs:
                   servicesText,
                   `**Note**: ${pkg.note || 'No additional notes'}`
                 ].join('\n\n');
-                console.log(`[INFO] Generated description for ${pkg.slug}`);
+                console.log(`[SUCCESS] Generated description for ${pkg.slug}: ${description}`);
 
+                console.log('[INFO] Transforming package to event type');
                 const transformed = {
                   title: pkg.name,
                   slug: pkg.slug,
@@ -319,13 +361,14 @@ jobs:
                   bookerLayouts: pkg.bookerLayouts || undefined
                 };
 
+                console.log('[INFO] Assigning tags to event type');
                 if (Array.isArray(pkg.eventType)) {
                   transformed.tags = transformed.tags.concat(pkg.eventType);
                 }
                 if (pkg.packageType) transformed.tags.push(pkg.packageType);
                 if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
                 if (pkg.New === 'Y') transformed.tags.push('New');
-                console.log(`[INFO] Transformed package ${pkg.slug} with tags: ${transformed.tags.join(', ')}`);
+                console.log(`[SUCCESS] Transformed package ${pkg.slug} with tags: ${transformed.tags.join(', ')}`);
 
                 newEventTypes.push(transformed);
               }
@@ -338,11 +381,12 @@ jobs:
 
                 if (existingEventType) {
                   // Compare existing event type with new event type
-                  console.log(`[INFO] Comparing event type ${transformed.slug} with existing ID: ${existingEventType.id}`);
+                  console.log(`[INFO] Found existing event type for slug: ${transformed.slug} with ID: ${existingEventType.id}`);
+                  console.log(`[INFO] Comparing event type ${transformed.slug} with existing`);
                   const differences = compareObjects(transformed, existingEventType);
                   const tagDiffs = compareEventTypes(existingEventType.tags || [], transformed.tags || []);
 
-                  // Always replace description completely, include other updates if differences exist
+                  // Always update description, include other updates if differences exist
                   const updatePayload = { description: transformed.description };
                   if (differences.length > 0 || tagDiffs.added.length > 0 || tagDiffs.deleted.length > 0) {
                     console.log(`[INFO] Differences detected for slug: ${transformed.slug}`);
@@ -351,31 +395,32 @@ jobs:
                       differences.forEach(diff => console.log(`    ${diff}`));
                     }
                     if (tagDiffs.added.length > 0) {
-                      console.log(`[INFO] Added event types: ${tagDiffs.added.join(', ')}`);
+                      console.log(`[INFO] Added tags: ${tagDiffs.added.join(', ')}`);
                     }
                     if (tagDiffs.deleted.length > 0) {
-                      console.log(`[INFO] Deleted event types: ${tagDiffs.deleted.join(', ')}`);
+                      console.log(`[INFO] Deleted tags: ${tagDiffs.deleted.join(', ')}`);
                     }
                     Object.assign(updatePayload, transformed);
                   } else {
-                    console.log(`[INFO] Only description replacement required for ${transformed.slug}`);
+                    console.log(`[INFO] Only description update required for ${transformed.slug}`);
                   }
 
+                  console.log(`[INFO] Updating event type for slug: ${transformed.slug}`);
                   try {
                     await apiRequest('PATCH', `/api/v2/event-types/${existingEventType.id}`, updatePayload);
                     console.log(`[SUCCESS] Updated event type for slug: ${transformed.slug}`);
                   } catch (e) {
-                    console.error(`[ERROR] Failed to update event type for slug ${transformed.slug}:`, e);
+                    console.error(`[ERROR] Failed to update event type for slug ${transformed.slug}: ${e.message}`);
                   }
                 } else {
                   // Create new event type if it doesn't exist
-                  console.log(`[INFO] Creating new event type for slug: ${transformed.slug}`);
+                  console.log(`[INFO] No existing event type found for slug: ${transformed.slug}, creating new`);
                   try {
                     const result = await apiRequest('POST', '/api/v2/event-types', transformed);
                     console.log(`[SUCCESS] Created event type for slug: ${transformed.slug} with ID: ${result.data.id}`);
                     await verifyEventType(transformed.slug, transformed, result.data.id);
                   } catch (e) {
-                    console.error(`[ERROR] Failed to create event type for slug ${transformed.slug}:`, e);
+                    console.error(`[ERROR] Failed to create event type for slug ${transformed.slug}: ${e.message}`);
                   }
                 }
 
@@ -384,33 +429,40 @@ jobs:
                   console.log(`[INFO] Processing schedules for ${transformed.slug}`);
                   const scheduleIds = [];
                   for (const schedule of transformed.availability.schedules) {
+                    console.log(`[INFO] Creating schedule for event type ${transformed.slug}`);
                     const scheduleId = await createSchedule(schedule);
-                    if (scheduleId) scheduleIds.push(scheduleId);
+                    if (scheduleId) {
+                      scheduleIds.push(scheduleId);
+                      console.log(`[SUCCESS] Added schedule ID: ${scheduleId} for ${transformed.slug}`);
+                    }
                   }
                   if (scheduleIds.length > 0) {
                     const existingEventTypeId = await getEventTypeId(transformed.slug);
                     if (existingEventTypeId) {
+                      console.log(`[INFO] Updating schedule IDs for slug: ${transformed.slug}`);
                       try {
                         await apiRequest('PATCH', `/api/v2/event-types/${existingEventTypeId}`, { scheduleIds });
                         console.log(`[SUCCESS] Updated schedule IDs for slug: ${transformed.slug}`);
                       } catch (e) {
-                        console.error(`[ERROR] Failed to update schedule IDs for slug ${transformed.slug}:`, e);
+                        console.error(`[ERROR] Failed to update schedule IDs for slug ${transformed.slug}: ${e.message}`);
                       }
                     }
                   }
                 }
 
+                console.log(`[INFO] Waiting 5 seconds before processing next event type`);
                 await new Promise(resolve => setTimeout(resolve, 5000));
                 console.log(`[INFO] Completed processing for ${transformed.slug}`);
               }
 
-              console.log('[SUCCESS] Event processing completed');
+              console.log('[SUCCESS] Event processing completed successfully');
             } catch (e) {
-              console.error('[ERROR] Fatal error during event processing:', e.message || JSON.stringify(e));
+              console.error(`[ERROR] Fatal error during event processing: ${e.message || JSON.stringify(e)}`);
               process.exit(1);
             }
           }
 
+          console.log('[INFO] Initiating event processing');
           processEvents();
           SCRIPT
 
@@ -426,6 +478,7 @@ jobs:
           const https = require('https');
 
           function apiRequest(method, path, body = null) {
+            console.log(`[INFO] Initiating ${method} request to ${path}`);
             return new Promise((resolve, reject) => {
               const options = {
                 hostname: 'api.cal.com',
@@ -436,60 +489,92 @@ jobs:
                   'Content-Type': 'application/json'
                 }
               };
+              console.log(`[INFO] Request options: ${JSON.stringify(options, null, 2)}`);
               const req = https.request(options, (res) => {
                 let data = '';
                 res.on('data', (chunk) => { data += chunk; });
                 res.on('end', () => {
+                  console.log(`[INFO] Response status: ${res.statusCode} for ${path}`);
+                  console.log(`[INFO] Response data: ${data}`);
                   if (res.statusCode >= 200 && res.statusCode < 300) {
                     try {
-                      resolve(JSON.parse(data || '{}'));
+                      const parsedData = JSON.parse(data || '{}');
+                      console.log(`[SUCCESS] Parsed response for ${path}: ${JSON.stringify(parsedData, null, 2)}`);
+                      resolve(parsedData);
                     } catch (e) {
+                      console.error(`[ERROR] Failed to parse response for ${path}: ${e.message}`);
                       reject(e);
                     }
                   } else {
+                    console.error(`[ERROR] Request failed for ${path} with status ${res.statusCode}: ${data}`);
                     reject({ statusCode: res.statusCode, data });
                   }
                 });
               });
-              req.on('error', (e) => { reject(e); });
-              if (body) req.write(JSON.stringify(body));
+              req.on('error', (e) => { 
+                console.error(`[ERROR] Request error for ${path}: ${e.message}`);
+                reject(e); 
+              });
+              if (body) {
+                console.log(`[INFO] Sending body for ${path}: ${JSON.stringify(body, null, 2)}`);
+                req.write(JSON.stringify(body));
+              }
               req.end();
             });
           }
 
           async function getEventTypeId(slug) {
+            console.log(`[INFO] Fetching event type ID for slug: ${slug}`);
             try {
               const res = await apiRequest('GET', '/api/v2/event-types?slug=' + encodeURIComponent(slug));
               const event_types = res.event_types || [];
+              console.log(`[SUCCESS] Found ${event_types.length} event types for slug: ${slug}`);
               return event_types.length > 0 ? event_types[0].id : null;
             } catch (e) {
-              console.error(`Error fetching event type ID for slug ${slug}:`, e);
+              console.error(`[ERROR] Error fetching event type ID for slug ${slug}: ${e.message}`);
               return null;
             }
           }
 
           async function configurePayments() {
             try {
+              console.log('[INFO] Starting payment configuration');
+              console.log('[INFO] Reading packages.json');
               let packages = JSON.parse(fs.readFileSync('packages.json'));
-              if (packages.some(pkg => Object.keys(pkg).length === 1)) {
-                packages = packages.map(pkg => Object.values(pkg)[0]);
+              console.log(`[SUCCESS] Loaded ${packages.length} packages from packages.json`);
+              if (Array.isArray(packages) && packages.some(pkg => Object.keys(pkg).length === 1 && typeof Object.values(pkg)[0] === 'object')) {
+                console.log('[INFO] Detected nested package structure, flattening');
+                packages = packages.map(p => {
+                  const inner = Object.values(p)[0];
+                  console.log(`[INFO] Flattening package: ${inner.slug || 'no-slug'}`);
+                  return inner;
+                }).filter(pkg => pkg && typeof pkg === 'object' && pkg.slug);
+                console.log('[SUCCESS] Flattened nested package structure');
               }
+
+              console.log('[INFO] Deduplicating packages by slug');
               packages = packages.filter((pkg, index, self) => 
                 index === self.findIndex(p => p.slug === pkg.slug)
               );
+              console.log(`[SUCCESS] Deduplicated to ${packages.length} packages`);
+
               for (const pkg of packages) {
+                console.log(`[INFO] Processing package for payment: ${pkg.name || 'no-name'} (${pkg.slug || 'no-slug'})`);
                 if (!pkg.slug || !pkg.name) {
-                  console.warn(`Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
+                  console.warn(`[WARN] Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
                   continue;
                 }
                 if (!pkg.price || pkg.price <= 0) {
+                  console.log(`[INFO] Skipping payment configuration for ${pkg.slug} due to invalid price: ${pkg.price}`);
                   continue;
                 }
+                console.log(`[INFO] Fetching event type ID for payment configuration`);
                 const eventTypeId = await getEventTypeId(pkg.slug);
                 if (!eventTypeId) {
-                  console.warn(`No event type found for slug ${pkg.slug}, skipping payment configuration`);
+                  console.warn(`[WARN] No event type found for slug ${pkg.slug}, skipping payment configuration`);
                   continue;
                 }
+                console.log(`[INFO] Constructing payment payload for slug: ${pkg.slug}`);
                 const paymentPayload = {
                   price: Math.round(pkg.price * 100),
                   currency: pkg.currency?.toLowerCase() || 'cad',
@@ -503,20 +588,25 @@ jobs:
                     }
                   }
                 };
+                console.log(`[INFO] Payment payload: ${JSON.stringify(paymentPayload, null, 2)}`);
+                console.log(`[INFO] Configuring payment for slug: ${pkg.slug}`);
                 try {
                   await apiRequest('PATCH', '/api/v2/event-types/' + eventTypeId, paymentPayload);
-                  console.log(`Configured payment for slug: ${pkg.slug}`);
+                  console.log(`[SUCCESS] Configured payment for slug: ${pkg.slug}`);
                 } catch (e) {
-                  console.error(`Failed to configure payment for slug ${pkg.slug}:`, e);
+                  console.error(`[ERROR] Failed to configure payment for slug ${pkg.slug}: ${e.message}`);
                 }
+                console.log('[INFO] Waiting 2 seconds before processing next package');
                 await new Promise(resolve => setTimeout(resolve, 2000));
               }
+              console.log('[SUCCESS] Payment configuration completed successfully');
             } catch (e) {
-              console.error('Error: ' + (e.message || JSON.stringify(e)));
+              console.error(`[ERROR] Fatal error during payment configuration: ${e.message || JSON.stringify(e)}`);
               process.exit(1);
             }
           }
 
+          console.log('[INFO] Initiating payment configuration');
           configurePayments();
           SCRIPT
 
