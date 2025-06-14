@@ -1,6 +1,6 @@
 [
   {
-    "name": "\ud83d\udd25 Glow & Go Mini Bundle (Up to 100 Guests)",
+    "name": "🔥 Glow & Go Mini Bundle (Up to 100 Guests)",
     "slug": "glow-go-mini-bundle",
     "price": 1020,
     "regPrice": 1250,
@@ -103,7 +103,7 @@
     }
   },
   {
-    "name": "\ud83c\udf89 Essential Celebration Bundle",
+    "name": "🎉 Essential Celebration Bundle",
     "slug": "essential-celebration-bundle",
     "price": 1160,
     "regPrice": 1450,
@@ -207,7 +207,7 @@
     }
   },
   {
-    "name": "\ud83d\udcf8 Ultimate Photo Experience Bundle",
+    "name": "📸 Ultimate Photo Experience Bundle",
     "slug": "ultimate-photo-experience-bundle",
     "price": 1680,
     "regPrice": 2100,
@@ -311,7 +311,7 @@
     }
   },
   {
-    "name": "\ud83e\udd42 Elegant Engagement Bundle",
+    "name": "🥂 Elegant Engagement Bundle",
     "slug": "elegant-engagement-bundle",
     "price": 1440,
     "regPrice": 1800,
@@ -416,7 +416,7 @@
     }
   },
   {
-    "name": "\ud83e\uddca Chill & Capture Bundle",
+    "name": "🧊 Chill & Capture Bundle",
     "slug": "chill-capture-bundle",
     "price": 1680,
     "regPrice": 2100,
@@ -520,7 +520,7 @@
     }
   },
   {
-    "name": "\ud83c\udfad Glam Booth Experience",
+    "name": "🎭 Glam Booth Experience",
     "slug": "glam-booth-experience",
     "price": 1980,
     "regPrice": 2475,
@@ -624,7 +624,7 @@
     }
   },
   {
-    "name": "\u2728 Signature Experience Bundle",
+    "name": "✨ Signature Experience Bundle",
     "slug": "signature-experience-bundle",
     "price": 2760,
     "regPrice": 3450,
@@ -730,12 +730,12 @@
     }
   },
   {
-    "name": "\ud83c\udf8a Social Soir\u00e9e Bundle",
+    "name": "🎊 Social Soirée Bundle",
     "slug": "social-soiree-bundle",
     "price": 2760,
     "regPrice": 3450,
     "discount": 20,
-    "description": "Host a social soir\u00e9e with flair and fun. This bundle includes a Photo Booth, 360 Video Booth, and Sparkler Boxes to keep the energy high and the memories vivid.",
+    "description": "Host a social soirée with flair and fun. This bundle includes a Photo Booth, 360 Video Booth, and Sparkler Boxes to keep the energy high and the memories vivid.",
     "guests": "Up to 200",
     "maxDuration": 8,
     "servicesIncluded": [
@@ -834,7 +834,7 @@
     }
   },
   {
-    "name": "\ud83d\udc83 First Dance Fantasy Bundle",
+    "name": "💃 First Dance Fantasy Bundle",
     "slug": "first-dance-fantasy-bundle",
     "price": 1920,
     "regPrice": 2400,
@@ -939,7 +939,7 @@
     }
   },
   {
-    "name": "\ud83d\udcbc Corporate Kickoff Bundle",
+    "name": "💼 Corporate Kickoff Bundle",
     "slug": "corporate-kickoff-bundle",
     "price": 3360,
     "regPrice": 4200,
@@ -1044,7 +1044,7 @@
     }
   },
   {
-    "name": "\ud83e\udd73 Milestone Magic Bundle",
+    "name": "🥳 Milestone Magic Bundle",
     "slug": "milestone-magic-bundle",
     "price": 1680,
     "regPrice": 2100,
@@ -1148,7 +1148,7 @@
     }
   },
   {
-    "name": "\ud83c\udf69 Morning Mixer Bundle",
+    "name": "🍩 Morning Mixer Bundle",
     "slug": "morning-mixer-bundle",
     "price": 1320,
     "regPrice": 1650,
@@ -1250,12 +1250,12 @@
     }
   },
   {
-    "name": "\u2615\ud83c\udf53 Caf\u00e9 & Chill Bundle (50 Guests)",
+    "name": "☕🍓 Café & Chill Bundle (50 Guests)",
     "slug": "cafe-chill-bundle",
     "price": 720,
     "regPrice": 900,
     "discount": 20,
-    "description": "Relax and enjoy with the Caf\u00e9 & Chill Bundle. Features a Photo Booth and Espresso & Coffee Booth for a cozy, caffeinated event experience.",
+    "description": "Relax and enjoy with the Café & Chill Bundle. Features a Photo Booth and Espresso & Coffee Booth for a cozy, caffeinated event experience.",
     "guests": "Up to 50",
     "maxDuration": 3,
     "servicesIncluded": [
@@ -1352,7 +1352,7 @@
     }
   },
   {
-    "name": "\ud83c\udf67 Cool Crowd Bundle",
+    "name": "🍧 Cool Crowd Bundle",
     "slug": "cool-crowd-bundle",
     "price": 1680,
     "regPrice": 2100,
@@ -1454,7 +1454,7 @@
     }
   },
   {
-    "name": "\ud83d\udc91 Luxury Romance Bundle",
+    "name": "💑 Luxury Romance Bundle",
     "slug": "luxury-romance-bundle",
     "price": 1920,
     "regPrice": 2400,
@@ -1559,7 +1559,7 @@
     }
   },
   {
-    "name": "\u2615\ud83d\udcf8 Corporate Connect Bundle (Up to 150 Guests)",
+    "name": "☕📸 Corporate Connect Bundle (Up to 150 Guests)",
     "slug": "corporate-connect-bundle",
     "price": 1680,
     "regPrice": 2100,
@@ -1662,7 +1662,7 @@
     }
   },
   {
-    "name": "\ud83c\udf1f The Grand Wedding Experience (Up to 300 Guests)",
+    "name": "🌟 The Grand Wedding Experience (Up to 300 Guests)",
     "slug": "grand-wedding-experience",
     "price": 3840,
     "regPrice": 4800,
@@ -1767,7 +1767,7 @@
     }
   },
   {
-    "name": "\ud83e\udd73 All-in-One Party Bundle",
+    "name": "🥳 All-in-One Party Bundle",
     "slug": "all-in-one-party-bundle",
     "price": 3120,
     "regPrice": 3900,
@@ -1873,11 +1873,11 @@
     }
   },
   {
-    "name": "\ud83d\udcf8 Photo Booth - Classic Package",
+    "name": "📸 Photo Booth - Classic Package",
     "slug": "photo-booth-classic",
     "price": 500,
-    "regPrice": 600,
-    "discount": 17,
+    "regPrice": 500,
+    "discount": 0,
     "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. All photos delivered digitally.",
     "guests": "Up to 200",
     "maxDuration": 3,
@@ -1911,7 +1911,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/photo-booth-classic",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -1973,11 +1973,11 @@
     }
   },
   {
-    "name": "\ud83d\udcf8 Photo Booth - Deluxe Package",
+    "name": "📸 Photo Booth - Deluxe Package",
     "slug": "photo-booth-deluxe",
     "price": 600,
-    "regPrice": 700,
-    "discount": 14,
+    "regPrice": 600,
+    "discount": 0,
     "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. Unlimited prints + digital copies.",
     "guests": "Up to 200",
     "maxDuration": 3,
@@ -2011,7 +2011,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/photo-booth-deluxe",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -2073,11 +2073,11 @@
     }
   },
   {
-    "name": "\ud83c\udfa5 360 Video Booth - Classic Package",
+    "name": "🎥 360 Video Booth - Classic Package",
     "slug": "360-video-booth-classic",
     "price": 600,
-    "regPrice": 700,
-    "discount": 14,
+    "regPrice": 600,
+    "discount": 0,
     "description": "Elevate your event with the sophistication of our 360 Video Booth experience. Guests are invited to step onto a sleek platform as a rotating camera captures elegant, slow-motion videos from every angle.",
     "guests": "Up to 200",
     "maxDuration": 3,
@@ -2111,7 +2111,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/360-video-booth",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -2173,11 +2173,11 @@
     }
   },
   {
-    "name": "\u260e\ufe0f Audio Guest Book - Classic Package",
+    "name": "☎️ Audio Guest Book - Classic Package",
     "slug": "audio-guest-book-classic",
     "price": 350,
-    "regPrice": 400,
-    "discount": 12,
+    "regPrice": 350,
+    "discount": 0,
     "description": "The Audio Guest Book offers a timeless and personal way to capture heartfelt moments. Guests simply pick up the vintage-style phone and leave a message.",
     "guests": "Up to 200",
     "maxDuration": 6,
@@ -2211,7 +2211,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/audio-guest-book",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -2273,11 +2273,11 @@
     }
   },
   {
-    "name": "\u2b50 Magazine Photo Booth Box - Classic Package",
+    "name": "⭐ Magazine Photo Booth Box - Classic Package",
     "slug": "magazine-photo-booth-box-classic",
     "price": 600,
-    "regPrice": 700,
-    "discount": 14,
+    "regPrice": 600,
+    "discount": 0,
     "description": "Bring the allure of a fashion magazine cover to your next event with our Magazine Photo Booth Box. Guests pose inside a life-sized, custom-branded magazine frame.",
     "guests": "Up to 200",
     "maxDuration": 6,
@@ -2311,7 +2311,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/magazine-photo-booth",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -2373,12 +2373,12 @@
     }
   },
   {
-    "name": "\u2615 Espresso & Coffee Booth (50 Guests)",
+    "name": "☕ Espresso & Coffee Booth (50 Guests)",
     "slug": "espresso-coffee-booth-50-guests",
     "price": 700,
-    "regPrice": 800,
-    "discount": 13,
-    "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "regPrice": 700,
+    "discount": 0,
+    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "guests": "Up to 50",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -2411,7 +2411,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-50",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -2473,12 +2473,12 @@
     }
   },
   {
-    "name": "\u2615 Espresso & Coffee Booth (100 Guests)",
+    "name": "☕ Espresso & Coffee Booth (100 Guests)",
     "slug": "espresso-coffee-booth-100-guests",
     "price": 1100,
-    "regPrice": 1300,
-    "discount": 15,
-    "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "regPrice": 1100,
+    "discount": 0,
+    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "guests": "Up to 100",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -2511,7 +2511,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-100",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -2573,12 +2573,12 @@
     }
   },
   {
-    "name": "\u2615 Espresso & Coffee Booth (150 Guests)",
+    "name": "☕ Espresso & Coffee Booth (150 Guests)",
     "slug": "espresso-coffee-booth-150-guests",
     "price": 1500,
-    "regPrice": 1800,
-    "discount": 17,
-    "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, cappuccinos, and more.",
+    "regPrice": 1500,
+    "discount": 0,
+    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, cappuccinos, and more.",
     "guests": "Up to 150",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -2611,7 +2611,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-150",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -2673,12 +2673,12 @@
     }
   },
   {
-    "name": "\u2615 Espresso & Coffee Booth (200 Guests)",
+    "name": "☕ Espresso & Coffee Booth (200 Guests)",
     "slug": "espresso-coffee-booth-200-guests",
     "price": 1900,
-    "regPrice": 2300,
-    "discount": 17,
-    "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "regPrice": 1900,
+    "discount": 0,
+    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "guests": "Up to 200",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -2711,7 +2711,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/espresso-coffee-booth-200",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -2773,12 +2773,12 @@
     }
   },
   {
-    "name": "\ud83e\uddc7 Waffle Booth (50 Guests)",
+    "name": "🧇 Waffle Booth (50 Guests)",
     "slug": "waffle-booth-50-guests",
     "price": 800,
-    "regPrice": 900,
-    "discount": 11,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "regPrice": 800,
+    "discount": 0,
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "guests": "Up to 50",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -2811,7 +2811,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-50",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -2873,12 +2873,12 @@
     }
   },
   {
-    "name": "\ud83e\uddc7 Waffle Booth (100 Guests)",
+    "name": "🧇 Waffle Booth (100 Guests)",
     "slug": "waffle-booth-100-guests",
     "price": 1200,
-    "regPrice": 1400,
-    "discount": 14,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "regPrice": 1200,
+    "discount": 0,
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "guests": "Up to 100",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -2911,7 +2911,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-100",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -2973,12 +2973,12 @@
     }
   },
   {
-    "name": "\ud83e\uddc7 Waffle Booth (150 Guests)",
+    "name": "🧇 Waffle Booth (150 Guests)",
     "slug": "waffle-booth-150-guests",
     "price": 1600,
-    "regPrice": 1900,
-    "discount": 16,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "regPrice": 1600,
+    "discount": 0,
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "guests": "Up to 150",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -3011,7 +3011,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-150",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -3073,12 +3073,12 @@
     }
   },
   {
-    "name": "\ud83e\uddc7 Waffle Booth (200 Guests)",
+    "name": "🧇 Waffle Booth (200 Guests)",
     "slug": "waffle-booth-200-guests",
     "price": 2000,
-    "regPrice": 2400,
-    "discount": 17,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "regPrice": 2000,
+    "discount": 0,
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "guests": "Up to 200",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -3111,7 +3111,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/waffle-booth-200",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -3173,11 +3173,11 @@
     }
   },
   {
-    "name": "\ud83e\udd64 Smoothies Booth (50 Guests)",
+    "name": "🥤 Smoothies Booth (50 Guests)",
     "slug": "smoothies-booth-50-guests",
     "price": 900,
-    "regPrice": 1000,
-    "discount": 10,
+    "regPrice": 900,
+    "discount": 0,
     "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies with real fruits, natural ingredients and a variety of add-ins.",
     "guests": "Up to 50",
     "maxDuration": 2,
@@ -3211,7 +3211,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-50",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -3273,11 +3273,11 @@
     }
   },
   {
-    "name": "\ud83e\udd64 Smoothies Booth (100 Guests)",
+    "name": "🥤 Smoothies Booth (100 Guests)",
     "slug": "smoothies-booth-100-guests",
     "price": 1300,
-    "regPrice": 1500,
-    "discount": 13,
+    "regPrice": 1300,
+    "discount": 0,
     "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies using real fruits, natural ingredients and a variety of add-ins.",
     "guests": "Up to 100",
     "maxDuration": 2,
@@ -3311,7 +3311,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-100",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -3373,11 +3373,11 @@
     }
   },
   {
-    "name": "\ud83e\udd64 Smoothies Booth (150 Guests)",
+    "name": "🥤 Smoothies Booth (150 Guests)",
     "slug": "smoothies-booth-150-guests",
     "price": 1700,
-    "regPrice": 2000,
-    "discount": 15,
+    "regPrice": 1700,
+    "discount": 0,
     "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies using real fruits, natural ingredients and a variety of add-ins.",
     "guests": "Up to 150",
     "maxDuration": 2,
@@ -3411,7 +3411,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-150",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -3473,11 +3473,11 @@
     }
   },
   {
-    "name": "\ud83e\udd64 Smoothies Booth (200 Guests)",
+    "name": "🥤 Smoothies Booth (200 Guests)",
     "slug": "smoothies-booth-200-guests",
     "price": 2100,
-    "regPrice": 2500,
-    "discount": 16,
+    "regPrice": 2100,
+    "discount": 0,
     "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies using real fruits, natural ingredients and a variety of add-ins.",
     "guests": "Up to 200",
     "maxDuration": 2,
@@ -3511,7 +3511,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/smoothies-booth-200",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -3573,11 +3573,11 @@
     }
   },
   {
-    "name": "\u2728 Sparkler Boxes - Classic Package",
+    "name": "✨ Sparkler Boxes - Classic Package",
     "slug": "sparkler-boxes-classic",
     "price": 400,
-    "regPrice": 450,
-    "discount": 11,
+    "regPrice": 400,
+    "discount": 0,
     "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
     "guests": "Up to 200",
     "maxDuration": 1,
@@ -3611,7 +3611,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-classic",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -3673,11 +3673,11 @@
     }
   },
   {
-    "name": "\u2728 Sparkler Boxes - Deluxe Package",
+    "name": "✨ Sparkler Boxes - Deluxe Package",
     "slug": "sparkler-boxes-deluxe",
     "price": 600,
-    "regPrice": 700,
-    "discount": 14,
+    "regPrice": 600,
+    "discount": 0,
     "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
     "guests": "Up to 200",
     "maxDuration": 1,
@@ -3711,7 +3711,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-deluxe",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -3773,11 +3773,11 @@
     }
   },
   {
-    "name": "\u2728 Sparkler Boxes - Red Carpet Package",
+    "name": "✨ Sparkler Boxes - Red Carpet Package",
     "slug": "sparkler-boxes-red-carpet",
     "price": 800,
-    "regPrice": 1000,
-    "discount": 20,
+    "regPrice": 800,
+    "discount": 0,
     "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
     "guests": "Up to 200",
     "maxDuration": 1,
@@ -3811,7 +3811,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/sparklers-box-red-carpet",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -3873,11 +3873,11 @@
     }
   },
   {
-    "name": "\ud83c\udf2b\ufe0f Dry Ice Fog - Classic Package",
+    "name": "🌫️ Dry Ice Fog - Classic Package",
     "slug": "dry-ice-fog-classic",
     "price": 400,
-    "regPrice": 500,
-    "discount": 20,
+    "regPrice": 400,
+    "discount": 0,
     "description": "Create a stunning, cinematic atmosphere with our Dry Ice Fog Effect! This low-lying fog adds a magical touch to first dances, stage entrances, or any moment you want to make unforgettable.",
     "guests": "Up to 200",
     "maxDuration": 1,
@@ -3911,7 +3911,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/dry-ice-fog",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -3973,11 +3973,11 @@
     }
   },
   {
-    "name": "\ud83e\udea9 Laser First Dance - Classic Package",
+    "name": "🪩 Laser First Dance - Classic Package",
     "slug": "laser-first-dance-classic",
     "price": 900,
-    "regPrice": 1100,
-    "discount": 18,
+    "regPrice": 900,
+    "discount": 0,
     "description": "Make your first dance truly unforgettable with our Laser First Dance Experience! Set beneath a canopy of synchronized laser lights and dreamy effects.",
     "guests": "Up to 200",
     "maxDuration": 1,
@@ -4011,7 +4011,7 @@
     ],
     "packageType": "Individual",
     "bookingUrl": "https://bundlebooth.ca/packs/ola/services/laser-first-dance",
-    "Sale": "Y",
+    "Sale": "N",
     "New": "N",
     "dateAdded": "05-31-2025",
     "disableGuestsCancelling": true,
@@ -4073,7 +4073,7 @@
     }
   },
   {
-    "name": "\ud83c\udfa5 Memorable Moments Bundle",
+    "name": "🎥 Memorable Moments Bundle",
     "slug": "memorable-moments-bundle",
     "price": 1280,
     "regPrice": 1600,
@@ -4177,7 +4177,7 @@
     }
   },
   {
-    "name": "\ud83c\udf1f Glamour & Fog Bundle",
+    "name": "🌟 Glamour & Fog Bundle",
     "slug": "glamour-fog-bundle",
     "price": 1520,
     "regPrice": 1900,
@@ -4281,7 +4281,7 @@
     }
   },
   {
-    "name": "\ud83e\uddc7 Sweet Snapshots Bundle",
+    "name": "🧇 Sweet Snapshots Bundle",
     "slug": "sweet-snapshots-bundle",
     "price": 1440,
     "regPrice": 1800,
@@ -4385,7 +4385,7 @@
     }
   },
   {
-    "name": "\ud83e\udd64 Vibrant Vibes Bundle",
+    "name": "🥤 Vibrant Vibes Bundle",
     "slug": "vibrant-vibes-bundle",
     "price": 1840,
     "regPrice": 2300,
@@ -4489,7 +4489,7 @@
     }
   },
   {
-    "name": "\u260e\ufe0f Heartfelt Connections Bundle",
+    "name": "☎️ Heartfelt Connections Bundle",
     "slug": "heartfelt-connections-bundle",
     "price": 1360,
     "regPrice": 1700,
@@ -4593,7 +4593,7 @@
     }
   },
   {
-    "name": "\u2728 Sparkle & Sweets Bundle",
+    "name": "✨ Sparkle & Sweets Bundle",
     "slug": "sparkle-sweets-bundle",
     "price": 1520,
     "regPrice": 1900,
@@ -4697,7 +4697,7 @@
     }
   },
   {
-    "name": "\ud83e\udd64 Refresh & Reveal Bundle",
+    "name": "🥤 Refresh & Reveal Bundle",
     "slug": "refresh-reveal-bundle",
     "price": 1760,
     "regPrice": 2200,
@@ -4801,7 +4801,7 @@
     }
   },
   {
-    "name": "\ud83d\udcbc Network & Snap Bundle",
+    "name": "💼 Network & Snap Bundle",
     "slug": "network-snap-bundle",
     "price": 2400,
     "regPrice": 3000,
@@ -4907,7 +4907,7 @@
     }
   },
   {
-    "name": "\ud83d\udcf8 Fresh Capture Bundle",
+    "name": "📸 Fresh Capture Bundle",
     "slug": "fresh-capture-bundle",
     "price": 1520,
     "regPrice": 1900,
@@ -5011,7 +5011,7 @@
     }
   },
   {
-    "name": "\ud83c\udfa5 Dynamic Treats Bundle",
+    "name": "🎥 Dynamic Treats Bundle",
     "slug": "dynamic-treats-bundle",
     "price": 1440,
     "regPrice": 1800,
@@ -5115,7 +5115,7 @@
     }
   },
   {
-    "name": "\ud83d\udcf8 Heartfelt Snaps Bundle",
+    "name": "📸 Heartfelt Snaps Bundle",
     "slug": "heartfelt-snaps-bundle",
     "price": 880,
     "regPrice": 1100,
@@ -5219,7 +5219,7 @@
     }
   },
   {
-    "name": "\u2728 Sparkle Snap Bundle",
+    "name": "✨ Sparkle Snap Bundle",
     "slug": "sparkle-snap-bundle",
     "price": 920,
     "regPrice": 1150,
@@ -5323,7 +5323,7 @@
     }
   },
   {
-    "name": "\ud83c\udfa5 Trendy Video Bundle",
+    "name": "🎥 Trendy Video Bundle",
     "slug": "trendy-video-bundle",
     "price": 1120,
     "regPrice": 1400,
@@ -5427,7 +5427,7 @@
     }
   },
   {
-    "name": "\ud83e\udea9 Dance Floor Magic Bundle",
+    "name": "🪩 Dance Floor Magic Bundle",
     "slug": "dance-floor-magic-bundle",
     "price": 1440,
     "regPrice": 1800,
@@ -5531,7 +5531,7 @@
     }
   },
   {
-    "name": "\u2728 Sentimental Sparkle Bundle",
+    "name": "✨ Sentimental Sparkle Bundle",
     "slug": "sentimental-sparkle-bundle",
     "price": 680,
     "regPrice": 850,
@@ -5635,7 +5635,7 @@
     }
   },
   {
-    "name": "\u2b50 Fashion Messages Bundle",
+    "name": "⭐ Fashion Messages Bundle",
     "slug": "fashion-messages-bundle",
     "price": 880,
     "regPrice": 1100,
@@ -5739,7 +5739,7 @@
     }
   },
   {
-    "name": "\ud83c\udf2b\ufe0f Dramatic Flair Bundle",
+    "name": "🌫️ Dramatic Flair Bundle",
     "slug": "dramatic-flair-bundle",
     "price": 760,
     "regPrice": 950,
@@ -5843,7 +5843,7 @@
     }
   },
   {
-    "name": "\ud83e\udea9 Radiant Dance Bundle",
+    "name": "🪩 Radiant Dance Bundle",
     "slug": "radiant-dance-bundle",
     "price": 1200,
     "regPrice": 1500,
@@ -5947,7 +5947,7 @@
     }
   },
   {
-    "name": "\ud83c\udf89 Festive Flair Bundle",
+    "name": "🎉 Festive Flair Bundle",
     "slug": "festive-flair-bundle",
     "price": 1440,
     "regPrice": 1800,
@@ -6051,7 +6051,7 @@
     }
   },
   {
-    "name": "\u2615 Sweet Conversations Bundle",
+    "name": "☕ Sweet Conversations Bundle",
     "slug": "sweet-conversations-bundle",
     "price": 1520,
     "regPrice": 1900,
@@ -6155,7 +6155,7 @@
     }
   },
   {
-    "name": "\ud83e\udd64 Glam Refresh Bundle",
+    "name": "🥤 Glam Refresh Bundle",
     "slug": "glam-refresh-bundle",
     "price": 1840,
     "regPrice": 2300,
@@ -6259,7 +6259,7 @@
     }
   },
   {
-    "name": "\ud83c\udf2b\ufe0f Cinematic Capture Bundle",
+    "name": "🌫️ Cinematic Capture Bundle",
     "slug": "cinematic-capture-bundle",
     "price": 1120,
     "regPrice": 1400,
@@ -6363,7 +6363,7 @@
     }
   },
   {
-    "name": "\u2728 Starlit Sweets Bundle",
+    "name": "✨ Starlit Sweets Bundle",
     "slug": "starlit-sweets-bundle",
     "price": 1440,
     "regPrice": 1800,
@@ -6467,7 +6467,7 @@
     }
   },
   {
-    "name": "\ud83c\udfa5 Dynamic Glam Bundle",
+    "name": "🎥 Dynamic Glam Bundle",
     "slug": "dynamic-glam-bundle",
     "price": 1680,
     "regPrice": 2100,
@@ -6573,7 +6573,7 @@
     }
   },
   {
-    "name": "\u2615 Corporate Caffeine Bundle",
+    "name": "☕ Corporate Caffeine Bundle",
     "slug": "corporate-caffeine-bundle",
     "price": 2000,
     "regPrice": 2500,
@@ -6679,7 +6679,7 @@
     }
   },
   {
-    "name": "\ud83e\udd64 Vibrant Party Bundle",
+    "name": "🥤 Vibrant Party Bundle",
     "slug": "vibrant-party-bundle",
     "price": 2320,
     "regPrice": 2900,
@@ -6785,7 +6785,7 @@
     }
   },
   {
-    "name": "\ud83e\uddc7 Romantic Treats Bundle",
+    "name": "🧇 Romantic Treats Bundle",
     "slug": "romantic-treats-bundle",
     "price": 1520,
     "regPrice": 1900,
@@ -6889,7 +6889,7 @@
     }
   },
   {
-    "name": "\ud83c\udf1f Starry Night Bundle",
+    "name": "🌟 Starry Night Bundle",
     "slug": "starry-night-bundle",
     "price": 2000,
     "regPrice": 2500,
