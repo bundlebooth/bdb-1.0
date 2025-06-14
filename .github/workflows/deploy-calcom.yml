@@ -342,7 +342,7 @@ jobs:
                   const differences = compareObjects(transformed, existingEventType);
                   const tagDiffs = compareEventTypes(existingEventType.tags || [], transformed.tags || []);
 
-                  // Always update description, include other updates if differences exist
+                  // Always replace description completely, include other updates if differences exist
                   const updatePayload = { description: transformed.description };
                   if (differences.length > 0 || tagDiffs.added.length > 0 || tagDiffs.deleted.length > 0) {
                     console.log(`[INFO] Differences detected for slug: ${transformed.slug}`);
@@ -358,7 +358,7 @@ jobs:
                     }
                     Object.assign(updatePayload, transformed);
                   } else {
-                    console.log(`[INFO] Only description update required for ${transformed.slug}`);
+                    console.log(`[INFO] Only description replacement required for ${transformed.slug}`);
                   }
 
                   try {
