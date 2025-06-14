@@ -34,32 +34,38 @@ async function readJsonFile(filePath) {
 // Helper function to fetch all event types and match by slug
 async function fetchEventTypes(apiKey, slug) {
     try {
-        // Debug: Log API key presence (obscure for security)
         await logMessage(`API Key present: ${!!apiKey}, Length: ${apiKey ? apiKey.length : 0}`);
-        
         await logMessage(`Fetching all event types to find slug: ${slug}`);
+
         let allEventTypes = [];
         let page = 1;
         const limit = 100;
 
+        // Try fetching all event types
         while (true) {
             const response = await axios.get(`${API_BASE_URL}/event-types`, {
                 headers: { 
-                    Authorization: `Bearer ${apiKey}`,
-                    'X-Calcom-Api-Key': apiKey // Alternative header
+                    Authorization: `Bearer ${apiKey}`
                 },
                 params: { 
                     limit, 
                     page,
-                    apiKey // Alternative: pass as query param
+                    includeHidden: true, // Try fetching hidden events
+                    userId: 1576969 // Filter by userId from log
                 }
             });
             await logMessage(`API Response status: ${response.status}, Page: ${page}`);
+            // Log full response for debugging
+            await logMessage(`Full API response: ${JSON.stringify(response.data, null, 2)}`);
+
             const eventTypeGroups = response.data.eventTypeGroups || [];
             const eventTypes = eventTypeGroups.flatMap(group => group.eventTypes || []);
             allEventTypes = allEventTypes.concat(eventTypes);
 
-            if (!response.data.pagination || !response.data.pagination.nextPage) {
+            // Check pagination
+            const pagination = response.data.pagination || {};
+            await logMessage(`Pagination: ${JSON.stringify(pagination)}`);
+            if (!pagination.nextPage && (!pagination.total || allEventTypes.length >= pagination.total)) {
                 break;
             }
             page++;
@@ -67,15 +73,35 @@ async function fetchEventTypes(apiKey, slug) {
 
         await logMessage(`Found ${allEventTypes.length} event types`);
         allEventTypes.forEach(event => {
-            logMessage(`Event: ID ${event.id}, Slug ${event.slug}, UserID ${event.userId}, Profile ${event.profile?.slug || 'none'}`);
+            logMessage(`Event: ID ${event.id}, Slug ${event.slug}, UserID ${event.userId || 'none'}, Profile ${event.profile?.slug || 'none'}, Hidden ${event.hidden || false}`);
         });
 
-        const targetEvent = allEventTypes.find(event => event.slug === slug && event.userId === 1576969);
+        // Try matching without userId filter
+        let targetEvent = allEventTypes.find(event => event.slug === slug);
         if (targetEvent) {
-            await logMessage(`Matched event type: ID ${targetEvent.id}, Slug ${targetEvent.slug}`);
+            await logMessage(`Matched event type: ID ${targetEvent.id}, Slug ${targetEvent.slug}, UserID ${targetEvent.userId || 'none'}`);
         } else {
-            await logMessage(`No event type found for slug: ${slug}`);
+            await logMessage(`No event type found for slug: ${slug} in all event types`);
         }
+
+        // Fallback: Try slug-filtered query
+        if (!targetEvent) {
+            await logMessage(`Falling back to slug-filtered query for: ${slug}`);
+            const response = await axios.get(`${API_BASE_URL}/event-types`, {
+                headers: { Authorization: `Bearer ${apiKey}` },
+                params: { slug, includeHidden: true }
+            });
+            await logMessage(`Slug query response: ${JSON.stringify(response.data, null, 2)}`);
+            const eventTypeGroups = response.data.eventTypeGroups || [];
+            const eventTypes = eventTypeGroups.flatMap(group => group.eventTypes || []);
+            targetEvent = eventTypes.find(event => event.slug === slug);
+            if (targetEvent) {
+                await logMessage(`Matched event type in slug query: ID ${targetEvent.id}, Slug ${targetEvent.slug}, UserID ${targetEvent.userId || 'none'}`);
+            } else {
+                await logMessage(`No event type found for slug: ${slug} in slug-filtered query`);
+            }
+        }
+
         return targetEvent;
     } catch (error) {
         await logMessage(`Error fetching event types for slug ${slug}: ${error.message}`);
@@ -89,18 +115,10 @@ async function fetchEventTypes(apiKey, slug) {
 // Helper function to delete an event type
 async function deleteEventType(apiKey, eventId, slug) {
     try {
-        // Debug: Log API key presence
         await logMessage(`API Key present for deletion: ${!!apiKey}, Length: ${apiKey ? apiKey.length : 0}`);
-        
         await logMessage(`Deleting event type: ID ${eventId}, Slug ${slug}`);
         const response = await axios.delete(`${API_BASE_URL}/event-types/${eventId}`, {
-            headers: { 
-                Authorization: `Bearer ${apiKey}`,
-                'X-Calcom-Api-Key': apiKey // Alternative header
-            },
-            params: { 
-                apiKey // Alternative: pass as query param
-            }
+            headers: { Authorization: `Bearer ${apiKey}` }
         });
         await logMessage(`Successfully deleted event type: ${slug} (ID: ${eventId})`);
         return response.data;
@@ -121,7 +139,6 @@ async function main() {
         process.exit(1);
     }
 
-    // Debug: Log API key length (avoid logging full key for security)
     await logMessage(`CALCOM_API_KEY length: ${apiKey.length}`);
 
     try {
