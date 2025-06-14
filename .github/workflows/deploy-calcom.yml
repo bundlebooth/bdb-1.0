@@ -102,6 +102,7 @@ jobs:
                 page++;
               }
               console.log(`[INFO] Retrieved ${eventTypes.length} event types`);
+              console.log(`[DEBUG] Event types: ${JSON.stringify(eventTypes, null, 2)}`);
               return eventTypes;
             } catch (e) {
               console.error(`[ERROR] Error fetching event types: ${e.message}`);
@@ -228,7 +229,7 @@ jobs:
                 const transformed = {
                   title: pkg.name,
                   slug: pkg.slug,
-                  lengthInMinutes: (pkg.maxDuration || 3) * 60,
+                  length: (pkg.maxDuration || 3) * 60,
                   description,
                   bookingFields: pkg.bookingFields.map(field => ({
                     type: field.type,
@@ -238,9 +239,8 @@ jobs:
                   })),
                   locations: pkg.locations?.length ? pkg.locations.map(loc => ({
                     type: loc.location_type || 'address',
-                    address: loc.location || 'To be provided by client',
-                    public: true
-                  })) : [{ type: 'address', address: 'To be provided by client', public: true }],
+                    address: loc.location || 'To be provided by client'
+                  })) : [{ type: 'address', address: 'To be provided by client' }],
                   minimumBookingNotice: pkg.minimumBookingNotice || 20160,
                   bookerLayouts: pkg.bookerLayouts || { defaultLayout: 'month', enabledLayouts: ['month'] },
                   color: pkg.color || { lightThemeHex: '#292929' },
@@ -278,7 +278,17 @@ jobs:
                   } catch (e) {
                     console.error(`[ERROR] Failed to create event type ${pkg.slug}: ${e.message}`);
                     if (e.message.includes('already has an event type with this slug')) {
-                      console.log(`[INFO] Skipping duplicate event type: ${pkg.slug}`);
+                      console.log(`[INFO] Duplicate slug detected for ${pkg.slug}, attempting update`);
+                      const eventTypeId = await getEventTypeId(pkg.slug);
+                      if (eventTypeId) {
+                        try {
+                          await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, transformed);
+                          console.log(`[INFO] Updated event type: ${pkg.slug}`);
+                          await inspectEventType(pkg.slug);
+                        } catch (updateError) {
+                          console.error(`[ERROR] Failed to update event type ${pkg.slug} after duplicate: ${updateError.message}`);
+                        }
+                      }
                       continue;
                     }
                     throw e;
