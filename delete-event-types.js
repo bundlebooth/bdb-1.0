@@ -34,37 +34,43 @@ async function readJsonFile(filePath) {
 // Helper function to fetch all event types and match by slug
 async function fetchEventTypes(apiKey, slug) {
     try {
+        // Debug: Log API key presence (obscure for security)
+        await logMessage(`API Key present: ${!!apiKey}, Length: ${apiKey ? apiKey.length : 0}`);
+        
         await logMessage(`Fetching all event types to find slug: ${slug}`);
         let allEventTypes = [];
         let page = 1;
-        const limit = 100; // Adjust based on API documentation
+        const limit = 100;
 
-        // Handle pagination
         while (true) {
             const response = await axios.get(`${API_BASE_URL}/event-types`, {
-                headers: { Authorization: `Bearer ${apiKey}` },
-                params: { limit, page }
+                headers: { 
+                    Authorization: `Bearer ${apiKey}`,
+                    'X-Calcom-Api-Key': apiKey // Alternative header
+                },
+                params: { 
+                    limit, 
+                    page,
+                    apiKey // Alternative: pass as query param
+                }
             });
             await logMessage(`API Response status: ${response.status}, Page: ${page}`);
             const eventTypeGroups = response.data.eventTypeGroups || [];
             const eventTypes = eventTypeGroups.flatMap(group => group.eventTypes || []);
             allEventTypes = allEventTypes.concat(eventTypes);
 
-            // Check for pagination (adjust based on API response structure)
             if (!response.data.pagination || !response.data.pagination.nextPage) {
                 break;
             }
             page++;
         }
 
-        // Log all event types for debugging
         await logMessage(`Found ${allEventTypes.length} event types`);
         allEventTypes.forEach(event => {
             logMessage(`Event: ID ${event.id}, Slug ${event.slug}, UserID ${event.userId}, Profile ${event.profile?.slug || 'none'}`);
         });
 
-        // Find matching event type
-        const targetEvent = allEventTypes.find(event => event.slug === slug && event.userId === 1576969); // Filter by userId from log
+        const targetEvent = allEventTypes.find(event => event.slug === slug && event.userId === 1576969);
         if (targetEvent) {
             await logMessage(`Matched event type: ID ${targetEvent.id}, Slug ${targetEvent.slug}`);
         } else {
@@ -83,9 +89,18 @@ async function fetchEventTypes(apiKey, slug) {
 // Helper function to delete an event type
 async function deleteEventType(apiKey, eventId, slug) {
     try {
+        // Debug: Log API key presence
+        await logMessage(`API Key present for deletion: ${!!apiKey}, Length: ${apiKey ? apiKey.length : 0}`);
+        
         await logMessage(`Deleting event type: ID ${eventId}, Slug ${slug}`);
         const response = await axios.delete(`${API_BASE_URL}/event-types/${eventId}`, {
-            headers: { Authorization: `Bearer ${apiKey}` }
+            headers: { 
+                Authorization: `Bearer ${apiKey}`,
+                'X-Calcom-Api-Key': apiKey // Alternative header
+            },
+            params: { 
+                apiKey // Alternative: pass as query param
+            }
         });
         await logMessage(`Successfully deleted event type: ${slug} (ID: ${eventId})`);
         return response.data;
@@ -102,16 +117,17 @@ async function deleteEventType(apiKey, eventId, slug) {
 async function main() {
     const apiKey = process.env.CALCOM_API_KEY;
     if (!apiKey) {
-        await logMessage('Error: CALCOM_API_KEY environment variable is not set');
+        await logMessage('Error: CALCOM_API_KEY environment variable is not set or empty');
         process.exit(1);
     }
 
+    // Debug: Log API key length (avoid logging full key for security)
+    await logMessage(`CALCOM_API_KEY length: ${apiKey.length}`);
+
     try {
-        // Read the JSON file
         const eventTypesToDelete = await readJsonFile(JSON_FILE_PATH);
         await logMessage(`File contents: ${JSON.stringify(eventTypesToDelete, null, 2)}`);
 
-        // Process each event type
         for (const eventType of eventTypesToDelete) {
             const slug = eventType.slug;
             if (!slug) {
@@ -119,14 +135,12 @@ async function main() {
                 continue;
             }
 
-            // Fetch the event type from the API
             const targetEvent = await fetchEventTypes(apiKey, slug);
             if (!targetEvent) {
                 await logMessage(`No event type found for slug: ${slug}`);
                 continue;
             }
 
-            // Delete the event type
             await deleteEventType(apiKey, targetEvent.id, slug);
         }
 
