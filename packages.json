@@ -3,6 +3,21 @@
   {
     "name": "🔥 Glow & Go Mini Bundle (Up to 100 Guests)",
     "slug": "glow-go-mini-bundle",
+	"timeZone": "America/Toronto",
+    "bookingFields": [
+      {
+        "type": "phone",
+        "label": "Phone Number",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "type": "text",
+        "label": "Event Location",
+        "required": true,
+        "placeholder": "Please provide the address where the event will be held"
+      }
+    ],
     "guests": 100,
     "maxDuration": 3,
     "price": 1020,
@@ -54,21 +69,6 @@
       "enabledLayouts": [
         "month"
       ]
-    },
-    "timeZone": "America/Toronto",
-    "bookingFields": [
-      {
-        "type": "phone",
-        "label": "Phone Number",
-        "required": true,
-        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
-      },
-      {
-        "type": "text",
-        "label": "Event Location",
-        "required": true,
-        "placeholder": "Please provide the address where the event will be held"
-      }
-    ]
+    }
   }
 ]
