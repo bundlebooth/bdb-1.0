@@ -1,90 +1,312 @@
-- name: Write event type insertion script
-  run: |
-    cat <<'SCRIPT' > insert-event-types.js
-    const { apiRequest, getAllEventTypes, loadPackages } = require('./utils');
+name: Map and Deploy JSON to Cal.com
 
-    const dayMap = {
-      Monday: 'Monday', Tuesday: 'Tuesday', Wednesday: 'Wednesday',
-      Thursday: 'Thursday', Friday: 'Friday', Saturday: 'Saturday', Sunday: 'Sunday',
-      1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 7: 'Sunday'
-    };
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages.json'
+  workflow_dispatch:
 
-    async function insertNewEventTypes() {
-      try {
-        const packages = loadPackages();
-        if (!packages.length) throw new Error('No valid packages found');
-        const existingEventTypes = await getAllEventTypes();
-        const existingSlugs = new Set(existingEventTypes.map(e => e.slug));
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        for (const pkg of packages) {
-          if (!pkg.slug || !pkg.name) {
-            console.warn(`Invalid package: ${JSON.stringify(pkg)}`);
-            continue;
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify packages.json
+        run: |
+          if [ ! -f packages.json ]; then
+            echo "Error: packages.json not found"
+            exit 1
+          fi
+          echo "packages.json verified"
+
+      - name: Write utility functions
+        run: |
+          cat <<'SCRIPT' > utils.js
+          const https = require('https');
+          const fs = require('fs');
+
+          function apiRequest(method, path, body = null, retries = 2) {
+            return new Promise((resolve, reject) => {
+              const options = {
+                hostname: 'api.cal.com',
+                path,
+                method,
+                headers: {
+                  Authorization: `Bearer ${process.env.CALCOM_API_KEY || 'MISSING_API_KEY'}`,
+                  'Content-Type': 'application/json'
+                }
+              };
+              console.log(`[DEBUG] API request: ${method} ${path}`);
+              const req = https.request(options, (res) => {
+                let data = '';
+                res.on('data', (chunk) => data += chunk);
+                res.on('end', () => {
+                  console.log(`[DEBUG] Response status: ${res.statusCode}, headers: ${JSON.stringify(res.headers)}`);
+                  console.log(`[DEBUG] Raw response: ${data}`);
+                  if (res.statusCode >= 200 && res.statusCode < 300) {
+                    try {
+                      const parsed = JSON.parse(data || '{}');
+                      resolve(parsed);
+                    } catch (e) {
+                      reject(new Error(`Failed to parse response for ${path}: ${e.message}`));
+                    }
+                  } else if ((res.statusCode === 429 || res.statusCode >= 500) && retries > 0) {
+                    console.warn(`[WARN] Retrying ${method} ${path} (status ${res.statusCode}, ${retries} attempts left)`);
+                    setTimeout(() => {
+                      apiRequest(method, path, body, retries - 1).then(resolve).catch(reject);
+                    }, 2000);
+                  } else {
+                    reject(new Error(`Request failed for ${path} with status ${res.statusCode}: ${data}`));
+                  }
+                });
+              });
+              req.on('error', (e) => reject(new Error(`Request error for ${path}: ${e.message}`)));
+              if (body) {
+                console.log(`[DEBUG] Request body: ${JSON.stringify(body)}`);
+                req.write(JSON.stringify(body));
+              }
+              req.end();
+            });
           }
-          if (existingSlugs.has(pkg.slug)) {
-            console.log(`Event type ${pkg.slug} already exists, skipping`);
-            continue;
-          }
 
-          const priceText = pkg.discount > 0 
-            ? `**Price**: **$${pkg.price} ${pkg.currency}** (Reg. ~~$${pkg.regPrice}~~) - ${pkg.discount}% OFF!`
-            : `**Price**: **$${pkg.price} ${pkg.currency}**`;
-          const servicesText = pkg.equipment && Array.isArray(pkg.equipment) && pkg.equipment.length > 0
-            ? `**Services Included**:\n${pkg.equipment.map(e => `- ${e}`).join('\n')}`
-            : `**Services Included**: None`;
-          const description = [
-            priceText,
-            `**Description**: ${pkg.description || 'No description provided'}`,
-            `**Guests**: ${pkg.guests || 'Not specified'}`,
-            `**Duration**: Up to ${pkg.maxDuration || 3} hours`,
-            servicesText,
-            `**Note**: ${pkg.note || 'No additional notes'}`
-          ].join('\n\n');
-
-          const transformed = {
-            title: pkg.name,
-            slug: pkg.slug,
-            length: (pkg.maxDuration || 3) * 60,
-            description,
-            locations: pkg.locations && Array.isArray(pkg.locations) && pkg.locations[0]?.location_type === 'ask'
-              ? [{ type: 'address', address: pkg.locations[0].location, public: true }]
-              : [{ type: 'address', address: 'Toronto, ON', public: true }],
-            availability: {
-              days: pkg.availabilityDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-              startTime: pkg.startTime || '09:00',
-              endTime: pkg.endTime || '23:59'
-            },
-            tags: [
-              ...(Array.isArray(pkg.eventType) ? pkg.eventType : []),
-              ...(pkg.packageType ? [pkg.packageType] : []),
-              ...(pkg.Sale === 'Y' ? ['On Sale'] : []),
-              ...(pkg.New === 'Y' ? ['New'] : [])
-            ],
-            disableGuests: pkg.disableGuests || false,
-            metadata: {
-              disableCalVideoTranscription: pkg.disableCalVideoTranscription || false,
-              disableGuestsCancelling: pkg.disableGuestsCancelling || false,
-              disableGuestsRescheduling: pkg.disableGuestsRescheduling || false
-            },
-            bookingFields: pkg.bookingFields || [],
-            color: pkg.color || { lightThemeHex: '#292929' },
-            minimumBookingNotice: pkg.minimumBookingNotice || 20160,
-            bookerLayouts: pkg.bookerLayouts || {
-              defaultLayout: 'month',
-              enabledLayouts: ['month']
+          async function getAllEventTypes() {
+            try {
+              let eventTypes = [];
+              let page = 1;
+              while (true) {
+                const res = await apiRequest('GET', `/api/v2/event-types?page=${page}&limit=100`);
+                console.log(`[DEBUG] Event types response for page ${page}: ${JSON.stringify(res, null, 2)}`);
+                const types = Array.isArray(res) ? res :
+                  res.eventTypes && Array.isArray(res.eventTypes) ? res.eventTypes :
+                  res.event_types && Array.isArray(res.event_types) ? res.event_types :
+                  res.data && Array.isArray(res.data) ? res.data : [];
+                if (!Array.isArray(types)) {
+                  throw new Error(`Invalid event types response structure: ${JSON.stringify(res, null, 2)}`);
+                }
+                eventTypes = eventTypes.concat(types);
+                if (!res.nextPage || types.length < 100) break;
+                page++;
+              }
+              console.log(`[INFO] Retrieved ${eventTypes.length} event types`);
+              return eventTypes;
+            } catch (e) {
+              console.error(`[ERROR] Error fetching event types: ${e.message}`);
+              throw e;
             }
+          }
+
+          function deduplicatePackages(packages) {
+            const seenSlugs = new Set();
+            return packages.filter(pkg => {
+              if (seenSlugs.has(pkg.slug)) {
+                console.warn(`Duplicate slug detected: ${pkg.slug}. Skipping package: ${pkg.name}`);
+                return false;
+              }
+              seenSlugs.add(pkg.slug);
+              return true;
+            });
+          }
+
+          function loadPackages() {
+            let packages = JSON.parse(fs.readFileSync('packages.json'));
+            if (packages.some(pkg => Object.keys(pkg).length === 1)) {
+              packages = packages.map(p => Object.values(p)[0]);
+            }
+            return deduplicatePackages(packages);
+          }
+
+          module.exports = { apiRequest, getAllEventTypes, deduplicatePackages, loadPackages };
+          SCRIPT
+
+      - name: Write event type insertion script
+        run: |
+          cat <<'SCRIPT' > insert-event-types.js
+          const { apiRequest, getAllEventTypes, loadPackages } = require('./utils');
+
+          const dayMap = {
+            Monday: 'Monday', Tuesday: 'Tuesday', Wednesday: 'Wednesday',
+            Thursday: 'Thursday', Friday: 'Friday', Saturday: 'Saturday', Sunday: 'Sunday',
+            1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 7: 'Sunday'
           };
 
-          const result = await apiRequest('POST', '/api/v2/event-types', transformed);
-          console.log(`Created event type: ${pkg.slug} (ID: ${result.data.id})`);
-          await new Promise(resolve => setTimeout(resolve, 5000));
-        }
-        console.log('Event type insertion completed');
-      } catch (e) {
-        console.error(`Fatal error during insertion: ${e.message}`);
-        process.exit(1);
-      }
-    }
+          async function insertNewEventTypes() {
+            try {
+              const packages = loadPackages();
+              if (!packages.length) throw new Error('No valid packages found');
+              const existingEventTypes = await getAllEventTypes();
+              const existingSlugs = new Set(existingEventTypes.map(e => e.slug));
 
-    insertNewEventTypes();
-    SCRIPT
+              for (const pkg of packages) {
+                if (!pkg.slug || !pkg.name) {
+                  console.warn(`Invalid package: ${JSON.stringify(pkg)}`);
+                  continue;
+                }
+                if (existingSlugs.has(pkg.slug)) {
+                  console.log(`Event type ${pkg.slug} already exists, skipping`);
+                  continue;
+                }
+
+                const priceText = pkg.discount > 0 
+                  ? `**Price**: **$${pkg.price} ${pkg.currency}** (Reg. ~~$${pkg.regPrice}~~) - ${pkg.discount}% OFF!`
+                  : `**Price**: **$${pkg.price} ${pkg.currency}**`;
+                const servicesText = pkg.equipment && Array.isArray(pkg.equipment) && pkg.equipment.length > 0
+                  ? `**Services Included**:\n${pkg.equipment.map(e => `- ${e}`).join('\n')}`
+                  : `**Services Included**: None`;
+                const description = [
+                  priceText,
+                  `**Description**: ${pkg.description || 'No description provided'}`,
+                  `**Guests**: ${pkg.guests || 'Not specified'}`,
+                  `**Duration**: Up to ${pkg.maxDuration || 3} hours`,
+                  servicesText,
+                  `**Note**: ${pkg.note || 'No additional notes'}`
+                ].join('\n\n');
+
+                const transformed = {
+                  title: pkg.name,
+                  slug: pkg.slug,
+                  length: (pkg.maxDuration || 3) * 60,
+                  description,
+                  locations: pkg.locations && Array.isArray(pkg.locations) && pkg.locations[0]?.location_type === 'ask'
+                    ? [{ type: 'address', address: pkg.locations[0].location, public: true }]
+                    : [{ type: 'address', address: 'Toronto, ON', public: true }],
+                  availability: {
+                    days: pkg.availabilityDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                    startTime: pkg.startTime || '09:00',
+                    endTime: pkg.endTime || '23:59'
+                  },
+                  tags: [
+                    ...(Array.isArray(pkg.eventType) ? pkg.eventType : []),
+                    ...(pkg.packageType ? [pkg.packageType] : []),
+                    ...(pkg.Sale === 'Y' ? ['On Sale'] : []),
+                    ...(pkg.New === 'Y' ? ['New'] : [])
+                  ],
+                  disableGuests: pkg.disableGuests || false,
+                  metadata: {
+                    disableCalVideoTranscription: pkg.disableCalVideoTranscription || false,
+                    disableGuestsCancelling: pkg.disableGuestsCancelling || false,
+                    disableGuestsRescheduling: pkg.disableGuestsRescheduling || false
+                  },
+                  bookingFields: pkg.bookingFields || [],
+                  color: pkg.color || { lightThemeHex: '#292929' },
+                  minimumBookingNotice: pkg.minimumBookingNotice || 20160,
+                  bookerLayouts: pkg.bookerLayouts || {
+                    defaultLayout: 'month',
+                    enabledLayouts: ['month']
+                  }
+                };
+
+                const result = await apiRequest('POST', '/api/v2/event-types', transformed);
+                console.log(`Created event type: ${pkg.slug} (ID: ${result.data.id})`);
+                await new Promise(resolve => setTimeout(resolve, 5000));
+              }
+              console.log('Event type insertion completed');
+            } catch (e) {
+              console.error(`Fatal error during insertion: ${e.message}`);
+              process.exit(1);
+            }
+          }
+
+          insertNewEventTypes();
+          SCRIPT
+
+      - name: Insert new event types
+        env:
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
+        run: |
+          node insert-event-types.js > insert-log.txt 2>&1 || {
+            echo "Insertion script failed. Check logs for details."
+            cat insert-log.txt
+            exit 1
+          }
+
+      - name: Write payment configuration script
+        run: |
+          cat <<'SCRIPT' > configure-payments.js
+          const { apiRequest, loadPackages } = require('./utils');
+
+          async function getEventTypeId(slug) {
+            try {
+              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
+              const eventTypes = Array.isArray(res) ? res :
+                res.eventTypes && Array.isArray(res.eventTypes) ? res.eventTypes :
+                res.event_types && Array.isArray(res.event_types) ? res.event_types :
+                res.data && Array.isArray(res.data) ? res.data : [];
+              return eventTypes.length ? eventTypes[0].id : null;
+            } catch (e) {
+              console.error(`Error fetching event type ID for ${slug}: ${e.message}`);
+              return null;
+            }
+          }
+
+          async function configurePayments() {
+            try {
+              const packages = loadPackages();
+              for (const pkg of packages) {
+                if (!pkg.slug || !pkg.name) {
+                  console.warn(`Invalid package: ${JSON.stringify(pkg)}`);
+                  continue;
+                }
+                if (!pkg.price || pkg.price <= 0) {
+                  console.log(`Skipping payment for ${pkg.slug}: invalid price`);
+                  continue;
+                }
+                const eventTypeId = await getEventTypeId(pkg.slug);
+                if (!eventTypeId) {
+                  console.warn(`No event type found for ${pkg.slug}`);
+                  continue;
+                }
+                const paymentPayload = {
+                  price: Math.round(pkg.price * 100),
+                  currency: pkg.currency?.toLowerCase() || 'cad',
+                  metadata: {
+                    apps: {
+                      stripe: {
+                        enabled: true,
+                        price: Math.round(pkg.price * 100),
+                        currency: pkg.currency?.toLowerCase() || 'cad'
+                      }
+                    }
+                  }
+                };
+                await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, paymentPayload);
+                console.log(`Configured payment for: ${pkg.slug}`);
+                await new Promise(resolve => setTimeout(resolve, 2000));
+              }
+              console.log('Payment configuration completed');
+            } catch (e) {
+              console.error(`Fatal error during payment configuration: ${e.message}`);
+              process.exit(1);
+            }
+          }
+
+          configurePayments();
+          SCRIPT
+
+      - name: Configure payments for event types
+        env:
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
+        run: |
+          node configure-payments.js > payment-log.txt 2>&1 || {
+            echo "Payment configuration failed. Check logs for details."
+            cat payment-log.txt
+            exit 1
+          }
+
+      - name: Archive logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-logs
+          path: |
+            *.log
+            *.txt
+          retention-days: 7
