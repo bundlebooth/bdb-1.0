@@ -26,1511 +26,413 @@ jobs:
             echo "Error: packages.json not found"
             exit 1
           fi
-          echo "Success: packages.json found and verified"
+          echo "packages.json verified"
 
-      - name: Write event type deletion script
+      - name: Write utility functions
         run: |
-          cat <<'SCRIPT' > delete-event-types.js
+          cat <<'SCRIPT' > utils.js
           const https = require('https');
-
-          function apiRequest(method, path, body = null, retries = 2) {
-            console.log(`[INFO] Initiating ${method} request to ${path}`);
-            return new Promise((resolve, reject) => {
-              const options = {
-                hostname: 'api.cal.com',
-                path: path,
-                method: method,
-                headers: {
-                  'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                  'Content-Type': 'application/json'
-                }
-              };
-              const req = https.request(options, (res) => {
-                let data = '';
-                res.on('data', (chunk) => { data += chunk; });
-                res.on('end', () => {
-                  console.log(`[INFO] Response status: ${res.statusCode} for ${path}`);
-                  if (res.statusCode >= 200 && res.statusCode < 300) {
-                    try {
-                      const parsedData = JSON.parse(data || '{}');
-                      console.log(`[SUCCESS] Parsed response for ${path}`);
-                      resolve(parsedData);
-                    } catch (e) {
-                      console.error(`[ERROR] Failed to parse response for ${path}:`, e);
-                      reject(e);
-                    }
-                  } else if (res.statusCode === 404 && retries > 0) {
-                    console.warn(`[WARN] 404 received for ${path}, retrying (${retries} attempts left)`);
-                    setTimeout(() => {
-                      apiRequest(method, path, body, retries - 1).then(resolve).catch(reject);
-                    }, 1000);
-                  } else {
-                    console.error(`[ERROR] Request failed for ${path} with status ${res.statusCode}`);
-                    reject({ statusCode: res.statusCode, data });
-                  }
-                });
-              });
-              req.on('error', (e) => { 
-                console.error(`[ERROR] Request error for ${path}:`, e);
-                reject(e); 
-              });
-              if (body) {
-                console.log(`[INFO] Sending body for ${path}:`, JSON.stringify(body));
-                req.write(JSON.stringify(body));
-              }
-              req.end();
-            });
-          }
-
-          async function getAllEventTypes() {
-            console.log('[INFO] Fetching all event types');
-            try {
-              const res = await apiRequest('GET', '/api/v2/event-types');
-              console.log('[DEBUG] Raw event types response:', JSON.stringify(res, null, 2));
-              let eventTypes = [];
-              if (Array.isArray(res)) {
-                eventTypes = res;
-              } else if (res.eventTypes && Array.isArray(res.eventTypes)) {
-                eventTypes = res.eventTypes;
-              } else if (res.event_types && Array.isArray(res.event_types)) {
-                eventTypes = res.event_types;
-              } else if (res.data && Array.isArray(res.data)) {
-                eventTypes = res.data;
-              } else {
-                console.error('[ERROR] Invalid event types response: expected array or object with array property, got:', JSON.stringify(res, null, 2));
-                throw new Error('Invalid event types response structure');
-              }
-              console.log('[SUCCESS] Retrieved event types:', eventTypes.length);
-              return eventTypes;
-            } catch (e) {
-              console.error('[ERROR] Error fetching event types:', e.message || JSON.stringify(e));
-              throw e;
-            }
-          }
-
-          async function deleteAllEventTypes() {
-            console.log('[INFO] Starting deletion of all event types');
-            try {
-              const eventTypes = await getAllEventTypes();
-              if (eventTypes.length === 0) {
-                console.log('[INFO] No event types found to delete');
-                return;
-              }
-              for (const eventType of eventTypes) {
-                if (eventType.id) {
-                  console.log(`[INFO] Deleting event type: ${eventType.slug || 'unknown'} (ID: ${eventType.id})`);
-                  try {
-                    await apiRequest('DELETE', `/api/v2/event-types/${eventType.id}`);
-                    console.log(`[SUCCESS] Deleted event type: ${eventType.slug || 'unknown'}`);
-                  } catch (e) {
-                    console.error(`[ERROR] Failed to delete event type ${eventType.slug || 'unknown'}:`, e);
-                  }
-                } else {
-                  console.warn(`[WARN] Event type missing ID: ${JSON.stringify(eventType)}`);
-                }
-              }
-              console.log('[SUCCESS] All event types processed for deletion');
-            } catch (e) {
-              console.error('[ERROR] Fatal error during deletion:', e.message || JSON.stringify(e));
-              process.exit(1);
-            }
-          }
-
-          deleteAllEventTypes();
-          SCRIPT
-
-      - name: Delete all event types
-        env:
-          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-        run: |
-          node delete-event-types.js || {
-            node delete-event-types.js || {
-              echo "Deletion script failed. Check logs for details.";
-              exit 1
-            }
-          }
-
-      - name: Write event type update script
-        run: |
-          cat <<'SCRIPT' > update-event-types.js
           const fs = require('fs');
-          const https = require('https');
-
-          const dayMap = {
-            'Monday': 'Monday',
-            'Tuesday': 'Tuesday',
-            'Wednesday': 'Wednesday',
-            'Thursday': 'Thursday',
-            'Friday': 'Friday',
-            'Saturday': 'Saturday',
-            'Sunday': 'Sunday',
-            1: 'Monday',
-            2: 'Tuesday',
-            3: 'Wednesday',
-            4: 'Thursday',
-            5: 'Friday',
-            6: 'Saturday',
-            7: 'Sunday'
-          };
-
-          function apiRequest(method, path, body = null, retries = 2) {
-            console.log(`[INFO] Initiating ${method} request to ${path}`);
-            return new Promise((resolve, reject) => {
-              const options = {
-                hostname: 'api.cal.com',
-                path: path,
-                method: method,
-                headers: {
-                  'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                  'Content-Type': 'application/json'
-                }
-              };
-              const req = https.request(options, (res) => {
-                let data = '';
-                res.on('data', (chunk) => { data += chunk; });
-                res.on('end', () => {
-                  console.log(`[INFO] Response status: ${res.statusCode} for ${path}`);
-                  if (res.statusCode >= 200 && res.statusCode < 300) {
-                    try {
-                      const parsedData = JSON.parse(data || '{}');
-                      console.log(`[SUCCESS] Parsed response for ${path}`);
-                      resolve(parsedData);
-                    } catch (e) {
-                      console.error(`[ERROR] Failed to parse response for ${path}:`, e);
-                      reject(e);
-                    }
-                  } else if (res.statusCode === 404 && retries > 0) {
-                    console.warn(`[WARN] 404 received for ${path}, retrying (${retries} attempts left)`);
-                    setTimeout(() => {
-                      apiRequest(method, path, body, retries - 1).then(resolve).catch(reject);
-                    }, 1000);
-                  } else {
-                    console.error(`[ERROR] Request failed for ${path} with status ${res.statusCode}`);
-                    reject({ statusCode: res.statusCode, data });
-                  }
-                });
-              });
-              req.on('error', (e) => { 
-                console.error(`[ERROR] Request error for ${path}:`, e);
-                reject(e); 
-              });
-              if (body) {
-                console.log(`[INFO] Sending body for ${path}:`, JSON.stringify(body));
-                req.write(JSON.stringify(body));
-              }
-              req.end();
-            });
-          }
-
-          async function getAllEventTypes() {
-            console.log('[INFO] Fetching all event types');
-            try {
-              const res = await apiRequest('GET', '/api/v2/event-types');
-              console.log('[DEBUG] Raw event types response:', JSON.stringify(res, null, 2));
-              let eventTypes = [];
-              if (Array.isArray(res)) {
-                eventTypes = res;
-              } else if (res.eventTypes && Array.isArray(res.eventTypes)) {
-                eventTypes = res.eventTypes;
-              } else if (res.event_types && Array.isArray(res.event_types)) {
-                eventTypes = res.event_types;
-              } else if (res.data && Array.isArray(res.data)) {
-                eventTypes = res.data;
-              } else {
-                console.error('[ERROR] Invalid event types response: expected array or object with array property, got:', JSON.stringify(res, null, 2));
-                throw new Error('Invalid event types response structure');
-              }
-              console.log('[SUCCESS] Retrieved event types:', eventTypes.length);
-              return eventTypes;
-            } catch (e) {
-              console.error('[ERROR] Error fetching event types:', e.message || JSON.stringify(e));
-              throw e;
-            }
-          }
-
-          async function getEventTypeId(slug) {
-            console.log(`[INFO] Fetching event type ID for slug: ${slug}`);
-            try {
-              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
-              let eventTypes = [];
-              if (Array.isArray(res)) {
-                eventTypes = res;
-              } else if (res.eventTypes && Array.isArray(res.eventTypes)) {
-                eventTypes = res.eventTypes;
-              } else if (res.event_types && Array.isArray(res.event_types)) {
-                eventTypes = res.event_types;
-              } else if (res.data && Array.isArray(res.data)) {
-                eventTypes = res.data;
-              } else {
-                console.error('[ERROR] Invalid event type response for slug:', slug);
-                return null;
-              }
-              console.log(`[SUCCESS] Found ${eventTypes.length} event types for slug: ${slug}`);
-              return eventTypes.length > 0 ? eventTypes[0].id : null;
-            } catch (e) {
-              console.error(`[ERROR] Error fetching event type ID for slug ${slug}:`, e);
-              return null;
-            }
-          }
-
-          function compareEventTypes(oldTypes, newTypes) {
-            const added = newTypes.filter(type => !oldTypes.includes(type));
-            const deleted = oldTypes.filter(type => !newTypes.includes(type));
-            return { added, deleted };
-          }
-
-          function compareObjects(obj1, obj2, path = '') {
-            console.log(`[INFO] Comparing objects at path: ${path}`);
-            const differences = [];
-            for (const key in obj1) {
-              if (key === 'description' || key === 'scheduleIds') continue;
-              const fullPath = path ? `${path}.${key}` : key;
-              if (typeof obj1[key] === 'object' && obj1[key] !== null && !Array.isArray(obj1[key])) {
-                const subDiffs = compareObjects(obj1[key], obj2[key] || {}, fullPath);
-                differences.push(...subDiffs);
-              } else if (Array.isArray(obj1[key])) {
-                if (!Array.isArray(obj2[key]) || JSON.stringify(obj1[key]) !== JSON.stringify(obj2[key])) {
-                  differences.push(`${fullPath}: ${JSON.stringify(obj1[key])} != ${JSON.stringify(obj2[key])}`);
-                }
-              } else if (obj1[key] !== obj2[key]) {
-                differences.push(`${fullPath}: ${obj1[key]} != ${obj2[key]}`);
-              }
-            }
-            for (const key in obj2) {
-              if (!(key in obj1) && key !== 'id' && key !== 'description' && key !== 'scheduleIds') {
-                const fullPath = path ? `${path}.${key}` : key;
-                differences.push(`${fullPath}: missing in new, present in old as ${obj2[key]}`);
-              }
-            }
-            if (differences.length > 0) {
-              console.log(`[INFO] Differences found:`, differences);
-            } else {
-              console.log(`[INFO] No differences found at path: ${path}`);
-            }
-            return differences;
-          }
-
-          function deduplicatePackages(packages) {
-            console.log('[INFO] Deduplicating packages');
-            const seenSlugs = new Set();
-            const uniquePackages = [];
-            for (const pkg of packages) {
-              if (seenSlugs.has(pkg.slug)) {
-                console.warn(`[WARN] Duplicate slug detected: ${pkg.slug}. Skipping package: ${pkg.name}`);
-                continue;
-              }
-              seenSlugs.add(pkg.slug);
-              uniquePackages.push(pkg);
-            }
-            console.log(`[SUCCESS] Deduplicated to ${uniquePackages.length} packages`);
-            return uniquePackages;
-          }
-
-          async function checkDiscrepancies() {
-            console.log('[INFO] Checking for discrepancies between packages.json and Cal.com event types');
-            try {
-              let packages = JSON.parse(fs.readFileSync('packages.json'));
-              console.log(`[INFO] Loaded ${packages.length} packages from packages.json`);
-              if (packages.some(pkg => Object.keys(pkg).length === 1)) {
-                packages = packages.map(p => Object.values(p)[0]);
-              }
-              packages = deduplicatePackages(packages);
-              if (packages.length === 0) {
-                console.error('[ERROR] No valid packages found after deduplication');
-                throw new Error('No valid packages found after deduplication');
-              }
-              const existingEventTypes = await getAllEventTypes();
-              const existingSlugs = new Set(existingEventTypes.map(e => e.slug));
-              console.log(`[INFO] Existing event type slugs:`, Array.from(existingSlugs));
-              for (const pkg of packages) {
-                if (!pkg.slug || !pkg.name) {
-                  console.warn(`[WARN] Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
-                  continue;
-                }
-                console.log(`[INFO] Checking package: ${pkg.name} (${pkg.slug})`);
-                const priceText = pkg.discount > 0 
-                  ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice || pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
-                  : `**Price**: **$${pkg.price}**`;
-                const servicesText = pkg.equipment && Array.isArray(pkg.equipment) && pkg.equipment.length > 0
-                  ? `**Services Included**:\n${pkg.equipment.map(e => `- ${e}`).join('\n')}`
-                  : `**Services Included**: None`;
-                const description = [
-                  priceText,
-                  `**Description**: ${pkg.description || 'No description provided'}`,
-                  `**Guests**: ${pkg.guests || 'Not specified'}`,
-                  `**Duration**: Up to ${pkg.maxDuration || 3} hours`,
-                  servicesText,
-                  `**Note**: ${pkg.note || 'No additional notes'}`
-                ].join('\n\n');
-                const transformed = {
-                  title: pkg.name,
-                  slug: pkg.slug,
-                  length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
-                  description: description,
-                  locations: pkg.locationTypes && Array.isArray(pkg.types) && pkg.types[0]?.location_type
-                    ? [{ type: 'address', address: 'To be provided by client', public: true }]
-                    : [{ type: 'address', address: pkg.type || 'Toronto, ON', public: true }],
-                  availability: pkg.available || {
-                    days: pkg.days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                    startTime: pkg.start || '09:00',
-                    endTime: pkg.end || '23:59'
-                  },
-                  tags: [],
-                  disableGuests: pkg.disableGuests || false,
-                  metadata: {
-                    disableCalVideoTranscription: pkg.disableCalVideoTranscript || false,
-                    disableGuestsCancelling: pkg.disableGuestsCancel || false,
-                    disableGuestsRescheduling: pkg.disableGuestsReschedule || false
-                  },
-                  bookingFields: pkg.bookingFields || [],
-                  color: pkg.color || undefined,
-                  minimumBookingNotice: pkg.minimumNotice || undefined,
-                  bookerLayouts: pkg.bookerLayouts || undefined
-                };
-                if (Array.isArray(pkg.eventType)) {
-                  transformed.tags = transformed.tags.concat(pkg.eventType);
-                }
-                if (pkg.packageType) transformed.tags.push(pkg.packageType);
-                if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
-                if (pkg.New === 'Y') transformed.tags.push('New');
-                const existingEventType = existingEventTypes.find(e => e.slug === transformed.slug);
-                if (existingEventType) {
-                  console.log(`[INFO] Comparing event type ${transformed.slug} with existing ID: ${existingEventType.id}`);
-                  const differences = compareObjects(transformed, existingEventType);
-                  const tagDiffs = compareEventTypes(existingEventType.tags || [], transformed.tags || []);
-                  const updatePayload = { description: transformed.description };
-                  if (differences.length > 0 || tagDiffs.added.length > 0 || tagDiffs.deleted.length > 0) {
-                    console.log(`[INFO] Differences detected for slug: ${transformed.slug}`);
-                    if (differences.length > 0) {
-                      console.log('[INFO] Field differences:');
-                      differences.forEach(diff => console.log(`    ${diff}`));
-                    }
-                    if (tagDiffs.added.length > 0) {
-                      console.log(`[INFO] Added event types: ${tagDiffs.added.join(', ')}`);
-                    }
-                    if (tagDiffs.deleted.length > 0) {
-                      console.log(`[INFO] Deleted event types: ${tagDiffs.deleted.join(', ')}`);
-                    }
-                    Object.assign(updatePayload, transformed);
-                    try {
-                      await apiRequest('PATCH', `/api/v2/event-types/${existingEventType.id}`, updatePayload);
-                      console.log(`[SUCCESS] Updated event type for slug: ${transformed.slug} with new description and fields`);
-                    } catch (e) {
-                      console.error(`[ERROR] Failed to update event type for slug ${transformed.slug}:`, e);
-                    }
-                  } else {
-                    console.log(`[INFO] Only description update required for ${transformed.slug}`);
-                    try {
-                      await apiRequest('PATCH', `/api/v2/event-types/${existingEventType.id}`, updatePayload);
-                      console.log(`[SUCCESS] Updated description for slug: ${transformed.slug}`);
-                    } catch (e) {
-                      console.error(`[ERROR] Failed to update description for slug ${transformed.slug}:`, e);
-                    }
-                  }
-                }
-              }
-              console.log('[SUCCESS] Discrepancy check and updates completed');
-            } catch (e) {
-              console.error('[ERROR] Fatal error during discrepancy check:', e.message || JSON.stringify(e));
-              process.exit(1);
-            }
-          }
-
-          checkDiscrepancies();
-          SCRIPT
-
-      - name: Update existing event types
-        env:
-          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-        run: |
-          node update-event-types.js || {
-            echo "Update script failed. Check logs for details.";
-            exit 1
-          }
-
-      - name: Write event type insertion script
-        run: |
-          cat <<'SCRIPT' > insert-event-types.js
-          const fs = require('fs');
-          const https = require('https');
-
-          const dayMap = {
-            'Monday': 'Monday',
-            'Tuesday': 'Tuesday',
-            'Wednesday': 'Wednesday',
-            'Thursday': 'Thursday',
-            'Friday': 'Friday',
-            'Saturday': 'Saturday',
-            'Sunday': 'Sunday',
-            1: 'Monday',
-            2: 'Tuesday',
-            3: 'Wednesday',
-            4: 'Thursday',
-            5: 'Friday',
-            6: 'Saturday',
-            7: 'Sunday'
-          };
-
-          function apiRequest(method, path, body = null, retries = 2) {
-            console.log(`[INFO] Initiating ${method} request to ${path}`);
-            return new Promise((resolve, reject) => {
-              const options = {
-                hostname: 'api.cal.com',
-                path: path,
-                method: method,
-                headers: {
-                  'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                  'Content-Type': 'application/json'
-                }
-              };
-              const req = https.request(options, (res) => {
-                let data = '';
-                res.on('data', (chunk) => { data += chunk; });
-                res.on('end', () => {
-                  console.log(`[INFO] Response status: ${res.statusCode} for ${path}`);
-                  if (res.statusCode >= 200 && res.statusCode < 300) {
-                    try {
-                      const parsedData = JSON.parse(data || '{}');
-                      console.log(`[SUCCESS] Parsed response for ${path}`);
-                      resolve(parsedData);
-                    } catch (e) {
-                      console.error(`[ERROR] Failed to parse response for ${path}:`, e);
-                      reject(e);
-                    }
-                  } else if (res.statusCode === 404 && retries > 0) {
-                    console.warn(`[WARN] 404 received for ${path}, retrying (${retries} attempts left)`);
-                    setTimeout(() => {
-                      apiRequest(method, path, body, retries - 1).then(resolve).catch(reject);
-                    }, 1000);
-                  } else {
-                    console.error(`[ERROR] Request failed for ${path} with status ${res.statusCode}`);
-                    reject({ statusCode: res.statusCode, data });
-                  }
-                });
-              });
-              req.on('error', (e) => { 
-                console.error(`[ERROR] Request error for ${path}:`, e);
-                reject(e); 
-              });
-              if (body) {
-                console.log(`[INFO] Sending body for ${path}:`, JSON.stringify(body));
-                req.write(JSON.stringify(body));
-              }
-              req.end();
-            });
-          }
-
-          async function getAllEventTypes() {
-            console.log('[INFO] Fetching all event types');
-            try {
-              const res = await apiRequest('GET', '/api/v2/event-types');
-              console.log('[DEBUG] Raw event types response:', JSON.stringify(res, null, 2));
-              let eventTypes = [];
-              if (Array.isArray(res)) {
-                eventTypes = res;
-              } else if (res.eventTypes && Array.isArray(res.eventTypes)) {
-                eventTypes = res.eventTypes;
-              } else if (res.event_types && Array.isArray(res.event_types)) {
-                eventTypes = res.event_types;
-              } else if (res.data && Array.isArray(res.data)) {
-                eventTypes = res.data;
-              } else {
-                console.error('[ERROR] Invalid event types response: expected array or object with array property, got:', JSON.stringify(res, null, 2));
-                throw new Error('Invalid event types response structure');
-              }
-              console.log('[SUCCESS] Retrieved event types:', eventTypes.length);
-              return eventTypes;
-            } catch (e) {
-              console.error('[ERROR] Error fetching event types:', e.message || JSON.stringify(e));
-              throw e;
-            }
-          }
-
-          async function createSchedule(scheduleData) {
-            console.log('[INFO] Creating schedule:', scheduleData.name);
-            try {
-              const mappedAvailability = scheduleData.availability.map(slot => ({
-                ...slot,
-                days: slot.days.map(day => dayMap[day] || day)
-              }));
-              const payload = {
-                name: scheduleData.name,
-                timeZone: scheduleData.timeZone,
-                isDefault: scheduleData.isDefault !== undefined ? scheduleData.isDefault : true,
-                availability: mappedAvailability
-              };
-              console.log('[INFO] Schedule payload:', payload);
-              const result = await apiRequest('POST', '/api/v2/schedules', payload);
-              console.log(`[SUCCESS] Created schedule with ID: ${result.data.id}`);
-              return result.data.id;
-            } catch (e) {
-              console.error('[ERROR] Failed to create schedule:', e);
-              return null;
-            }
-          }
-
-          function deduplicatePackages(packages) {
-            console.log('[INFO] Deduplicating packages');
-            const seenSlugs = new Set();
-            const uniquePackages = [];
-            for (const pkg of packages) {
-              if (seenSlugs.has(pkg.slug)) {
-                console.warn(`[WARN] Duplicate slug detected: ${pkg.slug}. Skipping package: ${pkg.name}`);
-                continue;
-              }
-              seenSlugs.add(pkg.slug);
-              uniquePackages.push(pkg);
-            }
-            console.log(`[SUCCESS] Deduplicated to ${uniquePackages.length} packages`);
-            return uniquePackages;
-          }
-
-          async function insertNewEventTypes() {
-            console.log('[INFO] Checking for new event types to insert');
-            try {
-              let packages = JSON.parse(fs.readFileSync('packages.json'));
-              console.log(`[INFO] Loaded ${packages.length} packages from packages.json`);
-              if (packages.some(pkg => Object.keys(pkg).length === 1)) {
-                packages = packages.map(p => Object.values(p)[0]);
-              }
-              packages = deduplicatePackages(packages);
-              if (packages.length === 0) {
-                console.error('[ERROR] No valid packages found after deduplication');
-                throw new Error('No valid packages found after deduplication');
-              }
-              const existingEventTypes = await getAllEventTypes();
-              const existingSlugs = new Set(existingEventTypes.map(e => e.slug));
-              console.log(`[INFO] Existing event type slugs:`, Array.from(existingSlugs));
-              for (const pkg of packages) {
-                if (!pkg.slug || !pkg.name) {
-                  console.warn(`[WARN] Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
-                  continue;
-                }
-                if (existingSlugs.has(pkg.slug)) {
-                  console.log(`[INFO] Event type ${pkg.slug} already exists, skipping creation`);
-                  continue;
-                }
-                console.log(`[INFO] Preparing to create new event type: ${pkg.name} (${pkg.slug})`);
-                const priceText = pkg.discount > 0 
-                  ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice || pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
-                  : `**Price**: **$${pkg.price}**`;
-                const servicesText = pkg.equipment && Array.isArray(pkg.equipment) && pkg.equipment.length > 0
-                  ? `**Services Offered**:\n${pkg.equipment.map(e => `- ${e}`).join('\n')}`
-                  : `**Services Included**: None`;
-                const description = [
-                  priceText,
-                  `**Description**: ${pkg.description || 'No description provided'}`,
-                  `**Guests**: ${pkg.guests || 'Not specified'}`,
-                  `**Duration**: Up to ${pkg.maxDuration || 3} hours`,
-                  servicesText,
-                  `**Note**: ${pkg.note || 'No additional notes'}`
-                ].join('\n\n');
-                const transformed = {
-                  title: pkg.name,
-                  slug: pkg.slug,
-                  length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
-                  description: description,
-                  locations: pkg.locationTypes && Array.isArray(pkg.types) && pkg.types[0]?.location_type
-                    ? [{ type: 'address', address: 'To be provided by client', public: true }]
-                    : [{ type: 'address', address: pkg.type || 'Toronto, ON', public: true }],
-                  availability: pkg.available || {
-                    days: pkg.days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                    startTime: pkg.startTime || '09:00',
-                    endTime: pkg.endTime || '23:59'
-                  },
-                  tags: [],
-                  disableGuests: pkg.disableGuests || false,
-                  metadata: {
-                    disableCalVideoTranscription: pkg.disableCalVideo || false,
-                    disableGuestsCancelling: pkg.disableGuestsCancel || false,
-                    disableGuestsRescheduling: pkg.disableGuestsReschedule || false
-                  },
-                  bookingFields: pkg.fieldsFields || [],
-                  color: pkg.color || undefined,
-                  minimumBookingNotice: pkg.minimumNotice || undefined,
-                  bookerLayouts: pkg.layouts || undefined
-                };
-                if (Array.isArray(pkg.eventType)) {
-                  transformed.tags = transformed.tags.concat(pkg.eventType);
-                }
-                if (pkg.packageType) {
-                  transformed.tags.push(pkg.packageType);
-                }
-                if (pkg.Sale === 'Y') {
-                  transformed.tags.push('On Sale');
-                }
-                if (pkg.New === 'Y') {
-                  transformed.tags.push('New');
-                }
-                console.log(`[INFO] Creating new event type for slug: ${transformed.slug}`);
-                let eventTypeId = null;
-                try {
-                  const result = await apiRequest('POST', '/api/v2/event-types', transformed);
-                  console.log(`[SUCCESS] Created event type for slug: ${transformed.slug} with ID: ${result.data.id}`);
-                  eventTypeId = result.data.id;
-                } catch (e) {
-                  if (e.statusCode === 400 && e.data?.error?.data?.message?.includes('event type with this slug')) {
-                    console.log(`[INFO] Event type ${transformed.slug} already exists, skipping`);
-                    continue;
-                  }
-                  console.error(`[ERROR] Failed to create event type for slug: ${transformed.slug}:`, e);
-                  continue;
-                }
-                if (transformed.availability && Array.isArray(transformed.availability.schedules)) {
-                  console.log(`[INFO] Processing schedules for slug: ${transformed.slug}`);
-                  const scheduleIds = [];
-                  for (const schedule of transformed.availability.schedules) {
-                    const scheduleId = await createSchedule(schedule);
-                    if (scheduleId) scheduleIds.push(scheduleId);
-                  }
-                  if (scheduleIds.length > 0 && eventTypeId) {
-                    try {
-                      await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, { scheduleIds });
-                      console.log(`[SUCCESS] Updated schedule IDs for slug: ${transformed.slug}`);
-                    } catch (e) {
-                      console.error(`[ERROR] Failed to update schedule IDs for slug: ${transformed.slug}:`, e);
-                    }
-                  }
-                }
-                await new Promise(resolve => setTimeout(resolve, 5000));
-              }
-              console.log('[SUCCESS] New event type insertion completed');
-            } catch (e) {
-              console.error('[ERROR] Fatal error during insertion:', e.message || JSON.stringify(e));
-              process.exit(1);
-            }
-          }
-
-          insertNewEventTypes();
-          SCRIPT
-
-      - name: Insert new event types
-        env:
-          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-        run: |
-          node insert-event-types.js || {
-            echo "Insertion script failed. Check logs for details.";
-            exit 1
-          }
-
-      - name: Write payment configuration script
-        run: |
-          cat <<'SCRIPT' > configure-payments.js
-          const fs = require('fs');
-          const https = require('https');
-
-          function apiRequest(method,
-
-System: The user has provided a log output from the `delete-event-types.js` script, indicating an error where the API response for fetching event types was an object instead of an expected array, causing the deletion process to complete without actually deleting any event types. The corrected `delete-event-types.js` script was provided to handle various API response structures and ensure proper error handling.
-
-However, the user's latest input appears incomplete, as it cuts off mid-sentence in the `configure-payments.js` script section of the YAML. The user previously requested a YAML workflow with three distinct steps: delete all event types, update existing event types, and add new event types, in that order. The provided log and the user's emphasis on the delete → update → add sequence suggest they want to ensure the deletion step works correctly and that the workflow maintains this order.
-
-Since the input is incomplete and the user didn’t explicitly ask for changes beyond the previous request, I’ll assume they want the corrected YAML with the fixed `delete-event-types.js` script, ensuring the delete → update → add sequence is maintained. I’ll complete the YAML by including the full `configure-payments.js` script (unchanged from the previous version) and ensure all steps align with the user’s requirements. If the user intended to provide additional modifications or a different script segment, they can clarify in a follow-up.
-
-Below is the complete, corrected YAML with the fixed `delete-event-types.js` script, maintaining the three-step sequence (delete, update, add), and including the full `configure-payments.js` script to complete the workflow. I’ve also updated the `update-event-types.js` and `insert-event-types.js` scripts to ensure consistent API response handling, mirroring the improvements made to `delete-event-types.js`.
-
-```yaml
-name: Map and Deploy JSON to Cal.com
-
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'packages.json'
-  workflow_dispatch:
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Verify packages.json
-        run: |
-          if [ ! -f packages.json ]; then
-            echo "Error: packages.json not found"
-            exit 1
-          fi
-          echo "Success: packages.json found and verified"
-
-      - name: Write event type deletion script
-        run: |
-          cat <<'SCRIPT' > delete-event-types.js
-          const https = require('https');
-
-          function apiRequest(method, path, body = null, retries = 2) {
-            console.log(`[INFO] Initiating ${method} request to ${path}`);
-            return new Promise((resolve, reject) => {
-              const options = {
-                hostname: 'api.cal.com',
-                path: path,
-                method: method,
-                headers: {
-                  'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                  'Content-Type': 'application/json'
-                }
-              };
-              const req = https.request(options, (res) => {
-                let data = '';
-                res.on('data', (chunk) => { data += chunk; });
-                res.on('end', () => {
-                  console.log(`[INFO] Response status: ${res.statusCode} for ${path}`);
-                  if (res.statusCode >= 200 && res.statusCode < 300) {
-                    try {
-                      const parsedData = JSON.parse(data || '{}');
-                      console.log(`[SUCCESS] Parsed response for ${path}`);
-                      resolve(parsedData);
-                    } catch (e) {
-                      console.error(`[ERROR] Failed to parse response for ${path}:`, e);
-                      reject(e);
-                    }
-                  } else if (res.statusCode === 404 && retries > 0) {
-                    console.warn(`[WARN] 404 received for ${path}, retrying (${retries} attempts left)`);
-                    setTimeout(() => {
-                      apiRequest(method, path, body, retries - 1).then(resolve).catch(reject);
-                    }, 1000);
-                  } else {
-                    console.error(`[ERROR] Request failed for ${path} with status ${res.statusCode}`);
-                    reject({ statusCode: res.statusCode, data });
-                  }
-                });
-              });
-              req.on('error', (e) => { 
-                console.error(`[ERROR] Request error for ${path}:`, e);
-                reject(e); 
-              });
-              if (body) {
-                console.log(`[INFO] Sending body for ${path}:`, JSON.stringify(body));
-                req.write(JSON.stringify(body));
-              }
-              req.end();
-            });
-          }
-
-          async function getAllEventTypes() {
-            console.log('[INFO] Fetching all event types');
-            try {
-              const res = await apiRequest('GET', '/api/v2/event-types');
-              console.log('[DEBUG] Raw event types response:', JSON.stringify(res, null, 2));
-              let eventTypes = [];
-              if (Array.isArray(res)) {
-                eventTypes = res;
-              } else if (res.eventTypes && Array.isArray(res.eventTypes)) {
-                eventTypes = res.eventTypes;
-              } else if (res.event_types && Array.isArray(res.event_types)) {
-                eventTypes = res.event_types;
-              } else if (res.data && Array.isArray(res.data)) {
-                eventTypes = res.data;
-              } else {
-                console.error('[ERROR] Invalid event types response: expected array or object with array property, got:', JSON.stringify(res, null, 2));
-                throw new Error('Invalid event types response structure');
-              }
-              console.log('[SUCCESS] Retrieved event types:', eventTypes.length);
-              return eventTypes;
-            } catch (e) {
-              console.error('[ERROR] Error fetching event types:', e.message || JSON.stringify(e));
-              throw e;
-            }
-          }
-
-          async function deleteAllEventTypes() {
-            console.log('[INFO] Starting deletion of all event types');
-            try {
-              const eventTypes = await getAllEventTypes();
-              if (eventTypes.length === 0) {
-                console.log('[INFO] No event types found to delete');
-                return;
-              }
-              for (const eventType of eventTypes) {
-                if (eventType.id) {
-                  console.log(`[INFO] Deleting event type: ${eventType.slug || 'unknown'} (ID: ${eventType.id})`);
-                  try {
-                    await apiRequest('DELETE', `/api/v2/event-types/${eventType.id}`);
-                    console.log(`[SUCCESS] Deleted event type: ${eventType.slug || 'unknown'}`);
-                  } catch (e) {
-                    console.error(`[ERROR] Failed to delete event type ${eventType.slug || 'unknown'}:`, e);
-                  }
-                } else {
-                  console.warn(`[WARN] Event type missing ID: ${JSON.stringify(eventType)}`);
-                }
-              }
-              console.log('[SUCCESS] All event types processed for deletion');
-            } catch (e) {
-              console.error('[ERROR] Fatal error during deletion:', e.message || JSON.stringify(e));
-              process.exit(1);
-            }
-          }
-
-          deleteAllEventTypes();
-          SCRIPT
-
-      - name: Delete all event types
-        env:
-          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-        run: |
-          node delete-event-types.js || {
-            node delete-event-types.js || {
-              echo "Deletion script failed. Check logs for details.";
-              exit 1
-            }
-          }
-
-      - name: Write event type update script
-        run: |
-          cat <<'SCRIPT' > update-event-types.js
-          const fs = require('fs');
-          const https = require('https');
-
-          const dayMap = {
-            'Monday': 'Monday',
-            'Tuesday': 'Tuesday',
-            'Wednesday': 'Wednesday',
-            'Thursday': 'Thursday',
-            'Friday': 'Friday',
-            'Saturday': 'Saturday',
-            'Sunday': 'Sunday',
-            1: 'Monday',
-            2: 'Tuesday',
-            3: 'Wednesday',
-            4: 'Thursday',
-            5: 'Friday',
-            6: 'Saturday',
-            7: 'Sunday'
-          };
-
-          function apiRequest(method, path, body = null, retries = 2) {
-            console.log(`[INFO] Initiating ${method} request to ${path}`);
-            return new Promise((resolve, reject) => {
-              const options = {
-                hostname: 'api.cal.com',
-                path: path,
-                method: method,
-                headers: {
-                  'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                  'Content-Type': 'application/json'
-                }
-              };
-              const req = https.request(options, (res) => {
-                let data = '';
-                res.on('data', (chunk) => { data += chunk; });
-                res.on('end', () => {
-                  console.log(`[INFO] Response status: ${res.statusCode} for ${path}`);
-                  if (res.statusCode >= 200 && res.statusCode < 300) {
-                    try {
-                      const parsedData = JSON.parse(data || '{}');
-                      console.log(`[SUCCESS] Parsed response for ${path}`);
-                      resolve(parsedData);
-                    } catch (e) {
-                      console.error(`[ERROR] Failed to parse response for ${path}:`, e);
-                      reject(e);
-                    }
-                  } else if (res.statusCode === 404 && retries > 0) {
-                    console.warn(`[WARN] 404 received for ${path}, retrying (${retries} attempts left)`);
-                    setTimeout(() => {
-                      apiRequest(method, path, body, retries - 1).then(resolve).catch(reject);
-                    }, 1000);
-                  } else {
-                    console.error(`[ERROR] Request failed for ${path} with status ${res.statusCode}`);
-                    reject({ statusCode: res.statusCode, data });
-                  }
-                });
-              });
-              req.on('error', (e) => { 
-                console.error(`[ERROR] Request error for ${path}:`, e);
-                reject(e); 
-              });
-              if (body) {
-                console.log(`[INFO] Sending body for ${path}:`, JSON.stringify(body));
-                req.write(JSON.stringify(body));
-              }
-              req.end();
-            });
-          }
-
-          async function getAllEventTypes() {
-            console.log('[INFO] Fetching all event types');
-            try {
-              const res = await apiRequest('GET', '/api/v2/event-types');
-              console.log('[DEBUG] Raw event types response:', JSON.stringify(res, null, 2));
-              let eventTypes = [];
-              if (Array.isArray(res)) {
-                eventTypes = res;
-              } else if (res.eventTypes && Array.isArray(res.eventTypes)) {
-                eventTypes = res.eventTypes;
-              } else if (res.event_types && Array.isArray(res.event_types)) {
-                eventTypes = res.event_types;
-              } else if (res.data && Array.isArray(res.data)) {
-                eventTypes = res.data;
-              } else {
-                console.error('[ERROR] Invalid event types response: expected array or object with array property, got:', JSON.stringify(res, null, 2));
-                throw new Error('Invalid event types response structure');
-              }
-              console.log('[SUCCESS] Retrieved event types:', eventTypes.length);
-              return eventTypes;
-            } catch (e) {
-              console.error('[ERROR] Error fetching event types:', e.message || JSON.stringify(e));
-              throw e;
-            }
-          }
-
-          async function getEventTypeId(slug) {
-            console.log(`[INFO] Fetching event type ID for slug: ${slug}`);
-            try {
-              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
-              let eventTypes = [];
-              if (Array.isArray(res)) {
-                eventTypes = res;
-              } else if (res.eventTypes && Array.isArray(res.eventTypes)) {
-                eventTypes = res.eventTypes;
-              } else if (res.event_types && Array.isArray(res.event_types)) {
-                eventTypes = res.event_types;
-              } else if (res.data && Array.isArray(res.data)) {
-                eventTypes = res.data;
-              } else {
-                console.error('[ERROR] Invalid event type response for slug:', slug);
-                return null;
-              }
-              console.log(`[SUCCESS] Found ${eventTypes.length} event types for slug: ${slug}`);
-              return eventTypes.length > 0 ? eventTypes[0].id : null;
-            } catch (e) {
-              console.error(`[ERROR] Error fetching event type ID for slug ${slug}:`, e);
-              return null;
-            }
-          }
-
-          function compareEventTypes(oldTypes, newTypes) {
-            const added = newTypes.filter(type => !oldTypes.includes(type));
-            const deleted = oldTypes.filter(type => !newTypes.includes(type));
-            return { added, deleted };
-          }
-
-          function compareObjects(obj1, obj2, path = '') {
-            console.log(`[INFO] Comparing objects at path: ${path}`);
-            const differences = [];
-            for (const key in obj1) {
-              if (key === 'description' || key === 'scheduleIds') continue;
-              const fullPath = path ? `${path}.${key}` : key;
-              if (typeof obj1[key] === 'object' && obj1[key] !== null && !Array.isArray(obj1[key])) {
-                const subDiffs = compareObjects(obj1[key], obj2[key] || {}, fullPath);
-                differences.push(...subDiffs);
-              } else if (Array.isArray(obj1[key])) {
-                if (!Array.isArray(obj2[key]) || JSON.stringify(obj1[key]) !== JSON.stringify(obj2[key])) {
-                  differences.push(`${fullPath}: ${JSON.stringify(obj1[key])} != ${JSON.stringify(obj2[key])}`);
-                }
-              } else if (obj1[key] !== obj2[key]) {
-                differences.push(`${fullPath}: ${obj1[key]} != ${obj2[key]}`);
-              }
-            }
-            for (const key in obj2) {
-              if (!(key in obj1) && key !== 'id' && key !== 'description' && key !== 'scheduleIds') {
-                const fullPath = path ? `${path}.${key}` : key;
-                differences.push(`${fullPath}: missing in new, present in old as ${obj2[key]}`);
-              }
-            }
-            if (differences.length > 0) {
-              console.log(`[INFO] Differences found:`, differences);
-            } else {
-              console.log(`[INFO] No differences found at path: ${path}`);
-            }
-            return differences;
-          }
-
-          function deduplicatePackages(packages) {
-            console.log('[INFO] Deduplicating packages');
-            const seenSlugs = new Set();
-            const uniquePackages = [];
-            for (const pkg of packages) {
-              if (seenSlugs.has(pkg.slug)) {
-                console.warn(`[WARN] Duplicate slug detected: ${pkg.slug}. Skipping package: ${pkg.name}`);
-                continue;
-              }
-              seenSlugs.add(pkg.slug);
-              uniquePackages.push(pkg);
-            }
-            console.log(`[SUCCESS] Deduplicated to ${uniquePackages.length} packages`);
-            return uniquePackages;
-          }
-
-          async function checkDiscrepancies() {
-            console.log('[INFO] Checking for discrepancies between packages.json and Cal.com event types');
-            try {
-              let packages = JSON.parse(fs.readFileSync('packages.json'));
-              console.log(`[INFO] Loaded ${packages.length} packages from packages.json`);
-              if (packages.some(pkg => Object.keys(pkg).length === 1)) {
-                packages = packages.map(p => Object.values(p)[0]);
-              }
-              packages = deduplicatePackages(packages);
-              if (packages.length === 0) {
-                console.error('[ERROR] No valid packages found after deduplication');
-                throw new Error('No valid packages found after deduplication');
-              }
-              const existingEventTypes = await getAllEventTypes();
-              const existingSlugs = new Set(existingEventTypes.map(e => e.slug));
-              console.log(`[INFO] Existing event type slugs:`, Array.from(existingSlugs));
-              for (const pkg of packages) {
-                if (!pkg.slug || !pkg.name) {
-                  console.warn(`[WARN] Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
-                  continue;
-                }
-                console.log(`[INFO] Checking package: ${pkg.name} (${pkg.slug})`);
-                const priceText = pkg.discount > 0 
-                  ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice || pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
-                  : `**Price**: **$${pkg.price}**`;
-                const servicesText = pkg.equipment && Array.isArray(pkg.equipment) && pkg.equipment.length > 0
-                  ? `**Services Included**:\n${pkg.equipment.map(e => `- ${e}`).join('\n')}`
-                  : `**Services Included**: None`;
-                const description = [
-                  priceText,
-                  `**Description**: ${pkg.description || 'No description provided'}`,
-                  `**Guests**: ${pkg.guests || 'Not specified'}`,
-                  `**Duration**: Up to ${pkg.maxDuration || 3} hours`,
-                  servicesText,
-                  `**Note**: ${pkg.note || 'No additional notes'}`
-                ].join('\n\n');
-                const transformed = {
-                  title: pkg.name,
-                  slug: pkg.slug,
-                  length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
-                  description: description,
-                  locations: pkg.locationTypes && Array.isArray(pkg.types) && pkg.types[0]?.location_type
-                    ? [{ type: 'address', address: 'To be provided by client', public: true }]
-                    : [{ type: 'address', address: pkg.type || 'Toronto, ON', public: true }],
-                  availability: pkg.available || {
-                    days: pkg.days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                    startTime: pkg.start || '09:00',
-                    endTime: pkg.end || '23:59'
-                  },
-                  tags: [],
-                  disableGuests: pkg.disableGuests || false,
-                  metadata: {
-                    disableCalVideoTranscription: pkg.disableCalVideoTranscript || false,
-                    disableGuestsCancelling: pkg.disableGuestsCancel || false,
-                    disableGuestsRescheduling: pkg.disableGuestsReschedule || false
-                  },
-                  bookingFields: pkg.bookingFields || [],
-                  color: pkg.color || undefined,
-                  minimumBookingNotice: pkg.minimumNotice || undefined,
-                  bookerLayouts: pkg.bookerLayouts || undefined
-                };
-                if (Array.isArray(pkg.eventType)) {
-                  transformed.tags = transformed.tags.concat(pkg.eventType);
-                }
-                if (pkg.packageType) transformed.tags.push(pkg.packageType);
-                if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
-                if (pkg.New === 'Y') transformed.tags.push('New');
-                const existingEventType = existingEventTypes.find(e => e.slug === transformed.slug);
-                if (existingEventType) {
-                  console.log(`[INFO] Comparing event type ${transformed.slug} with existing ID: ${existingEventType.id}`);
-                  const differences = compareObjects(transformed, existingEventType);
-                  const tagDiffs = compareEventTypes(existingEventType.tags || [], transformed.tags || []);
-                  const updatePayload = { description: transformed.description };
-                  if (differences.length > 0 || tagDiffs.added.length > 0 || tagDiffs.deleted.length > 0) {
-                    console.log(`[INFO] Differences detected for slug: ${transformed.slug}`);
-                    if (differences.length > 0) {
-                      console.log('[INFO] Field differences:');
-                      differences.forEach(diff => console.log(`    ${diff}`));
-                    }
-                    if (tagDiffs.added.length > 0) {
-                      console.log(`[INFO] Added event types: ${tagDiffs.added.join(', ')}`);
-                    }
-                    if (tagDiffs.deleted.length > 0) {
-                      console.log(`[INFO] Deleted event types: ${tagDiffs.deleted.join(', ')}`);
-                    }
-                    Object.assign(updatePayload, transformed);
-                    try {
-                      await apiRequest('PATCH', `/api/v2/event-types/${existingEventType.id}`, updatePayload);
-                      console.log(`[SUCCESS] Updated event type for slug: ${transformed.slug} with new description and fields`);
-                    } catch (e) {
-                      console.error(`[ERROR] Failed to update event type for slug ${transformed.slug}:`, e);
-                    }
-                  } else {
-                    console.log(`[INFO] Only description update required for ${transformed.slug}`);
-                    try {
-                      await apiRequest('PATCH', `/api/v2/event-types/${existingEventType.id}`, updatePayload);
-                      console.log(`[SUCCESS] Updated description for slug: ${transformed.slug}`);
-                    } catch (e) {
-                      console.error(`[ERROR] Failed to update description for slug ${transformed.slug}:`, e);
-                    }
-                  }
-                }
-              }
-              console.log('[SUCCESS] Discrepancy check and updates completed');
-            } catch (e) {
-              console.error('[ERROR] Fatal error during discrepancy check:', e.message || JSON.stringify(e));
-              process.exit(1);
-            }
-          }
-
-          checkDiscrepancies();
-          SCRIPT
-
-      - name: Update existing event types
-        env:
-          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-        run: |
-          node update-event-types.js || {
-            echo "Update script failed. Check logs for details.";
-            exit 1
-          }
-
-      - name: Write event type insertion script
-        run: |
-          cat <<'SCRIPT' > insert-event-types.js
-          const fs = require('fs');
-          const https = require('https');
-
-          const dayMap = {
-            'Monday': 'Monday',
-            'Tuesday': 'Tuesday',
-            'Wednesday': 'Wednesday',
-            'Thursday': 'Thursday',
-            'Friday': 'Friday',
-            'Saturday': 'Saturday',
-            'Sunday': 'Sunday',
-            1: 'Monday',
-            2: 'Tuesday',
-            3: 'Wednesday',
-            4: 'Thursday',
-            5: 'Friday',
-            6: 'Saturday',
-            7: 'Sunday'
-          };
-
-          function apiRequest(method, path, body = null, retries = 2) {
-            console.log(`[INFO] Initiating ${method} request to ${path}`);
-            return new Promise((resolve, reject) => {
-              const options = {
-                hostname: 'api.cal.com',
-                path: path,
-                method: method,
-                headers: {
-                  'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
-                  'Content-Type': 'application/json'
-                }
-              };
-              const req = https.request(options, (res) => {
-                let data = '';
-                res.on('data', (chunk) => { data += chunk; });
-                res.on('end', () => {
-                  console.log(`[INFO] Response status: ${res.statusCode} for ${path}`);
-                  if (res.statusCode >= 200 && res.statusCode < 300) {
-                    try {
-                      const parsedData = JSON.parse(data || '{}');
-                      console.log(`[SUCCESS] Parsed response for ${path}`);
-                      resolve(parsedData);
-                    } catch (e) {
-                      console.error(`[ERROR] Failed to parse response for ${path}:`, e);
-                      reject(e);
-                    }
-                  } else if (res.statusCode === 404 && retries > 0) {
-                    console.warn(`[WARN] 404 received for ${path}, retrying (${retries} attempts left)`);
-                    setTimeout(() => {
-                      apiRequest(method, path, body, retries - 1).then(resolve).catch(reject);
-                    }, 1000);
-                  } else {
-                    console.error(`[ERROR] Request failed for ${path} with status ${res.statusCode}`);
-                    reject({ statusCode: res.statusCode, data });
-                  }
-                });
-              });
-              req.on('error', (e) => { 
-                console.error(`[ERROR] Request error for ${path}:`, e);
-                reject(e); 
-              });
-              if (body) {
-                console.log(`[INFO] Sending body for ${path}:`, JSON.stringify(body));
-                req.write(JSON.stringify(body));
-              }
-              req.end();
-            });
-          }
-
-          async function getAllEventTypes() {
-            console.log('[INFO] Fetching all event types');
-            try {
-              const res = await apiRequest('GET', '/api/v2/event-types');
-              console.log('[DEBUG] Raw event types response:', JSON.stringify(res, null, 2));
-              let eventTypes = [];
-              if (Array.isArray(res)) {
-                eventTypes = res;
-              } else if (res.eventTypes && Array.isArray(res.eventTypes)) {
-                eventTypes = res.eventTypes;
-              } else if (res.event_types && Array.isArray(res.event_types)) {
-                eventTypes = res.event_types;
-              } else if (res.data && Array.isArray(res.data)) {
-                eventTypes = res.data;
-              } else {
-                console.error('[ERROR] Invalid event types response: expected array or object with array property, got:', JSON.stringify(res, null, 2));
-                throw new Error('Invalid event types response structure');
-              }
-              console.log('[SUCCESS] Retrieved event types:', eventTypes.length);
-              return eventTypes;
-            } catch (e) {
-              console.error('[ERROR] Error fetching event types:', e.message || JSON.stringify(e));
-              throw e;
-            }
-          }
-
-          async function createSchedule(scheduleData) {
-            console.log('[INFO] Creating schedule:', scheduleData.name);
-            try {
-              const mappedAvailability = scheduleData.availability.map(slot => ({
-                ...slot,
-                days: slot.days.map(day => dayMap[day] || day)
-              }));
-              const payload = {
-                name: scheduleData.name,
-                timeZone: scheduleData.timeZone,
-                isDefault: scheduleData.isDefault !== undefined ? scheduleData.isDefault : true,
-                availability: mappedAvailability
-              };
-              console.log('[INFO] Schedule payload:', payload);
-              const result = await apiRequest('POST', '/api/v2/schedules', payload);
-              console.log(`[SUCCESS] Created schedule with ID: ${result.data.id}`);
-              return result.data.id;
-            } catch (e) {
-              console.error('[ERROR] Failed to create schedule:', e);
-              return null;
-            }
-          }
-
-          function deduplicatePackages(packages) {
-            console.log('[INFO] Deduplicating packages');
-            const seenSlugs = new Set();
-            const uniquePackages = [];
-            for (const pkg of packages) {
-              if (seenSlugs.has(pkg.slug)) {
-                console.warn(`[WARN] Duplicate slug detected: ${pkg.slug}. Skipping package: ${pkg.name}`);
-                continue;
-              }
-              seenSlugs.add(pkg.slug);
-              uniquePackages.push(pkg);
-            }
-            console.log(`[SUCCESS] Deduplicated to ${uniquePackages.length} packages`);
-            return uniquePackages;
-          }
-
-          async function insertNewEventTypes() {
-            console.log('[INFO] Checking for new event types to insert');
-            try {
-              let packages = JSON.parse(fs.readFileSync('packages.json'));
-              console.log(`[INFO] Loaded ${packages.length} packages from packages.json`);
-              if (packages.some(pkg => Object.keys(pkg).length === 1)) {
-                packages = packages.map(p => Object.values(p)[0]);
-              }
-              packages = deduplicatePackages(packages);
-              if (packages.length === 0) {
-                console.error('[ERROR] No valid packages found after deduplication');
-                throw new Error('No valid packages found after deduplication');
-              }
-              const existingEventTypes = await getAllEventTypes();
-              const existingSlugs = new Set(existingEventTypes.map(e => e.slug));
-              console.log(`[INFO] Existing event type slugs:`, Array.from(existingSlugs));
-              for (const pkg of packages) {
-                if (!pkg.slug || !pkg.name) {
-                  console.warn(`[WARN] Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
-                  continue;
-                }
-                if (existingSlugs.has(pkg.slug)) {
-                  console.log(`[INFO] Event type ${pkg.slug} already exists, skipping creation`);
-                  continue;
-                }
-                console.log(`[INFO] Preparing to create new event type: ${pkg.name} (${pkg.slug})`);
-                const priceText = pkg.discount > 0 
-                  ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice || pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
-                  : `**Price**: **$${pkg.price}**`;
-                const servicesText = pkg.equipment && Array.isArray(pkg.equipment) && pkg.equipment.length > 0
-                  ? `**Services Offered**:\n${pkg.equipment.map(e => `- ${e}`).join('\n')}`
-                  : `**Services Included**: None`;
-                const description = [
-                  priceText,
-                  `**Description**: ${pkg.description || 'No description provided'}`,
-                  `**Guests**: ${pkg.guests || 'Not specified'}`,
-                  `**Duration**: Up to ${pkg.maxDuration || 3} hours`,
-                  servicesText,
-                  `**Note**: ${pkg.note || 'No additional notes'}`
-                ].join('\n\n');
-                const transformed = {
-                  title: pkg.name,
-                  slug: pkg.slug,
-                  length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
-                  description: description,
-                  locations: pkg.locationTypes && Array.isArray(pkg.types) && pkg.types[0]?.location_type
-                    ? [{ type: 'address', address: 'To be provided by client', public: true }]
-                    : [{ type: 'address', address: pkg.type || 'Toronto, ON', public: true }],
-                  availability: pkg.available || {
-                    days: pkg.days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                    startTime: pkg.startTime || '09:00',
-                    endTime: pkg.endTime || '23:59'
-                  },
-                  tags: [],
-                  disableGuests: pkg.disableGuests || false,
-                  metadata: {
-                    disableCalVideoTranscription: pkg.disableCalVideo || false,
-                    disableGuestsCancelling: pkg.disableGuestsCancel || false,
-                    disableGuestsRescheduling: pkg.disableGuestsReschedule || false
-                  },
-                  bookingFields: pkg.fieldsFields || [],
-                  color: pkg.color || undefined,
-                  minimumBookingNotice: pkg.minimumNotice || undefined,
-                  bookerLayouts: pkg.layouts || undefined
-                };
-                if (Array.isArray(pkg.eventType)) {
-                  transformed.tags = transformed.tags.concat(pkg.eventType);
-                }
-                if (pkg.packageType) {
-                  transformed.tags.push(pkg.packageType);
-                }
-                if (pkg.Sale === 'Y') {
-                  transformed.tags.push('On Sale');
-                }
-                if (pkg.New === 'Y') {
-                  transformed.tags.push('New');
-                }
-                console.log(`[INFO] Creating new event type for slug: ${transformed.slug}`);
-                let eventTypeId = null;
-                try {
-                  const result = await apiRequest('POST', '/api/v2/event-types', transformed);
-                  console.log(`[SUCCESS] Created event type for slug: ${transformed.slug} with ID: ${result.data.id}`);
-                  eventTypeId = result.data.id;
-                } catch (e) {
-                  if (e.statusCode === 400 && e.data?.error?.data?.message?.includes('event type with this slug')) {
-                    console.log(`[INFO] Event type ${transformed.slug} already exists, skipping`);
-                    continue;
-                  }
-                  console.error(`[ERROR] Failed to create event type for slug: ${transformed.slug}:`, e);
-                  continue;
-                }
-                if (transformed.availability && Array.isArray(transformed.availability.schedules)) {
-                  console.log(`[INFO] Processing schedules for slug: ${transformed.slug}`);
-                  const scheduleIds = [];
-                  for (const schedule of transformed.availability.schedules) {
-                    const scheduleId = await createSchedule(schedule);
-                    if (scheduleId) scheduleIds.push(scheduleId);
-                  }
-                  if (scheduleIds.length > 0 && eventTypeId) {
-                    try {
-                      await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, { scheduleIds });
-                      console.log(`[SUCCESS] Updated schedule IDs for slug: ${transformed.slug}`);
-                    } catch (e) {
-                      console.error(`[ERROR] Failed to update schedule IDs for slug: ${transformed.slug}:`, e);
-                    }
-                  }
-                }
-                await new Promise(resolve => setTimeout(resolve, 5000));
-              }
-              console.log('[SUCCESS] New event type insertion completed');
-            } catch (e) {
-              console.error('[ERROR] Fatal error during insertion:', e.message || JSON.stringify(e));
-              process.exit(1);
-            }
-          }
-
-          insertNewEventTypes();
-          SCRIPT
-
-      - name: Insert new event types
-        env:
-          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
-        run: |
-          node insert-event-types.js || {
-            echo "Insertion script failed. Check logs for details.";
-            exit 1
-          }
-
-      - name: Write payment configuration script
-        run: |
-          cat <<'SCRIPT' > configure-payments.js
-          const fs = require('fs');
-          const https = require('https');
 
           function apiRequest(method, path, body = null) {
             return new Promise((resolve, reject) => {
               const options = {
                 hostname: 'api.cal.com',
-                path: path,
-                method: method,
+                path,
+                method,
                 headers: {
-                  'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
+                  Authorization: `Bearer ${process.env.CALCOM_API_KEY}`,
                   'Content-Type': 'application/json'
                 }
               };
               const req = https.request(options, (res) => {
                 let data = '';
-                res.on('data', (chunk) => { data += chunk; });
+                res.on('data', (chunk) => data += chunk);
                 res.on('end', () => {
                   if (res.statusCode >= 200 && res.statusCode < 300) {
                     try {
                       resolve(JSON.parse(data || '{}'));
                     } catch (e) {
-                      reject(e);
+                      reject(new Error(`Failed to parse response for ${path}: ${e.message}`));
                     }
                   } else {
-                    reject({ statusCode: res.statusCode, data });
+                    reject(new Error(`Request failed for ${path} with status ${res.statusCode}`));
                   }
                 });
               });
-              req.on('error', (error) => { reject(error); });
-              if (body) {
-                req.write(JSON.stringify(body));
-              }
+              req.on('error', (e) => reject(new Error(`Request error for ${path}: ${e.message}`)));
+              if (body) req.write(JSON.stringify(body));
               req.end();
             });
           }
 
+          async function getAllEventTypes() {
+            try {
+              const res = await apiRequest('GET', '/api/v2/event-types');
+              const eventTypes = Array.isArray(res) ? res :
+                res.eventTypes && Array.isArray(res.eventTypes) ? res.eventTypes :
+                res.event_types && Array.isArray(res.event_types) ? res.event_types :
+                res.data && Array.isArray(res.data) ? res.data : [];
+              if (!Array.isArray(eventTypes)) {
+                throw new Error('Invalid event types response structure');
+              }
+              return eventTypes;
+            } catch (e) {
+              throw new Error(`Error fetching event types: ${e.message}`);
+            }
+          }
+
+          function deduplicatePackages(packages) {
+            const seenSlugs = new Set();
+            return packages.filter(pkg => {
+              if (seenSlugs.has(pkg.slug)) {
+                console.warn(`Duplicate slug detected: ${pkg.slug}. Skipping package: ${pkg.name}`);
+                return false;
+              }
+              seenSlugs.add(pkg.slug);
+              return true;
+            });
+          }
+
+          function loadPackages() {
+            let packages = JSON.parse(fs.readFileSync('packages.json'));
+            if (packages.some(pkg => Object.keys(pkg).length === 1)) {
+              packages = packages.map(p => Object.values(p)[0]);
+            }
+            return deduplicatePackages(packages);
+          }
+
+          module.exports = { apiRequest, getAllEventTypes, deduplicatePackages, loadPackages };
+          SCRIPT
+
+      - name: Write event type deletion script
+        run: |
+          cat <<'SCRIPT' > delete-event-types.js
+          const { apiRequest, getAllEventTypes } = require('./utils');
+
+          async function deleteAllEventTypes() {
+            try {
+              const eventTypes = await getAllEventTypes();
+              if (!eventTypes.length) {
+                console.log('No event types found to delete');
+                return;
+              }
+              for (const { id, slug } of eventTypes) {
+                if (id) {
+                  await apiRequest('DELETE', `/api/v2/event-types/${id}`);
+                  console.log(`Deleted event type: ${slug || 'unknown'}`);
+                } else {
+                  console.warn(`Event type missing ID: ${JSON.stringify(eventTypes)}`);
+                }
+              }
+              console.log('All event types processed for deletion');
+            } catch (e) {
+              console.error(`Fatal error during deletion: ${e.message}`);
+              process.exit(1);
+            }
+          }
+
+          deleteAllEventTypes();
+          SCRIPT
+
+      - name: Delete all event types
+        env:
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
+        run: |
+          node delete-event-types.js || {
+            node delete-event-types.js || {
+              echo "Deletion script failed. Check logs for details."
+              exit 1
+            }
+          }
+
+      - name: Write event type update script
+        run: |
+          cat <<'SCRIPT' > update-event-types.js
+          const { apiRequest, getAllEventTypes, loadPackages } = require('./utils');
+
+          const dayMap = {
+            Monday: 'Monday', Tuesday: 'Tuesday', Wednesday: 'Wednesday',
+            Thursday: 'Thursday', Friday: 'Friday', Saturday: 'Saturday', Sunday: 'Sunday',
+            1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 7: 'Sunday'
+          };
+
+          function compareObjects(obj1, obj2, path = '') {
+            const differences = [];
+            for (const key in obj1) {
+              if (key === 'description' || key === 'scheduleIds') continue;
+              const fullPath = path ? `${path}.${key}` : key;
+              if (typeof obj1[key] === 'object' && obj1[key] && !Array.isArray(obj1[key])) {
+                differences.push(...compareObjects(obj1[key], obj2[key] || {}, fullPath));
+              } else if (Array.isArray(obj1[key])) {
+                if (!Array.isArray(obj2[key]) || JSON.stringify(obj1[key]) !== JSON.stringify(obj2[key])) {
+                  differences.push(`${fullPath}: ${JSON.stringify(obj1[key])} != ${JSON.stringify(obj2[key])}`);
+                }
+              } else if (obj1[key] !== obj2[key]) {
+                differences.push(`${fullPath}: ${obj1[key]} != ${obj2[key]}`);
+              }
+            }
+            for (const key in obj2) {
+              if (!(key in obj1) && key !== 'id' && key !== 'description' && key !== 'scheduleIds') {
+                differences.push(`${fullPath}: missing in new, present in old as ${obj2[key]}`);
+              }
+            }
+            return differences;
+          }
+
+          function compareEventTypes(oldTypes, newTypes) {
+            return {
+              added: newTypes.filter(type => !oldTypes.includes(type)),
+              deleted: oldTypes.filter(type => !newTypes.includes(type))
+            };
+          }
+
+          async function updateEventTypes() {
+            try {
+              const packages = loadPackages();
+              if (!packages.length) throw new Error('No valid packages found');
+              const existingEventTypes = await getAllEventTypes();
+              for (const pkg of packages) {
+                if (!pkg.slug || !pkg.name) {
+                  console.warn(`Invalid package: ${JSON.stringify(pkg)}`);
+                  continue;
+                }
+                const priceText = pkg.discount > 0 
+                  ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice || pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
+                  : `**Price**: **$${pkg.price}**`;
+                const servicesText = pkg.equipment && Array.isArray(pkg.equipment) && pkg.equipment.length > 0
+                  ? `**Services Included**:\n${pkg.equipment.map(e => `- ${e}`).join('\n')}`
+                  : `**Services Included**: None`;
+                const description = [
+                  priceText,
+                  `**Description**: ${pkg.description || 'No description provided'}`,
+                  `**Guests**: ${pkg.guests || 'Not specified'}`,
+                  `**Duration**: Up to ${pkg.maxDuration || 3} hours`,
+                  servicesText,
+                  `**Note**: ${pkg.note || 'No additional notes'}`
+                ].join('\n\n');
+                const transformed = {
+                  title: pkg.name,
+                  slug: pkg.slug,
+                  length: (pkg.maxDuration || 3) * 60,
+                  description,
+                  locations: pkg.locationTypes && Array.isArray(pkg.types) && pkg.types[0]?.location_type
+                    ? [{ type: 'address', address: 'To be provided by client', public: true }]
+                    : [{ type: 'address', address: pkg.type || 'Toronto, ON', public: true }],
+                  availability: pkg.available || {
+                    days: pkg.days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                    startTime: pkg.start || '09:00',
+                    endTime: pkg.end || '23:59'
+                  },
+                  tags: [
+                    ...(Array.isArray(pkg.eventType) ? pkg.eventType : []),
+                    ...(pkg.packageType ? [pkg.packageType] : []),
+                    ...(pkg.Sale === 'Y' ? ['On Sale'] : []),
+                    ...(pkg.New === 'Y' ? ['New'] : [])
+                  ],
+                  disableGuests: pkg.disableGuests || false,
+                  metadata: {
+                    disableCalVideoTranscription: pkg.disableCalVideoTranscript || false,
+                    disableGuestsCancelling: pkg.disableGuestsCancel || false,
+                    disableGuestsRescheduling: pkg.disableGuestsReschedule || false
+                  },
+                  bookingFields: pkg.bookingFields || [],
+                  color: pkg.color,
+                  minimumBookingNotice: pkg.minimumNotice,
+                  bookerLayouts: pkg.bookerLayouts
+                };
+                const existingEventType = existingEventTypes.find(e => e.slug === pkg.slug);
+                if (existingEventType) {
+                  const differences = compareObjects(transformed, existingEventType);
+                  const tagDiffs = compareEventTypes(existingEventType.tags || [], transformed.tags);
+                  const updatePayload = { description };
+                  if (differences.length || tagDiffs.added.length || tagDiffs.deleted.length) {
+                    Object.assign(updatePayload, transformed);
+                    await apiRequest('PATCH', `/api/v2/event-types/${existingEventType.id}`, updatePayload);
+                    console.log(`Updated event type: ${pkg.slug}`);
+                  } else {
+                    await apiRequest('PATCH', `/api/v2/event-types/${existingEventType.id}`, updatePayload);
+                    console.log(`Updated description for: ${pkg.slug}`);
+                  }
+                }
+              }
+              console.log('Event type updates completed');
+            } catch (e) {
+              console.error(`Fatal error during update: ${e.message}`);
+              process.exit(1);
+            }
+          }
+
+          updateEventTypes();
+          SCRIPT
+
+      - name: Update existing event types
+        env:
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
+        run: |
+          node update-event-types.js || {
+            echo "Update script failed. Check logs for details."
+            exit 1
+          }
+
+      - name: Write event type insertion script
+        run: |
+          cat <<'SCRIPT' > insert-event-types.js
+          const { apiRequest, getAllEventTypes, loadPackages } = require('./utils');
+
+          const dayMap = {
+            Monday: 'Monday', Tuesday: 'Tuesday', Wednesday: 'Wednesday',
+            Thursday: 'Thursday', Friday: 'Friday', Saturday: 'Saturday', Sunday: 'Sunday',
+            1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 7: 'Sunday'
+          };
+
+          async function createSchedule(scheduleData) {
+            try {
+              const payload = {
+                name: scheduleData.name,
+                timeZone: scheduleData.timeZone,
+                isDefault: scheduleData.isDefault ?? true,
+                availability: scheduleData.availability.map(slot => ({
+                  ...slot,
+                  days: slot.days.map(day => dayMap[day] || day)
+                }))
+              };
+              const result = await apiRequest('POST', '/api/v2/schedules', payload);
+              return result.data.id;
+            } catch (e) {
+              console.error(`Failed to create schedule: ${e.message}`);
+              return null;
+            }
+          }
+
+          async function insertNewEventTypes() {
+            try {
+              const packages = loadPackages();
+              if (!packages.length) throw new Error('No valid packages found');
+              const existingEventTypes = await getAllEventTypes();
+              const existingSlugs = new Set(existingEventTypes.map(e => e.slug));
+              for (const pkg of packages) {
+                if (!pkg.slug || !pkg.name) {
+                  console.warn(`Invalid package: ${JSON.stringify(pkg)}`);
+                  continue;
+                }
+                if (existingSlugs.has(pkg.slug)) {
+                  console.log(`Event type ${pkg.slug} already exists, skipping`);
+                  continue;
+                }
+                const priceText = pkg.discount > 0 
+                  ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice || pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
+                  : `**Price**: **$${pkg.price}**`;
+                const servicesText = pkg.equipment && Array.isArray(pkg.equipment) && pkg.equipment.length > 0
+                  ? `**Services Offered**:\n${pkg.equipment.map(e => `- ${e}`).join('\n')}`
+                  : `**Services Included**: None`;
+                const description = [
+                  priceText,
+                  `**Description**: ${pkg.description || 'No description provided'}`,
+                  `**Guests**: ${pkg.guests || 'Not specified'}`,
+                  `**Duration**: Up to ${pkg.maxDuration || 3} hours`,
+                  servicesText,
+                  `**Note**: ${pkg.note || 'No additional notes'}`
+                ].join('\n\n');
+                const transformed = {
+                  title: pkg.name,
+                  slug: pkg.slug,
+                  length: (pkg.maxDuration || 3) * 60,
+                  description,
+                  locations: pkg.locationTypes && Array.isArray(pkg.types) && pkg.types[0]?.location_type
+                    ? [{ type: 'address', address: 'To be provided by client', public: true }]
+                    : [{ type: 'address', address: pkg.type || 'Toronto, ON', public: true }],
+                  availability: pkg.available || {
+                    days: pkg.days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                    startTime: pkg.startTime || '09:00',
+                    endTime: pkg.endTime || '23:59'
+                  },
+                  tags: [
+                    ...(Array.isArray(pkg.eventType) ? pkg.eventType : []),
+                    ...(pkg.packageType ? [pkg.packageType] : []),
+                    ...(pkg.Sale === 'Y' ? ['On Sale'] : []),
+                    ...(pkg.New === 'Y' ? ['New'] : [])
+                  ],
+                  disableGuests: pkg.disableGuests || false,
+                  metadata: {
+                    disableCalVideoTranscription: pkg.disableCalVideo || false,
+                    disableGuestsCancelling: pkg.disableGuestsCancel || false,
+                    disableGuestsRescheduling: pkg.disableGuestsReschedule || false
+                  },
+                  bookingFields: pkg.fieldsFields || [],
+                  color: pkg.color,
+                  minimumBookingNotice: pkg.minimumNotice,
+                  bookerLayouts: pkg.layouts
+                };
+                const result = await apiRequest('POST', '/api/v2/event-types', transformed);
+                const eventTypeId = result.data.id;
+                console.log(`Created event type: ${pkg.slug}`);
+                if (transformed.availability && Array.isArray(transformed.availability.schedules)) {
+                  const scheduleIds = [];
+                  for (const schedule of transformed.availability.schedules) {
+                    const scheduleId = await createSchedule(schedule);
+                    if (scheduleId) scheduleIds.push(scheduleId);
+                  }
+                  if (scheduleIds.length) {
+                    await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, { scheduleIds });
+                    console.log(`Updated schedule IDs for: ${pkg.slug}`);
+                  }
+                }
+                await new Promise(resolve => setTimeout(resolve, 5000));
+              }
+              console.log('Event type insertion completed');
+            } catch (e) {
+              console.error(`Fatal error during insertion: ${e.message}`);
+              process.exit(1);
+            }
+          }
+
+          insertNewEventTypes();
+          SCRIPT
+
+      - name: Insert new event types
+        env:
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
+        run: |
+          node insert-event-types.js || {
+            echo "Insertion script failed. Check logs for details."
+            exit 1
+          }
+
+      - name: Write payment configuration script
+        run: |
+          cat <<'SCRIPT' > configure-payments.js
+          const { apiRequest, loadPackages } = require('./utils');
+
           async function getEventTypeId(slug) {
             try {
-              const res = await apiRequest('GET', '/api/v2/event-types?slug=' + encodeURIComponent(slug));
-              let eventTypes = [];
-              if (Array.isArray(res)) {
-                eventTypes = res;
-              } else if (res.eventTypes && Array.isArray(res.eventTypes)) {
-                eventTypes = res.eventTypes;
-              } else if (res.event_types && Array.isArray(res.event_types)) {
-                eventTypes = res.event_types;
-              } else if (res.data && Array.isArray(res.data)) {
-                eventTypes = res.data;
-              } else {
-                console.error('[ERROR] Invalid event type response for slug:', slug);
-                return null;
-              }
-              return eventTypes.length > 0 ? eventTypes[0].id : null;
-            } catch (error) {
-              console.error('Error fetching event type ID for slug:', slug, error);
+              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
+              const eventTypes = Array.isArray(res) ? res :
+                res.eventTypes && Array.isArray(res.eventTypes) ? res.eventTypes :
+                res.event_types && Array.isArray(res.event_types) ? res.event_types :
+                res.data && Array.isArray(res.data) ? res.data : [];
+              return eventTypes.length ? eventTypes[0].id : null;
+            } catch (e) {
+              console.error(`Error fetching event type ID for ${slug}: ${e.message}`);
               return null;
             }
           }
 
           async function configurePayments() {
             try {
-              console.log('[INFO] Starting payment configuration');
-              let packages = JSON.parse(fs.readFileSync('packages.json'));
-              if (packages.some(pkg => Object.keys(pkg).length === 1)) {
-                packages = packages.map(pkg => Object.values(pkg)[0]);
-              }
-              packages = packages.filter((pkg, index, self) => 
-                index === self.findIndex(p => p.slug === pkg.slug)
-              );
-              console.log(`[INFO] Processing ${packages.length} packages for payment configuration`);
+              const packages = loadPackages();
               for (const pkg of packages) {
                 if (!pkg.slug || !pkg.name) {
-                  console.warn(`[WARN] Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
+                  console.warn(`Invalid package: ${JSON.stringify(pkg)}`);
                   continue;
                 }
                 if (!pkg.price || pkg.price <= 0) {
-                  console.log(`[INFO] Skipping payment configuration for ${pkg.slug} due to invalid price`);
+                  console.log(`Skipping payment for ${pkg.slug}: invalid price`);
                   continue;
                 }
                 const eventTypeId = await getEventTypeId(pkg.slug);
                 if (!eventTypeId) {
-                  console.warn(`[WARN] No event type found for slug ${pkg.slug}, skipping payment configuration`);
+                  console.warn(`No event type found for ${pkg.slug}`);
                   continue;
                 }
                 const paymentPayload = {
@@ -1546,20 +448,35 @@ jobs:
                     }
                   }
                 };
-                try {
-                  await apiRequest('PATCH', '/api/v2/event-types/' + eventTypeId, paymentPayload);
-                  console.log(`[SUCCESS] Configured payment for slug: ${pkg.slug}`);
-                } catch (e) {
-                  console.error(`[ERROR] Failed to configure payment for slug ${pkg.slug}:`, e);
-                }
+                await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, paymentPayload);
+                console.log(`Configured payment for: ${pkg.slug}`);
                 await new Promise(resolve => setTimeout(resolve, 2000));
               }
-              console.log('[SUCCESS] Payment configuration completed');
+              console.log('Payment configuration completed');
             } catch (e) {
-              console.error('[ERROR] Fatal error during payment configuration:', e.message || JSON.stringify(e));
+              console.error(`Fatal error during payment configuration: ${e.message}`);
               process.exit(1);
             }
           }
 
           configurePayments();
-         
+          SCRIPT
+
+      - name: Configure payments for event types
+        env:
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
+        run: |
+          node configure-payments.js || {
+            echo "Payment configuration failed. Check logs for details."
+            exit 1
+          }
+
+      - name: Archive logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-logs
+          path: |
+            *.log
+            *.txt
+          retention-days: 7
