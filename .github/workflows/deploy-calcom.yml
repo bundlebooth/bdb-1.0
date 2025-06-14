@@ -140,7 +140,7 @@ jobs:
                   throw new Error('Invalid package: missing slug or name');
                 }
                 const priceText = pkg.discount > 0 
-                  ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
+                  ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice}~~) - ${pkg.discount}% OFF!`
                   : `**Price**: **$${pkg.price}**`;
                 const servicesText = pkg.servicesIncluded && Array.isArray(pkg.servicesIncluded)
                   ? `**Services Included**:\n${pkg.servicesIncluded.map(s => `- ${s}`).join('\n')}`
