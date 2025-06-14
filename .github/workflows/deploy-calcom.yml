@@ -141,8 +141,10 @@ jobs:
         run: |
           node delete-event-types.js || {
             node delete-event-types.js || {
-              echo "Deletion script failed. Check logs for details."
-              exit 1
+              node delete-event-types.js || {
+                echo "Deletion script failed. Check logs for details."
+                exit 1
+              }
             }
           }
 
