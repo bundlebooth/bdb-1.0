@@ -50,6 +50,7 @@ jobs:
           };
 
           function apiRequest(method, path, body = null, retries = 2) {
+            console.log(`[INFO] Initiating ${method} request to ${path}`);
             return new Promise((resolve, reject) => {
               const options = {
                 hostname: 'api.cal.com',
@@ -64,68 +65,78 @@ jobs:
                 let data = '';
                 res.on('data', (chunk) => { data += chunk; });
                 res.on('end', () => {
+                  console.log(`[INFO] Response status: ${res.statusCode} for ${path}`);
                   if (res.statusCode >= 200 && res.statusCode < 300) {
                     try {
-                      resolve(JSON.parse(data || '{}'));
+                      const parsedData = JSON.parse(data || '{}');
+                      console.log(`[SUCCESS] Parsed response for ${path}`);
+                      resolve(parsedData);
                     } catch (e) {
+                      console.error(`[ERROR] Failed to parse response for ${path}:`, e);
                       reject(e);
                     }
                   } else if (res.statusCode === 404 && retries > 0) {
+                    console.warn(`[WARN] 404 received for ${path}, retrying (${retries} attempts left)`);
                     setTimeout(() => {
                       apiRequest(method, path, body, retries - 1).then(resolve).catch(reject);
                     }, 1000);
                   } else {
+                    console.error(`[ERROR] Request failed for ${path} with status ${res.statusCode}`);
                     reject({ statusCode: res.statusCode, data });
                   }
                 });
               });
-              req.on('error', (e) => { reject(e); });
-              if (body) req.write(JSON.stringify(body));
+              req.on('error', (e) => { 
+                console.error(`[ERROR] Request error for ${path}:`, e);
+                reject(e); 
+              });
+              if (body) {
+                console.log(`[INFO] Sending body for ${path}:`, JSON.stringify(body));
+                req.write(JSON.stringify(body));
+              }
               req.end();
             });
           }
 
           async function getAllEventTypes() {
+            console.log('[INFO] Fetching all event types');
             try {
               const res = await apiRequest('GET', '/api/v2/event-types');
+              console.log('[SUCCESS] Retrieved event types:', res.event_types.length);
               return res.event_types || [];
             } catch (e) {
-              console.error('Error fetching event types:', e);
+              console.error('[ERROR] Error fetching event types:', e);
               return [];
             }
           }
 
           async function getEventTypeId(slug) {
+            console.log(`[INFO] Fetching event type ID for slug: ${slug}`);
             try {
               const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
               const eventTypes = res.event_types || [];
+              console.log(`[SUCCESS] Found ${eventTypes.length} event types for slug: ${slug}`);
               return eventTypes.length > 0 ? eventTypes[0].id : null;
             } catch (e) {
-              console.error(`Error fetching event type ID for slug ${slug}:`, e);
+              console.error(`[ERROR] Error fetching event type ID for slug ${slug}:`, e);
               return null;
             }
           }
 
           async function getEventType(id) {
+            console.log(`[INFO] Fetching event type with ID: ${id}`);
             try {
               const res = await apiRequest('GET', `/api/v2/event-types/${id}`);
+              console.log(`[SUCCESS] Retrieved event type for ID: ${id}`);
               return res.data || res.event_type;
             } catch (e) {
-              console.error(`Error fetching event type ${id}:`, e);
+              console.error(`[ERROR] Error fetching event type ${id}:`, e);
               return null;
             }
           }
 
-          async function deleteEventType(id) {
-            try {
-              await apiRequest('DELETE', `/api/v2/event-types/${id}`);
-              console.log(`Deleted event type with ID ${id}`);
-            } catch (e) {
-              console.error(`Error deleting event type ${id}:`, e);
-            }
-          }
-
           async function createSchedule(scheduleData) {
+            console.log('[INFO] Creating schedule:', scheduleData.name);
             try {
               const mappedAvailability = scheduleData.availability.map(slot => ({
                 ...slot,
@@ -137,17 +148,21 @@ jobs:
                 isDefault: scheduleData.isDefault !== undefined ? scheduleData.isDefault : true,
                 availability: mappedAvailability
               };
+              console.log('[INFO] Schedule payload:', payload);
               const result = await apiRequest('POST', '/api/v2/schedules', payload);
+              console.log(`[SUCCESS] Created schedule with ID: ${result.data.id}`);
               return result.data.id;
             } catch (e) {
-              console.error('Failed to create schedule:', e);
+              console.error('[ERROR] Failed to create schedule:', e);
               return null;
             }
           }
 
           async function verifyEventType(slug, expected, eventTypeId) {
+            console.log(`[INFO] Verifying event type for slug: ${slug}`);
             const eventType = await getEventType(eventTypeId);
             if (!eventType || eventType.slug !== slug) {
+              console.error(`[ERROR] Event type not found for slug: ${slug}`);
               throw new Error('Event type not found for slug: ' + slug);
             }
             const errors = [];
@@ -172,8 +187,10 @@ jobs:
               }
             }
             if (errors.length > 0) {
+              console.error(`[ERROR] Verification failed for ${slug}: ${errors.join('; ')}`);
               throw new Error('Verification failed for ' + slug + ': ' + errors.join('; '));
             }
+            console.log(`[SUCCESS] Verification passed for slug: ${slug}`);
           }
 
           function compareEventTypes(oldTypes, newTypes) {
@@ -183,6 +200,7 @@ jobs:
           }
 
           function compareObjects(obj1, obj2, path = '') {
+            console.log(`[INFO] Comparing objects at path: ${path}`);
             const differences = [];
             for (const key in obj1) {
               if (key === 'description' || key === 'scheduleIds') continue;
@@ -204,47 +222,60 @@ jobs:
                 differences.push(`${fullPath}: missing in new, present in old as ${obj2[key]}`);
               }
             }
+            if (differences.length > 0) {
+              console.log(`[INFO] Differences found:`, differences);
+            } else {
+              console.log(`[INFO] No differences found at path: ${path}`);
+            }
             return differences;
           }
 
           function deduplicatePackages(packages) {
+            console.log('[INFO] Deduplicating packages');
             const seenSlugs = new Set();
             const uniquePackages = [];
             for (const pkg of packages) {
               if (seenSlugs.has(pkg.slug)) {
-                console.warn(`Duplicate slug detected: ${pkg.slug}. Skipping package: ${pkg.name}`);
+                console.warn(`[WARN] Duplicate slug detected: ${pkg.slug}. Skipping package: ${pkg.name}`);
                 continue;
               }
               seenSlugs.add(pkg.slug);
               uniquePackages.push(pkg);
             }
+            console.log(`[SUCCESS] Deduplicated to ${uniquePackages.length} packages`);
             return uniquePackages;
           }
 
           async function processEvents() {
             try {
+              console.log('[INFO] Starting event processing');
               let packages = JSON.parse(fs.readFileSync('packages.json'));
+              console.log(`[INFO] Loaded ${packages.length} packages from packages.json`);
               if (packages.some(pkg => Object.keys(pkg).length === 1)) {
                 packages = packages.map(p => Object.values(p)[0]);
+                console.log('[INFO] Flattened nested package structure');
               }
 
               // Deduplicate packages by slug
               packages = deduplicatePackages(packages);
               if (packages.length === 0) {
+                console.error('[ERROR] No valid packages found after deduplication');
                 throw new Error('No valid packages found after deduplication');
               }
 
-              // Step 1: Fetch existing event types
+              // Step 1: Fetch existing event types for comparison
               const existingEventTypes = await getAllEventTypes();
               const existingSlugs = new Set(existingEventTypes.map(e => e.slug));
+              console.log(`[INFO] Existing event type slugs:`, Array.from(existingSlugs));
 
               // Step 2: Prepare new event types from packages.json
               const newEventTypes = [];
               for (const pkg of packages) {
                 if (!pkg.slug || !pkg.name) {
-                  console.warn(`Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
+                  console.warn(`[WARN] Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
                   continue;
                 }
+                console.log(`[INFO] Processing package: ${pkg.name} (${pkg.slug})`);
 
                 const priceText = pkg.discount > 0 
                   ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice || pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
@@ -260,6 +291,7 @@ jobs:
                   servicesText,
                   `**Note**: ${pkg.note || 'No additional notes'}`
                 ].join('\n\n');
+                console.log(`[INFO] Generated description for ${pkg.slug}`);
 
                 const transformed = {
                   title: pkg.name,
@@ -293,50 +325,63 @@ jobs:
                 if (pkg.packageType) transformed.tags.push(pkg.packageType);
                 if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
                 if (pkg.New === 'Y') transformed.tags.push('New');
+                console.log(`[INFO] Transformed package ${pkg.slug} with tags: ${transformed.tags.join(', ')}`);
 
                 newEventTypes.push(transformed);
               }
+              console.log(`[SUCCESS] Prepared ${newEventTypes.length} new event types`);
 
-              // Step 3: Process differences and updates
+              // Step 3: Compare and update/create event types
               for (const transformed of newEventTypes) {
+                console.log(`[INFO] Processing event type: ${transformed.slug}`);
                 const existingEventType = existingEventTypes.find(e => e.slug === transformed.slug);
+
                 if (existingEventType) {
+                  // Compare existing event type with new event type
+                  console.log(`[INFO] Comparing event type ${transformed.slug} with existing ID: ${existingEventType.id}`);
                   const differences = compareObjects(transformed, existingEventType);
                   const tagDiffs = compareEventTypes(existingEventType.tags || [], transformed.tags || []);
-                  try {
-                    const updatePayload = { description: transformed.description };
-                    if (differences.length > 0 || tagDiffs.added.length > 0 || tagDiffs.deleted.length > 0) {
-                      console.log(`Differences detected for slug: ${transformed.slug}`);
-                      if (differences.length > 0) {
-                        console.log('  Field differences:');
-                        differences.forEach(diff => console.log(`    ${diff}`));
-                      }
-                      if (tagDiffs.added.length > 0) {
-                        console.log(`  Added event types: ${tagDiffs.added.join(', ')}`);
-                      }
-                      if (tagDiffs.deleted.length > 0) {
-                        console.log(`  Deleted event types: ${tagDiffs.deleted.join(', ')}`);
-                      }
-                      Object.assign(updatePayload, transformed);
+
+                  // Always update description, include other updates if differences exist
+                  const updatePayload = { description: transformed.description };
+                  if (differences.length > 0 || tagDiffs.added.length > 0 || tagDiffs.deleted.length > 0) {
+                    console.log(`[INFO] Differences detected for slug: ${transformed.slug}`);
+                    if (differences.length > 0) {
+                      console.log('[INFO] Field differences:');
+                      differences.forEach(diff => console.log(`    ${diff}`));
                     }
+                    if (tagDiffs.added.length > 0) {
+                      console.log(`[INFO] Added event types: ${tagDiffs.added.join(', ')}`);
+                    }
+                    if (tagDiffs.deleted.length > 0) {
+                      console.log(`[INFO] Deleted event types: ${tagDiffs.deleted.join(', ')}`);
+                    }
+                    Object.assign(updatePayload, transformed);
+                  } else {
+                    console.log(`[INFO] Only description update required for ${transformed.slug}`);
+                  }
+
+                  try {
                     await apiRequest('PATCH', `/api/v2/event-types/${existingEventType.id}`, updatePayload);
-                    console.log(`Updated event type for slug: ${transformed.slug} (description always updated)`);
+                    console.log(`[SUCCESS] Updated event type for slug: ${transformed.slug}`);
                   } catch (e) {
-                    console.error(`Failed to update event type for slug ${transformed.slug}:`, e);
+                    console.error(`[ERROR] Failed to update event type for slug ${transformed.slug}:`, e);
                   }
                 } else {
-                  console.log(`Creating new event type for slug: ${transformed.slug} with event types: ${transformed.tags ? transformed.tags.join(', ') : 'None'}`);
+                  // Create new event type if it doesn't exist
+                  console.log(`[INFO] Creating new event type for slug: ${transformed.slug}`);
                   try {
                     const result = await apiRequest('POST', '/api/v2/event-types', transformed);
-                    console.log(`Created event type for slug: ${transformed.slug}`);
+                    console.log(`[SUCCESS] Created event type for slug: ${transformed.slug} with ID: ${result.data.id}`);
                     await verifyEventType(transformed.slug, transformed, result.data.id);
                   } catch (e) {
-                    console.error(`Failed to create event type for slug ${transformed.slug}:`, e);
+                    console.error(`[ERROR] Failed to create event type for slug ${transformed.slug}:`, e);
                   }
                 }
 
                 // Update schedules if necessary
                 if (transformed.availability && Array.isArray(transformed.availability.schedules)) {
+                  console.log(`[INFO] Processing schedules for ${transformed.slug}`);
                   const scheduleIds = [];
                   for (const schedule of transformed.availability.schedules) {
                     const scheduleId = await createSchedule(schedule);
@@ -347,26 +392,21 @@ jobs:
                     if (existingEventTypeId) {
                       try {
                         await apiRequest('PATCH', `/api/v2/event-types/${existingEventTypeId}`, { scheduleIds });
-                        console.log(`Updated schedule IDs for slug: ${transformed.slug}`);
+                        console.log(`[SUCCESS] Updated schedule IDs for slug: ${transformed.slug}`);
                       } catch (e) {
-                        console.error(`Failed to update schedule IDs for slug ${transformed.slug}:`, e);
+                        console.error(`[ERROR] Failed to update schedule IDs for slug ${transformed.slug}:`, e);
                       }
                     }
                   }
                 }
 
                 await new Promise(resolve => setTimeout(resolve, 5000));
+                console.log(`[INFO] Completed processing for ${transformed.slug}`);
               }
 
-              // Step 4: Delete obsolete event types
-              for (const existingEvent of existingEventTypes) {
-                if (!newEventTypes.some(t => t.slug === existingEvent.slug)) {
-                  await deleteEventType(existingEvent.id);
-                  console.log(`Deleted event type with slug: ${existingEvent.slug} as it is not in the new JSON`);
-                }
-              }
+              console.log('[SUCCESS] Event processing completed');
             } catch (e) {
-              console.error('Error: ' + (e.message || JSON.stringify(e)));
+              console.error('[ERROR] Fatal error during event processing:', e.message || JSON.stringify(e));
               process.exit(1);
             }
           }
