@@ -1,5 +1,6 @@
 const axios = require('axios');
 const fs = require('fs').promises;
+const retry = require('async-retry');
 
 // Configuration
 const API_BASE_URL = 'https://api.cal.com/v1';
@@ -57,7 +58,10 @@ async function fetchEventTypes(apiKey, slug) {
             };
             await logMessage(`Request config: ${JSON.stringify(config, (key, value) => key === 'Authorization' || key === 'apiKey' ? '***' : value, 2)}`);
 
-            const response = await axios.get(`${API_BASE_URL}/event-types`, config);
+            const response = await retry(
+                () => axios.get(`${API_BASE_URL}/event-types`, config),
+                { retries: 3, minTimeout: 1000 }
+            );
             await logMessage(`API Response status: ${response.status}, Page: ${page}`);
             await logMessage(`Full API response: ${JSON.stringify(response.data, null, 2)}`);
 
@@ -101,7 +105,10 @@ async function fetchEventTypes(apiKey, slug) {
             };
             await logMessage(`Fallback request config: ${JSON.stringify(config, (key, value) => key === 'Authorization' || key === 'apiKey' ? '***' : value, 2)}`);
 
-            const response = await axios.get(`${API_BASE_URL}/event-types`, config);
+            const response = await retry(
+                () => axios.get(`${API_BASE_URL}/event-types`, config),
+                { retries: 3, minTimeout: 1000 }
+            );
             await logMessage(`Slug query response: ${JSON.stringify(response.data, null, 2)}`);
 
             const eventTypes = response.data.event_types || [];
@@ -129,13 +136,16 @@ async function deleteEventType(apiKey, eventId, slug) {
     try {
         await logMessage(`API Key present for deletion: ${!!apiKey}, Length: ${apiKey ? apiKey.length : 0}`);
         await logMessage(`Deleting event type: ID ${eventId}, Slug ${slug}`);
-        const response = await axios.delete(`${API_BASE_URL}/event-types/${eventId}`, {
-            headers: {
-                Authorization: `Bearer ${apiKey}`,
-                'X-Calcom-Api-Key': apiKey
-            },
-            params: { apiKey }
-        });
+        const response = await retry(
+            () => axios.delete(`${API_BASE_URL}/event-types/${eventId}`, {
+                headers: {
+                    Authorization: `Bearer ${apiKey}`,
+                    'X-Calcom-Api-Key': apiKey
+                },
+                params: { apiKey }
+            }),
+            { retries: 3, minTimeout: 1000 }
+        );
         await logMessage(`Successfully deleted event type: ${slug} (ID: ${eventId})`);
         return response.data;
     } catch (error) {
