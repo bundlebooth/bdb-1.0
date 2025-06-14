@@ -257,7 +257,7 @@ jobs:
             try {
               console.log('[INFO] Starting event processing');
               console.log('[INFO] Reading packages.json');
-              let packages = JSON.parse(fs.readFileSync('packages.json'));
+              let packages = JSON.parse(fs.readFileSync('packages.json', 'utf8'));
               console.log(`[SUCCESS] Loaded ${packages.length} packages from packages.json`);
               // Improved flattening logic
               if (Array.isArray(packages) && packages.some(pkg => Object.keys(pkg).length === 1 && typeof Object.values(pkg)[0] === 'object')) {
@@ -540,7 +540,7 @@ jobs:
             try {
               console.log('[INFO] Starting payment configuration');
               console.log('[INFO] Reading packages.json');
-              let packages = JSON.parse(fs.readFileSync('packages.json'));
+              let packages = JSON.parse(fs.readFileSync('packages.json', 'utf8'));
               console.log(`[SUCCESS] Loaded ${packages.length} packages from packages.json`);
               if (Array.isArray(packages) && packages.some(pkg => Object.keys(pkg).length === 1 && typeof Object.values(pkg)[0] === 'object')) {
                 console.log('[INFO] Detected nested package structure, flattening');
