@@ -1,9 +1,9 @@
 [
   {
-    "name": "🔥 Glow & Go Mini Bundle (Up to 100 Guests)",
+    "name": "\ud83d\udd25 Glow & Go Mini Bundle (Up to 100 Guests)",
     "slug": "glow-go-mini-bundle",
     "price": 1020,
-    "regularPrice": 1250,
+    "regPrice": 1250,
     "discount": 18,
     "description": "Create maximum impact with minimal setup using the Glow & Go Mini Bundle. Perfect for smaller gatherings, this bundle combines the immersive 360 Video Booth with a mesmerizing Dry Ice Fog effect to elevate your event's ambiance.",
     "guests": "Up to 100",
@@ -103,10 +103,10 @@
     }
   },
   {
-    "name": "🎉 Essential Celebration Bundle",
+    "name": "\ud83c\udf89 Essential Celebration Bundle",
     "slug": "essential-celebration-bundle",
     "price": 1160,
-    "regularPrice": 1250,
+    "regPrice": 1450,
     "discount": 20,
     "description": "Celebrate with style using our Essential Celebration Bundle. This package includes a Photo Booth for fun snapshots, an Audio Guest Book for heartfelt messages, and Sparkler Boxes for a dazzling touch.",
     "guests": "Up to 150",
@@ -207,10 +207,10 @@
     }
   },
   {
-    "name": "📸 Ultimate Photo Experience Bundle",
+    "name": "\ud83d\udcf8 Ultimate Photo Experience Bundle",
     "slug": "ultimate-photo-experience-bundle",
     "price": 1680,
-    "regularPrice": 1250,
+    "regPrice": 2100,
     "discount": 20,
     "description": "Turn your event into a full-blown media moment with the Ultimate Photo Experience Bundle. Featuring a Photo Booth, 360 Video Booth, and Magazine Photo Booth Box for a variety of stunning photo ops.",
     "guests": "Up to 200",
@@ -311,10 +311,10 @@
     }
   },
   {
-    "name": "🥂 Elegant Engagement Bundle",
+    "name": "\ud83e\udd42 Elegant Engagement Bundle",
     "slug": "elegant-engagement-bundle",
     "price": 1440,
-    "regularPrice": 1250,
+    "regPrice": 1800,
     "discount": 20,
     "description": "Perfect for intimate wedding receptions, the Elegant Engagement Bundle offers a Photo Booth, Audio Guest Book, and Sparkler Boxes to capture and celebrate every romantic moment.",
     "guests": "Up to 150",
@@ -416,10 +416,10 @@
     }
   },
   {
-    "name": "🧊 Chill & Capture Bundle",
+    "name": "\ud83e\uddca Chill & Capture Bundle",
     "slug": "chill-capture-bundle",
     "price": 1680,
-    "regularPrice": 1250,
+    "regPrice": 2100,
     "discount": 20,
     "description": "Capture every cool moment with the Chill & Capture Bundle. Includes a Photo Booth, 360 Video Booth, and Sparkler Boxes for a vibrant and memorable experience.",
     "guests": "Up to 150",
@@ -520,10 +520,10 @@
     }
   },
   {
-    "name": "🎭 Glam Booth Experience",
+    "name": "\ud83c\udfad Glam Booth Experience",
     "slug": "glam-booth-experience",
     "price": 1980,
-    "regularPrice": 1250,
+    "regPrice": 2475,
     "discount": 20,
     "description": "Experience the glam with our premium Glam Booth Experience. Features a Photo Booth, Magazine Photo Booth Box, and Sparkler Boxes for a high-fashion event vibe.",
     "guests": "Up to 150",
@@ -624,10 +624,10 @@
     }
   },
   {
-    "name": "✨ Signature Experience Bundle",
+    "name": "\u2728 Signature Experience Bundle",
     "slug": "signature-experience-bundle",
     "price": 2760,
-    "regularPrice": 1250,
+    "regPrice": 3450,
     "discount": 20,
     "description": "Make your event unforgettable with the Signature Experience. Combines a Photo Booth, 360 Video Booth, Audio Guest Book, and Sparkler Boxes for a comprehensive celebration package.",
     "guests": "Up to 200",
@@ -730,12 +730,12 @@
     }
   },
   {
-    "name": "🎊 Social Soirée Bundle",
+    "name": "\ud83c\udf8a Social Soir\u00e9e Bundle",
     "slug": "social-soiree-bundle",
     "price": 2760,
-    "regularPrice": 1250,
+    "regPrice": 3450,
     "discount": 20,
-    "description": "Host a social soirée with flair and fun. This bundle includes a Photo Booth, 360 Video Booth, and Sparkler Boxes to keep the energy high and the memories vivid.",
+    "description": "Host a social soir\u00e9e with flair and fun. This bundle includes a Photo Booth, 360 Video Booth, and Sparkler Boxes to keep the energy high and the memories vivid.",
     "guests": "Up to 200",
     "maxDuration": 8,
     "servicesIncluded": [
@@ -834,10 +834,10 @@
     }
   },
   {
-    "name": "💃 First Dance Fantasy Bundle",
+    "name": "\ud83d\udc83 First Dance Fantasy Bundle",
     "slug": "first-dance-fantasy-bundle",
     "price": 1920,
-    "regularPrice": 1250,
+    "regPrice": 2400,
     "discount": 20,
     "description": "Celebrate your first dance in style with the First Dance Fantasy Bundle. Features a Photo Booth, Audio Guest Book, and a stunning Laser Effect for First Dance.",
     "guests": "Up to 150",
@@ -939,10 +939,10 @@
     }
   },
   {
-    "name": "💼 Corporate Kickoff Bundle",
+    "name": "\ud83d\udcbc Corporate Kickoff Bundle",
     "slug": "corporate-kickoff-bundle",
     "price": 3360,
-    "regularPrice": 1250,
+    "regPrice": 4200,
     "discount": 20,
     "description": "Kick off your corporate event with style. This bundle includes a Photo Booth, 360 Video Booth, and Sparkler Boxes for a professional yet engaging experience.",
     "guests": "Up to 300",
@@ -1044,10 +1044,10 @@
     }
   },
   {
-    "name": "🥳 Milestone Magic Bundle",
+    "name": "\ud83e\udd73 Milestone Magic Bundle",
     "slug": "milestone-magic-bundle",
     "price": 1680,
-    "regularPrice": 1250,
+    "regPrice": 2100,
     "discount": 20,
     "description": "Celebrate milestones with magic. Includes a Photo Booth, 360 Video Booth, and Sparkler Boxes to mark the occasion with flair.",
     "guests": "Up to 200",
@@ -1148,10 +1148,10 @@
     }
   },
   {
-    "name": "🍩 Morning Mixer Bundle",
+    "name": "\ud83c\udf69 Morning Mixer Bundle",
     "slug": "morning-mixer-bundle",
     "price": 1320,
-    "regularPrice": 1250,
+    "regPrice": 1650,
     "discount": 20,
     "description": "Perfect for brunch and daytime events, the Morning Mixer Bundle includes a Photo Booth and Audio Guest Book for a fun and heartfelt experience.",
     "guests": "Up to 150",
@@ -1250,12 +1250,12 @@
     }
   },
   {
-    "name": "☕🍓 Café & Chill Bundle (50 Guests)",
+    "name": "\u2615\ud83c\udf53 Caf\u00e9 & Chill Bundle (50 Guests)",
     "slug": "cafe-chill-bundle",
     "price": 720,
-    "regularPrice": 1250,
+    "regPrice": 900,
     "discount": 20,
-    "description": "Relax and enjoy with the Café & Chill Bundle. Features a Photo Booth and Espresso & Coffee Booth for a cozy, caffeinated event experience.",
+    "description": "Relax and enjoy with the Caf\u00e9 & Chill Bundle. Features a Photo Booth and Espresso & Coffee Booth for a cozy, caffeinated event experience.",
     "guests": "Up to 50",
     "maxDuration": 3,
     "servicesIncluded": [
@@ -1352,10 +1352,10 @@
     }
   },
   {
-    "name": "🍧 Cool Crowd Bundle",
+    "name": "\ud83c\udf67 Cool Crowd Bundle",
     "slug": "cool-crowd-bundle",
     "price": 1680,
-    "regularPrice": 1250,
+    "regPrice": 2100,
     "discount": 20,
     "description": "Keep it cool with the Cool Crowd Bundle. Includes a Photo Booth and 360 Video Booth, perfect for summer events.",
     "guests": "Up to 200",
@@ -1454,10 +1454,10 @@
     }
   },
   {
-    "name": "💑 Luxury Romance Bundle",
+    "name": "\ud83d\udc91 Luxury Romance Bundle",
     "slug": "luxury-romance-bundle",
     "price": 1920,
-    "regularPrice": 1250,
+    "regPrice": 2400,
     "discount": 20,
     "description": "Luxury wedding bundle for romance. Features a Photo Booth, Audio Guest Book, and Sparkler Boxes for an elegant celebration.",
     "guests": "Up to 200",
@@ -1559,10 +1559,10 @@
     }
   },
   {
-    "name": "☕📸 Corporate Connect Bundle (Up to 150 Guests)",
+    "name": "\u2615\ud83d\udcf8 Corporate Connect Bundle (Up to 150 Guests)",
     "slug": "corporate-connect-bundle",
     "price": 1680,
-    "regularPrice": 1250,
+    "regPrice": 2100,
     "discount": 20,
     "description": "Connect your corporate guests with the Corporate Connect Bundle. Includes a Photo Booth and Magazine Photo Booth Box for a professional touch.",
     "guests": "Up to 150",
@@ -1662,10 +1662,10 @@
     }
   },
   {
-    "name": "🌟 The Grand Wedding Experience (Up to 300 Guests)",
+    "name": "\ud83c\udf1f The Grand Wedding Experience (Up to 300 Guests)",
     "slug": "grand-wedding-experience",
     "price": 3840,
-    "regularPrice": 1250,
+    "regPrice": 4800,
     "discount": 20,
     "description": "Grand wedding experience with a Photo Booth, 360 Video Booth, and Sparkler Boxes for a spectacular celebration.",
     "guests": "Up to 300",
@@ -1767,10 +1767,10 @@
     }
   },
   {
-    "name": "🥳 All-in-One Party Bundle",
+    "name": "\ud83e\udd73 All-in-One Party Bundle",
     "slug": "all-in-one-party-bundle",
     "price": 3120,
-    "regularPrice": 1250,
+    "regPrice": 3900,
     "discount": 20,
     "description": "All your party needs bundled together. Includes a Photo Booth, 360 Video Booth, Audio Guest Book, and Sparkler Boxes for a complete event experience.",
     "guests": "Up to 250",
@@ -1873,10 +1873,10 @@
     }
   },
   {
-    "name": "📸 Photo Booth - Classic Package",
+    "name": "\ud83d\udcf8 Photo Booth - Classic Package",
     "slug": "photo-booth-classic",
     "price": 500,
-    "regularPrice": 1250,
+    "regPrice": 600,
     "discount": 17,
     "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. All photos delivered digitally.",
     "guests": "Up to 200",
@@ -1973,10 +1973,10 @@
     }
   },
   {
-    "name": "📸 Photo Booth - Deluxe Package",
+    "name": "\ud83d\udcf8 Photo Booth - Deluxe Package",
     "slug": "photo-booth-deluxe",
     "price": 600,
-    "regularPrice": 1250,
+    "regPrice": 700,
     "discount": 14,
     "description": "The photo booth experience adds a vibrant touch to any event, creating instant, tangible memories for your guests. Unlimited prints + digital copies.",
     "guests": "Up to 200",
@@ -2073,10 +2073,10 @@
     }
   },
   {
-    "name": "🎥 360 Video Booth - Classic Package",
+    "name": "\ud83c\udfa5 360 Video Booth - Classic Package",
     "slug": "360-video-booth-classic",
     "price": 600,
-    "regularPrice": 1250,
+    "regPrice": 700,
     "discount": 14,
     "description": "Elevate your event with the sophistication of our 360 Video Booth experience. Guests are invited to step onto a sleek platform as a rotating camera captures elegant, slow-motion videos from every angle.",
     "guests": "Up to 200",
@@ -2173,10 +2173,10 @@
     }
   },
   {
-    "name": "☎️ Audio Guest Book - Classic Package",
+    "name": "\u260e\ufe0f Audio Guest Book - Classic Package",
     "slug": "audio-guest-book-classic",
     "price": 350,
-    "regularPrice": 1250,
+    "regPrice": 400,
     "discount": 12,
     "description": "The Audio Guest Book offers a timeless and personal way to capture heartfelt moments. Guests simply pick up the vintage-style phone and leave a message.",
     "guests": "Up to 200",
@@ -2273,10 +2273,10 @@
     }
   },
   {
-    "name": "⭐ Magazine Photo Booth Box - Classic Package",
+    "name": "\u2b50 Magazine Photo Booth Box - Classic Package",
     "slug": "magazine-photo-booth-box-classic",
     "price": 600,
-    "regularPrice": 1250,
+    "regPrice": 700,
     "discount": 14,
     "description": "Bring the allure of a fashion magazine cover to your next event with our Magazine Photo Booth Box. Guests pose inside a life-sized, custom-branded magazine frame.",
     "guests": "Up to 200",
@@ -2373,12 +2373,12 @@
     }
   },
   {
-    "name": "☕ Espresso & Coffee Booth (50 Guests)",
+    "name": "\u2615 Espresso & Coffee Booth (50 Guests)",
     "slug": "espresso-coffee-booth-50-guests",
     "price": 700,
-    "regularPrice": 1250,
+    "regPrice": 800,
     "discount": 13,
-    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "guests": "Up to 50",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -2473,12 +2473,12 @@
     }
   },
   {
-    "name": "☕ Espresso & Coffee Booth (100 Guests)",
+    "name": "\u2615 Espresso & Coffee Booth (100 Guests)",
     "slug": "espresso-coffee-booth-100-guests",
     "price": 1100,
-    "regularPrice": 1250,
+    "regPrice": 1300,
     "discount": 15,
-    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "guests": "Up to 100",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -2573,12 +2573,12 @@
     }
   },
   {
-    "name": "☕ Espresso & Coffee Booth (150 Guests)",
+    "name": "\u2615 Espresso & Coffee Booth (150 Guests)",
     "slug": "espresso-coffee-booth-150-guests",
     "price": 1500,
-    "regularPrice": 1250,
+    "regPrice": 1800,
     "discount": 17,
-    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, cappuccinos, and more.",
+    "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, cappuccinos, and more.",
     "guests": "Up to 150",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -2673,12 +2673,12 @@
     }
   },
   {
-    "name": "☕ Espresso & Coffee Booth (200 Guests)",
+    "name": "\u2615 Espresso & Coffee Booth (200 Guests)",
     "slug": "espresso-coffee-booth-200-guests",
     "price": 1900,
-    "regularPrice": 1250,
+    "regPrice": 2300,
     "discount": 17,
-    "description": "Bring the café experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
+    "description": "Bring the caf\u00e9 experience to your event with our stylish espresso booth! We serve fresh, barista-crafted drinks including espressos, lattes, cappuccinos, and more.",
     "guests": "Up to 200",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -2773,12 +2773,12 @@
     }
   },
   {
-    "name": "🧇 Waffle Booth (50 Guests)",
+    "name": "\ud83e\uddc7 Waffle Booth (50 Guests)",
     "slug": "waffle-booth-50-guests",
     "price": 800,
-    "regularPrice": 1250,
+    "regPrice": 900,
     "discount": 11,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "guests": "Up to 50",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -2873,12 +2873,12 @@
     }
   },
   {
-    "name": "🧇 Waffle Booth (100 Guests)",
+    "name": "\ud83e\uddc7 Waffle Booth (100 Guests)",
     "slug": "waffle-booth-100-guests",
     "price": 1200,
-    "regularPrice": 1250,
+    "regPrice": 1400,
     "discount": 14,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "guests": "Up to 100",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -2973,12 +2973,12 @@
     }
   },
   {
-    "name": "🧇 Waffle Booth (150 Guests)",
+    "name": "\ud83e\uddc7 Waffle Booth (150 Guests)",
     "slug": "waffle-booth-150-guests",
     "price": 1600,
-    "regularPrice": 1250,
+    "regPrice": 1900,
     "discount": 16,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "guests": "Up to 150",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -3073,12 +3073,12 @@
     }
   },
   {
-    "name": "🧇 Waffle Booth (200 Guests)",
+    "name": "\ud83e\uddc7 Waffle Booth (200 Guests)",
     "slug": "waffle-booth-200-guests",
     "price": 2000,
-    "regularPrice": 1250,
+    "regPrice": 2400,
     "discount": 17,
-    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings—from fresh fruits and whipped cream to chocolate drizzle and syrups.",
+    "description": "Treat your guests to warm, freshly made waffles with our fun and flavorful Waffle Booth! Served with a variety of toppings\u2014from fresh fruits and whipped cream to chocolate drizzle and syrups.",
     "guests": "Up to 200",
     "maxDuration": 2,
     "servicesIncluded": [
@@ -3173,10 +3173,10 @@
     }
   },
   {
-    "name": "🥤 Smoothies Booth (50 Guests)",
+    "name": "\ud83e\udd64 Smoothies Booth (50 Guests)",
     "slug": "smoothies-booth-50-guests",
     "price": 900,
-    "regularPrice": 1250,
+    "regPrice": 1000,
     "discount": 10,
     "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies with real fruits, natural ingredients and a variety of add-ins.",
     "guests": "Up to 50",
@@ -3273,10 +3273,10 @@
     }
   },
   {
-    "name": "🥤 Smoothies Booth (100 Guests)",
+    "name": "\ud83e\udd64 Smoothies Booth (100 Guests)",
     "slug": "smoothies-booth-100-guests",
     "price": 1300,
-    "regularPrice": 1250,
+    "regPrice": 1500,
     "discount": 13,
     "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies using real fruits, natural ingredients and a variety of add-ins.",
     "guests": "Up to 100",
@@ -3373,10 +3373,10 @@
     }
   },
   {
-    "name": "🥤 Smoothies Booth (150 Guests)",
+    "name": "\ud83e\udd64 Smoothies Booth (150 Guests)",
     "slug": "smoothies-booth-150-guests",
     "price": 1700,
-    "regularPrice": 1250,
+    "regPrice": 2000,
     "discount": 15,
     "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies using real fruits, natural ingredients and a variety of add-ins.",
     "guests": "Up to 150",
@@ -3473,10 +3473,10 @@
     }
   },
   {
-    "name": "🥤 Smoothies Booth (200 Guests)",
+    "name": "\ud83e\udd64 Smoothies Booth (200 Guests)",
     "slug": "smoothies-booth-200-guests",
     "price": 2100,
-    "regularPrice": 1250,
+    "regPrice": 2500,
     "discount": 16,
     "description": "Add a fresh, healthy twist to your event with our vibrant Smoothie Booth! We blend delicious smoothies using real fruits, natural ingredients and a variety of add-ins.",
     "guests": "Up to 200",
@@ -3573,10 +3573,10 @@
     }
   },
   {
-    "name": "✨ Sparkler Boxes - Classic Package",
+    "name": "\u2728 Sparkler Boxes - Classic Package",
     "slug": "sparkler-boxes-classic",
     "price": 400,
-    "regularPrice": 1250,
+    "regPrice": 450,
     "discount": 11,
     "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
     "guests": "Up to 200",
@@ -3673,10 +3673,10 @@
     }
   },
   {
-    "name": "✨ Sparkler Boxes - Deluxe Package",
+    "name": "\u2728 Sparkler Boxes - Deluxe Package",
     "slug": "sparkler-boxes-deluxe",
     "price": 600,
-    "regularPrice": 1250,
+    "regPrice": 700,
     "discount": 14,
     "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
     "guests": "Up to 200",
@@ -3773,10 +3773,10 @@
     }
   },
   {
-    "name": "✨ Sparkler Boxes - Red Carpet Package",
+    "name": "\u2728 Sparkler Boxes - Red Carpet Package",
     "slug": "sparkler-boxes-red-carpet",
     "price": 800,
-    "regularPrice": 1250,
+    "regPrice": 1000,
     "discount": 20,
     "description": "Light up your celebration with our elegant Sparkler Boxes! A stylish station offering guests premium sparklers for that magical photo moment or grand finale.",
     "guests": "Up to 200",
@@ -3873,10 +3873,10 @@
     }
   },
   {
-    "name": "🌫️ Dry Ice Fog - Classic Package",
+    "name": "\ud83c\udf2b\ufe0f Dry Ice Fog - Classic Package",
     "slug": "dry-ice-fog-classic",
     "price": 400,
-    "regularPrice": 1250,
+    "regPrice": 500,
     "discount": 20,
     "description": "Create a stunning, cinematic atmosphere with our Dry Ice Fog Effect! This low-lying fog adds a magical touch to first dances, stage entrances, or any moment you want to make unforgettable.",
     "guests": "Up to 200",
@@ -3973,10 +3973,10 @@
     }
   },
   {
-    "name": "🪩 Laser First Dance - Classic Package",
+    "name": "\ud83e\udea9 Laser First Dance - Classic Package",
     "slug": "laser-first-dance-classic",
     "price": 900,
-    "regularPrice": 1250,
+    "regPrice": 1100,
     "discount": 18,
     "description": "Make your first dance truly unforgettable with our Laser First Dance Experience! Set beneath a canopy of synchronized laser lights and dreamy effects.",
     "guests": "Up to 200",
@@ -4073,10 +4073,10 @@
     }
   },
   {
-    "name": "🎥 Memorable Moments Bundle",
+    "name": "\ud83c\udfa5 Memorable Moments Bundle",
     "slug": "memorable-moments-bundle",
     "price": 1280,
-    "regularPrice": 1250,
+    "regPrice": 1600,
     "discount": 20,
     "description": "Capture the excitement of your event with the Memorable Moments Bundle. Features a 360 Video Booth for dynamic videos and an Audio Guest Book to record heartfelt messages from friends and family.",
     "guests": "Up to 150",
@@ -4177,10 +4177,10 @@
     }
   },
   {
-    "name": "🌟 Glamour & Fog Bundle",
+    "name": "\ud83c\udf1f Glamour & Fog Bundle",
     "slug": "glamour-fog-bundle",
     "price": 1520,
-    "regularPrice": 1250,
+    "regPrice": 1900,
     "discount": 20,
     "description": "Add a touch of glamour to your event with the Glamour & Fog Bundle. Includes a Magazine Photo Booth Box for high-fashion photos and a Dry Ice Fog effect for a dreamy atmosphere.",
     "guests": "Up to 150",
@@ -4281,10 +4281,10 @@
     }
   },
   {
-    "name": "🧇 Sweet Snapshots Bundle",
+    "name": "\ud83e\uddc7 Sweet Snapshots Bundle",
     "slug": "sweet-snapshots-bundle",
     "price": 1440,
-    "regularPrice": 1250,
+    "regPrice": 1800,
     "discount": 20,
     "description": "Make your event extra sweet with the Sweet Snapshots Bundle. Combines a Photo Booth for fun photos and a Waffle Booth for delicious treats with customizable toppings.",
     "guests": "Up to 100",
@@ -4385,10 +4385,10 @@
     }
   },
   {
-    "name": "🥤 Vibrant Vibes Bundle",
+    "name": "\ud83e\udd64 Vibrant Vibes Bundle",
     "slug": "vibrant-vibes-bundle",
     "price": 1840,
-    "regularPrice": 1250,
+    "regPrice": 2300,
     "discount": 20,
     "description": "Energize your event with the Vibrant Vibes Bundle. Features a 360 Video Booth for dynamic captures and a Smoothies Booth for refreshing, healthy drinks.",
     "guests": "Up to 150",
@@ -4489,10 +4489,10 @@
     }
   },
   {
-    "name": "☎️ Heartfelt Connections Bundle",
+    "name": "\u260e\ufe0f Heartfelt Connections Bundle",
     "slug": "heartfelt-connections-bundle",
     "price": 1360,
-    "regularPrice": 1250,
+    "regPrice": 1700,
     "discount": 20,
     "description": "Foster meaningful moments at your event with the Heartfelt Connections Bundle. Includes an Audio Guest Book for heartfelt messages and an Espresso & Coffee Booth for cozy conversations.",
     "guests": "Up to 100",
@@ -4593,10 +4593,10 @@
     }
   },
   {
-    "name": "✨ Sparkle & Sweets Bundle",
+    "name": "\u2728 Sparkle & Sweets Bundle",
     "slug": "sparkle-sweets-bundle",
     "price": 1520,
-    "regularPrice": 1250,
+    "regPrice": 1900,
     "discount": 20,
     "description": "Celebrate your event with flair using the Sparkle & Sweets Bundle. Features a Waffle Booth for delectable treats and Sparkler Boxes for a dazzling finale.",
     "guests": "Up to 100",
@@ -4697,10 +4697,10 @@
     }
   },
   {
-    "name": "🥤 Refresh & Reveal Bundle",
+    "name": "\ud83e\udd64 Refresh & Reveal Bundle",
     "slug": "refresh-reveal-bundle",
     "price": 1760,
-    "regularPrice": 1250,
+    "regPrice": 2200,
     "discount": 20,
     "description": "Keep the party fresh and magical with the Refresh & Reveal Bundle. Includes a Smoothies Booth for vibrant drinks and a Dry Ice Fog effect for a captivating atmosphere, perfect for your event.",
     "guests": "Up to 150",
@@ -4801,10 +4801,10 @@
     }
   },
   {
-    "name": "💼 Network & Snap Bundle",
+    "name": "\ud83d\udcbc Network & Snap Bundle",
     "slug": "network-snap-bundle",
     "price": 2400,
-    "regularPrice": 1250,
+    "regPrice": 3000,
     "discount": 20,
     "description": "Elevate your event with the Network & Snap Bundle. Features a Photo Booth, 360 Video Booth, and Espresso & Coffee Booth for a professional yet engaging experience with a caffeinated twist.",
     "guests": "Up to 200",
@@ -4907,10 +4907,10 @@
     }
   },
   {
-    "name": "📸 Fresh Capture Bundle",
+    "name": "\ud83d\udcf8 Fresh Capture Bundle",
     "slug": "fresh-capture-bundle",
     "price": 1520,
-    "regularPrice": 1250,
+    "regPrice": 1900,
     "discount": 20,
     "description": "Add a vibrant twist to your event with the Fresh Capture Bundle. Combines a Photo Booth for fun snapshots and a Smoothies Booth for refreshing, healthy drinks.",
     "guests": "Up to 100",
@@ -5011,10 +5011,10 @@
     }
   },
   {
-    "name": "🎥 Dynamic Treats Bundle",
+    "name": "\ud83c\udfa5 Dynamic Treats Bundle",
     "slug": "dynamic-treats-bundle",
     "price": 1440,
-    "regularPrice": 1250,
+    "regPrice": 1800,
     "discount": 20,
     "description": "Make your event unforgettable with the Dynamic Treats Bundle. Features a 360 Video Booth for dynamic video captures and a Waffle Booth for delicious, customizable treats.",
     "guests": "Up to 150",
@@ -5115,10 +5115,10 @@
     }
   },
   {
-    "name": "📸 Heartfelt Snaps Bundle",
+    "name": "\ud83d\udcf8 Heartfelt Snaps Bundle",
     "slug": "heartfelt-snaps-bundle",
     "price": 880,
-    "regularPrice": 1250,
+    "regPrice": 1100,
     "discount": 20,
     "description": "Capture heartfelt moments with the Heartfelt Snaps Bundle. Combines a Photo Booth for vibrant photos and an Audio Guest Book for cherished messages.",
     "guests": "Up to 150",
@@ -5219,10 +5219,10 @@
     }
   },
   {
-    "name": "✨ Sparkle Snap Bundle",
+    "name": "\u2728 Sparkle Snap Bundle",
     "slug": "sparkle-snap-bundle",
     "price": 920,
-    "regularPrice": 1250,
+    "regPrice": 1150,
     "discount": 20,
     "description": "Light up your event with the Sparkle Snap Bundle. Features a Photo Booth for fun snapshots and Sparkler Boxes for a dazzling touch.",
     "guests": "Up to 200",
@@ -5323,10 +5323,10 @@
     }
   },
   {
-    "name": "🎥 Trendy Video Bundle",
+    "name": "\ud83c\udfa5 Trendy Video Bundle",
     "slug": "trendy-video-bundle",
     "price": 1120,
-    "regularPrice": 1250,
+    "regPrice": 1400,
     "discount": 20,
     "description": "Create stylish memories with the Trendy Video Bundle. Includes a 360 Video Booth for dynamic videos and a Magazine Photo Booth Box for high-fashion photos.",
     "guests": "Up to 200",
@@ -5427,10 +5427,10 @@
     }
   },
   {
-    "name": "🪩 Dance Floor Magic Bundle",
+    "name": "\ud83e\udea9 Dance Floor Magic Bundle",
     "slug": "dance-floor-magic-bundle",
     "price": 1440,
-    "regularPrice": 1250,
+    "regPrice": 1800,
     "discount": 20,
     "description": "Transform your dance floor with the Dance Floor Magic Bundle. Features a 360 Video Booth for immersive captures and a Laser Effect for First Dance for a spectacular show.",
     "guests": "Up to 200",
@@ -5531,10 +5531,10 @@
     }
   },
   {
-    "name": "✨ Sentimental Sparkle Bundle",
+    "name": "\u2728 Sentimental Sparkle Bundle",
     "slug": "sentimental-sparkle-bundle",
     "price": 680,
-    "regularPrice": 1250,
+    "regPrice": 850,
     "discount": 20,
     "description": "Celebrate with heart and flair using the Sentimental Sparkle Bundle. Includes an Audio Guest Book for heartfelt messages and Sparkler Boxes for a magical touch.",
     "guests": "Up to 100",
@@ -5635,10 +5635,10 @@
     }
   },
   {
-    "name": "⭐ Fashion Messages Bundle",
+    "name": "\u2b50 Fashion Messages Bundle",
     "slug": "fashion-messages-bundle",
     "price": 880,
-    "regularPrice": 1250,
+    "regPrice": 1100,
     "discount": 20,
     "description": "Blend style and sentiment with the Fashion Messages Bundle. Features a Magazine Photo Booth Box for chic photos and an Audio Guest Book for personal keepsakes.",
     "guests": "Up to 150",
@@ -5739,10 +5739,10 @@
     }
   },
   {
-    "name": "🌫️ Dramatic Flair Bundle",
+    "name": "\ud83c\udf2b\ufe0f Dramatic Flair Bundle",
     "slug": "dramatic-flair-bundle",
     "price": 760,
-    "regularPrice": 1250,
+    "regPrice": 950,
     "discount": 20,
     "description": "Add a touch of drama with the Dramatic Flair Bundle. Combines Sparkler Boxes for a sparkling effect and Dry Ice Fog for a cinematic atmosphere.",
     "guests": "Up to 200",
@@ -5843,10 +5843,10 @@
     }
   },
   {
-    "name": "🪩 Radiant Dance Bundle",
+    "name": "\ud83e\udea9 Radiant Dance Bundle",
     "slug": "radiant-dance-bundle",
     "price": 1200,
-    "regularPrice": 1250,
+    "regPrice": 1500,
     "discount": 20,
     "description": "Illuminate your event with the Radiant Dance Bundle. Features Sparkler Boxes for dazzling moments and a Laser Effect for First Dance to create a memorable show.",
     "guests": "Up to 200",
@@ -5947,10 +5947,10 @@
     }
   },
   {
-    "name": "🎉 Festive Flair Bundle",
+    "name": "\ud83c\udf89 Festive Flair Bundle",
     "slug": "festive-flair-bundle",
     "price": 1440,
-    "regularPrice": 1250,
+    "regPrice": 1800,
     "discount": 20,
     "description": "Bring the party to life with the Festive Flair Bundle. Features a Photo Booth for vibrant snapshots and a Laser Effect for First Dance to create a dazzling atmosphere.",
     "guests": "Up to 150",
@@ -6051,10 +6051,10 @@
     }
   },
   {
-    "name": "☕ Sweet Conversations Bundle",
+    "name": "\u2615 Sweet Conversations Bundle",
     "slug": "sweet-conversations-bundle",
     "price": 1520,
-    "regularPrice": 1250,
+    "regPrice": 1900,
     "discount": 20,
     "description": "Create a cozy vibe with the Sweet Conversations Bundle. Includes an Espresso & Coffee Booth for warm drinks and a Waffle Booth for sweet treats to spark delightful chats.",
     "guests": "Up to 100",
@@ -6155,10 +6155,10 @@
     }
   },
   {
-    "name": "🥤 Glam Refresh Bundle",
+    "name": "\ud83e\udd64 Glam Refresh Bundle",
     "slug": "glam-refresh-bundle",
     "price": 1840,
-    "regularPrice": 1250,
+    "regPrice": 2300,
     "discount": 20,
     "description": "Add style and refreshment with the Glam Refresh Bundle. Features a Magazine Photo Booth Box for chic photos and a Smoothies Booth for vibrant, healthy drinks.",
     "guests": "Up to 150",
@@ -6259,10 +6259,10 @@
     }
   },
   {
-    "name": "🌫️ Cinematic Capture Bundle",
+    "name": "\ud83c\udf2b\ufe0f Cinematic Capture Bundle",
     "slug": "cinematic-capture-bundle",
     "price": 1120,
-    "regularPrice": 1250,
+    "regPrice": 1400,
     "discount": 20,
     "description": "Create a movie-like experience with the Cinematic Capture Bundle. Includes a 360 Video Booth for dynamic videos and Dry Ice Fog for a dramatic effect.",
     "guests": "Up to 200",
@@ -6363,10 +6363,10 @@
     }
   },
   {
-    "name": "✨ Starlit Sweets Bundle",
+    "name": "\u2728 Starlit Sweets Bundle",
     "slug": "starlit-sweets-bundle",
     "price": 1440,
-    "regularPrice": 1250,
+    "regPrice": 1800,
     "discount": 20,
     "description": "Light up your event with the Starlit Sweets Bundle. Features a Waffle Booth for delicious treats and Dry Ice Fog for a magical, starry atmosphere.",
     "guests": "Up to 100",
@@ -6467,10 +6467,10 @@
     }
   },
   {
-    "name": "🎥 Dynamic Glam Bundle",
+    "name": "\ud83c\udfa5 Dynamic Glam Bundle",
     "slug": "dynamic-glam-bundle",
     "price": 1680,
-    "regularPrice": 1250,
+    "regPrice": 2100,
     "discount": 20,
     "description": "Capture the spotlight with the Dynamic Glam Bundle. Includes a 360 Video Booth, Magazine Photo Booth Box, and Sparkler Boxes for a glamorous event experience.",
     "guests": "Up to 200",
@@ -6573,10 +6573,10 @@
     }
   },
   {
-    "name": "☕ Corporate Caffeine Bundle",
+    "name": "\u2615 Corporate Caffeine Bundle",
     "slug": "corporate-caffeine-bundle",
     "price": 2000,
-    "regularPrice": 1250,
+    "regPrice": 2500,
     "discount": 20,
     "description": "Energize your corporate event with the Corporate Caffeine Bundle. Features an Espresso & Coffee Booth, Photo Booth, and Audio Guest Book for a professional and engaging experience.",
     "guests": "Up to 150",
@@ -6679,10 +6679,10 @@
     }
   },
   {
-    "name": "🥤 Vibrant Party Bundle",
+    "name": "\ud83e\udd64 Vibrant Party Bundle",
     "slug": "vibrant-party-bundle",
     "price": 2320,
-    "regularPrice": 1250,
+    "regPrice": 2900,
     "discount": 20,
     "description": "Throw a lively bash with the Vibrant Party Bundle. Includes a Smoothies Booth, 360 Video Booth, and Sparkler Boxes for a colorful and memorable celebration.",
     "guests": "Up to 200",
@@ -6785,10 +6785,10 @@
     }
   },
   {
-    "name": "🧇 Romantic Treats Bundle",
+    "name": "\ud83e\uddc7 Romantic Treats Bundle",
     "slug": "romantic-treats-bundle",
     "price": 1520,
-    "regularPrice": 1250,
+    "regPrice": 1900,
     "discount": 20,
     "description": "Savor sweet moments with the Romantic Treats Bundle. Features a Waffle Booth for indulgent treats and an Audio Guest Book for heartfelt messages, perfect for intimate celebrations.",
     "guests": "Up to 100",
@@ -6889,10 +6889,10 @@
     }
   },
   {
-    "name": "🌟 Starry Night Bundle",
+    "name": "\ud83c\udf1f Starry Night Bundle",
     "slug": "starry-night-bundle",
     "price": 2000,
-    "regularPrice": 1250,
+    "regPrice": 2500,
     "discount": 20,
     "description": "Create a magical evening with the Starry Night Bundle. Includes a Photo Booth, Dry Ice Fog, and Laser Effect for First Dance for a breathtaking, starry atmosphere.",
     "guests": "Up to 200",
