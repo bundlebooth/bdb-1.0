@@ -46,8 +46,7 @@ jobs:
                 method,
                 headers: {
                   Authorization: `Bearer ${process.env.CALCOM_API_KEY || 'MISSING_API_KEY'}`,
-                  'Content-Type': 'application/json',
-                  'cal-api-version': '2024-06-14'
+                  'Content-Type': 'application/json'
                 }
               };
               console.log(`[DEBUG] API request: ${method} ${path}`);
@@ -70,7 +69,11 @@ jobs:
                       apiRequest(method, path, body, retries - 1).then(resolve).catch(reject);
                     }, 2000);
                   } else {
-                    reject(new Error(`Request failed for ${path} with status ${res.statusCode}: ${data}`));
+                    if (res.statusCode === 404 && path.includes('/event-types')) {
+                      resolve({ data: { eventTypeGroups: [] } });
+                    } else {
+                      reject(new Error(`Request failed for ${path} with status ${res.statusCode}: ${data}`));
+                    }
                   }
                 });
               });
@@ -88,7 +91,7 @@ jobs:
               let eventTypes = [];
               let page = 1;
               while (true) {
-                const res = await apiRequest('GET', `/v2/event-types?page=${page}&limit=100`);
+                const res = await apiRequest('GET', `/api/v2/event-types?page=${page}&limit=100`);
                 console.log(`[DEBUG] Event types response for page ${page}: ${JSON.stringify(res, null, 2)}`);
                 const types = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
                 if (!Array.isArray(types)) {
@@ -161,7 +164,7 @@ jobs:
                 }]
               };
               console.log(`[DEBUG] Creating schedule for ${pkg.slug}: ${JSON.stringify(payload)}`);
-              const result = await apiRequest('POST', '/v2/schedules', payload);
+              const result = await apiRequest('POST', '/api/v2/schedules', payload);
               console.log(`[INFO] Created schedule ID: ${result.data.id} for ${pkg.slug}`);
               return result.data.id;
             } catch (e) {
@@ -172,7 +175,7 @@ jobs:
 
           async function getEventTypeId(slug) {
             try {
-              const res = await apiRequest('GET', `/v2/event-types?slug=${encodeURIComponent(slug)}`);
+              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
               const eventTypes = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
               console.log(`[DEBUG] Fetched event type for slug ${slug}: ${JSON.stringify(eventTypes[0])}`);
               return eventTypes.length ? eventTypes[0].id : null;
@@ -184,7 +187,7 @@ jobs:
 
           async function inspectEventType(slug) {
             try {
-              const res = await apiRequest('GET', `/v2/event-types?slug=${encodeURIComponent(slug)}`);
+              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
               const eventTypes = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
               console.log(`[DEBUG] Inspected event type ${slug}: ${JSON.stringify(eventTypes[0], null, 2)}`);
               return eventTypes[0] || null;
@@ -207,6 +210,7 @@ jobs:
                   continue;
                 }
                 console.log(`[INFO] Processing package: ${pkg.slug}`);
+                console.log(`[DEBUG] Package details: ${JSON.stringify(pkg, null, 2)}`);
                 const priceText = pkg.discount > 0 
                   ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice || pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
                   : `**Price**: **$${pkg.price}**`;
@@ -258,7 +262,7 @@ jobs:
                   }
                   try {
                     console.log(`[DEBUG] Updating event type ${pkg.slug} with payload: ${JSON.stringify(transformed)}`);
-                    await apiRequest('PATCH', `/v2/event-types/${eventTypeId}`, transformed);
+                    await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, transformed);
                     console.log(`[INFO] Updated event type: ${pkg.slug}`);
                     await inspectEventType(pkg.slug);
                   } catch (e) {
@@ -268,7 +272,7 @@ jobs:
                 } else {
                   try {
                     console.log(`[DEBUG] Creating event type ${pkg.slug} with payload: ${JSON.stringify(transformed)}`);
-                    const result = await apiRequest('POST', '/v2/event-types', transformed);
+                    const result = await apiRequest('POST', '/api/v2/event-types', transformed);
                     console.log(`[INFO] Created event type: ${pkg.slug} with ID: ${result.data.id}`);
                     await inspectEventType(pkg.slug);
                   } catch (e) {
@@ -310,7 +314,7 @@ jobs:
 
           async function getEventTypeId(slug) {
             try {
-              const res = await apiRequest('GET', `/v2/event-types?slug=${encodeURIComponent(slug)}`);
+              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
               const eventTypes = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
               return eventTypes.length ? eventTypes[0].id : null;
             } catch (e) {
@@ -349,7 +353,7 @@ jobs:
                     }
                   }
                 };
-                await apiRequest('PATCH', `/v2/event-types/${eventTypeId}`, paymentPayload);
+                await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, paymentPayload);
                 console.log(`Configured payment for: ${pkg.slug}`);
                 await new Promise(resolve => setTimeout(resolve, 2000));
               }
