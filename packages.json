@@ -8034,7 +8034,7 @@
   },
    {
     "name": "Testing Payment",
-    "slug": "Testing Payment",
+    "slug": "testing-payment",
     "guests": 100,
     "maxDuration": 3,
     "price": 2,
