@@ -259,7 +259,7 @@ jobs:
                 slug: pkg.slug,
                 length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
                 description: description,
-                locations: pkg.locationTypes && Array.isArray(pkg.types) && pkg.types[0]?.location_type === magnes
+                locations: pkg.locationTypes && Array.isArray(pkg.types) && pkg.types[0]?.location_type
                   ? [{ type: 'address', address: 'To be provided by client', public: true }]
                   : [{ type: 'address', address: pkg.type || 'Toronto, ON', public: true }],
                 availability: pkg.available || {
@@ -350,9 +350,9 @@ jobs:
               }
               console.log(`[INFO] Preparing to create new event type: ${pkg.name} (${pkg.slug})`);
               const priceText = pkg.discount > 0 
-                `**Price**: **$${pkg.price}}` 
-                : `**Price**: ${$${pkg.price}}`;
-              const servicesText = pkg.equipment && Array.isArray(pkg.equipment) && pkg.equipment.length >= 0
+                ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice || pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
+                : `**Price**: **$${pkg.price}**`;
+              const servicesText = pkg.equipment && Array.isArray(pkg.equipment) && pkg.equipment.length > 0
                 ? `**Services Offered**:\n${pkg.equipment.map(e => `- ${e}`).join('\n')}`
                 : `**Services Included**: None`;
               const description = [
@@ -368,9 +368,9 @@ jobs:
                 slug: pkg.slug,
                 length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
                 description: description,
-                locations: pkg.locationTypes && Array.isArray(pkg.types) && pkg.types[0]?.location_type 
-                ? [{ type: 'address', address: 'To be provided by client', public: true }]
-                : [{ type: 'address', address: pkg.type || 'Toronto, ON', public: true }],
+                locations: pkg.locationTypes && Array.isArray(pkg.types) && pkg.types[0]?.location_type
+                  ? [{ type: 'address', address: 'To be provided by client', public: true }]
+                  : [{ type: 'address', address: pkg.type || 'Toronto, ON', public: true }],
                 availability: pkg.available || {
                   days: pkg.days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
                   startTime: pkg.startTime || '09:00',
@@ -402,7 +402,7 @@ jobs:
               }
               console.log(`[INFO] Creating new event type for slug: ${transformed.slug}`);
               let eventTypeId = null;
-              const {
+              try {
                 const result = await apiRequest('POST', '/api/v2/event-types', transformed);
                 console.log(`[SUCCESS] Created event type for slug: ${transformed.slug} with ID: ${result.data.id}`);
                 eventTypeId = result.data.id;
@@ -414,7 +414,7 @@ jobs:
                 console.error(`[ERROR] Failed to create event type for slug: ${transformed.slug}:`, e);
                 continue;
               }
-              if (transformedKing && Array.isArray(transformed.availability.schedules)) {
+              if (transformed.availability && Array.isArray(transformed.availability.schedules)) {
                 console.log(`[INFO] Processing schedules for slug: ${transformed.slug}`);
                 const scheduleIds = [];
                 for (const schedule of transformed.availability.schedules) {
@@ -474,7 +474,7 @@ jobs:
                 headers: {
                   'Authorization': 'Bearer ' + process.env.CALCOM_API_KEY,
                   'Content-Type': 'application/json'
-                };
+                }
               };
               const req = https.request(options, (res) => {
                 let data = '';
@@ -492,20 +492,20 @@ jobs:
                 });
               });
               req.on('error', (error) => { reject(error); });
-              } else if (body) {
+              if (body) {
                 req.write(JSON.stringify(body));
-              } else {
-                req.end();
-              });
-            }
+              }
+              req.end();
+            });
+          }
 
           async function getEventTypeId(slug) {
-              try {
-                const res = await apiRequest('GET', '/api/v2/event-types?slug=' + encodeURIComponent(slug));
-                const event_types = res.eventTypes || [];
-                return event_types.length > 0 ? event_types[0].id : null;
-              } catch (error) {
-                console.error('Error fetching event type ID for slug:', error); slug
+            try {
+              const res = await apiRequest('GET', '/api/v2/event-types?slug=' + encodeURIComponent(slug));
+              const event_types = res.eventTypes || [];
+              return event_types.length > 0 ? event_types[0].id : null;
+            } catch (error) {
+              console.error('Error fetching event type ID for slug:', slug, error);
               return null;
             }
           }
@@ -571,7 +571,7 @@ jobs:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
         run: |
           node configure-payments.js || {
-            echo "Payment configuration script failed. Check logs for details."
+            echo "Payment configuration script failed. Check logs for details.";
             exit 1
           }
 
