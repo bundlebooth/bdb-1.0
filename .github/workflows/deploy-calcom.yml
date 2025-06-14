@@ -28,6 +28,10 @@ jobs:
           fi
           echo "packages.json verified"
 
+      - name: Validate packages.json syntax
+        run: |
+          node -e "try { JSON.parse(require('fs').readFileSync('packages.json')); console.log('packages.json is valid JSON'); } catch (e) { console.error('Invalid JSON in packages.json:', e.message); process.exit(1); }"
+
       - name: Write utility functions
         run: |
           cat <<'SCRIPT' > utils.js
@@ -117,11 +121,18 @@ jobs:
           }
 
           function loadPackages() {
-            let packages = JSON.parse(fs.readFileSync('packages.json'));
-            if (packages.some(pkg => Object.keys(pkg).length === 1)) {
-              packages = packages.map(p => Object.values(p)[0]);
+            try {
+              const rawJson = fs.readFileSync('packages.json', 'utf8');
+              let packages = JSON.parse(rawJson);
+              if (packages.some(pkg => Object.keys(pkg).length === 1)) {
+                packages = packages.map(p => Object.values(p)[0]);
+              }
+              return deduplicatePackages(packages);
+            } catch (e) {
+              console.error(`[ERROR] Failed to parse packages.json: ${e.message}`);
+              console.error(`[DEBUG] JSON content near error: ${e.message.includes('position') ? rawJson.slice(Math.max(0, parseInt(e.message.match(/position (\d+)/)?.[1] || 0) - 50), parseInt(e.message.match(/position (\d+)/)?.[1] || 0) + 50) : 'N/A'}`);
+              throw e;
             }
-            return deduplicatePackages(packages);
           }
 
           module.exports = { apiRequest, getAllEventTypes, deduplicatePackages, loadPackages };
