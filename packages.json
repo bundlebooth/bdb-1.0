@@ -1,4 +1,4 @@
-[ 
+[
   {
     "name": "🔥 Glow & Go Mini Bundle (Up to 100 Guests)",
     "slug": "glow-go-mini-bundle",
@@ -63,5 +63,6 @@
         "required": true,
         "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
       }
-]
     ]
+  }
+]
