@@ -1,15 +1,21 @@
 [
   {
     "name": "🔥 Glow & Go Mini Bundle (Up to 100 Guests)",
-    "slug": "glow-and-go-mini-bundle",
+    "slug": "glow-go-mini-bundle",
     "price": 1020,
     "regularPrice": 1250,
     "discount": 18,
     "description": "Create maximum impact with minimal setup using the Glow & Go Mini Bundle. Perfect for smaller gatherings, this bundle combines the immersive 360 Video Booth with a mesmerizing Dry Ice Fog effect to elevate your event's ambiance.",
     "guests": "Up to 100",
     "maxDuration": 3,
-    "servicesIncluded": ["360 Video Booth", "Dry Ice Fog"],
-    "equipment": ["360 Video Booth", "Dry Ice Fog"],
+    "servicesIncluded": [
+      "360 Video Booth",
+      "Dry Ice Fog"
+    ],
+    "equipment": [
+      "360 Video Booth",
+      "Dry Ice Fog"
+    ],
     "note": "Additional charges apply for extended hours or additional services.",
     "locations": [
       {
@@ -18,10 +24,21 @@
       }
     ],
     "currency": "CAD",
-    "availabilityDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
     "startTime": "09:00",
     "endTime": "23:59",
-    "eventType": ["Event Bundle", "Special Effects", "All", "Corporate"],
+    "eventType": [
+      "All",
+      "Corporate"
+    ],
     "packageType": "Bundle",
     "bookingUrl": "https://cal.com/bundlebooth/placeholder",
     "Sale": "Y",
@@ -37,7 +54,9 @@
     "minimumBookingNotice": 20160,
     "bookerLayouts": {
       "defaultLayout": "month",
-      "enabledLayouts": ["month"]
+      "enabledLayouts": [
+        "month"
+      ]
     },
     "bookingFields": [
       {
@@ -66,7 +85,223 @@
           "isDefault": true,
           "availability": [
             {
-              "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "startTime": "09:00",
+              "endTime": "23:59"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "🎉 Essential Celebration Bundle",
+    "slug": "essential-celebration-bundle",
+    "price": 1160,
+    "regularPrice": 1250,
+    "discount": 20,
+    "description": "Celebrate with style using our Essential Celebration Bundle. This package includes a Photo Booth for fun snapshots, an Audio Guest Book for heartfelt messages, and Sparkler Boxes for a dazzling touch.",
+    "guests": "Up to 150",
+    "maxDuration": 6,
+    "servicesIncluded": [
+      "Photo Booth",
+      "Audio Guest Book",
+      "Sparkler Boxes"
+    ],
+    "equipment": [
+      "Photo Booth",
+      "Audio Guest Book",
+      "Sparkler Boxes"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "locations": [
+      {
+        "location": "Client will provide the address",
+        "location_type": "ask"
+      }
+    ],
+    "currency": "CAD",
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "startTime": "09:00",
+    "endTime": "23:59",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/booking/ola/services/essential-celebration-bundle",
+    "Sale": "Y",
+    "New": "N",
+    "dateAdded": "05-31-2025",
+    "disableGuestsCancelling": true,
+    "disableGuestsRescheduling": true,
+    "disableCalVideoTranscription": true,
+    "disableGuests": true,
+    "color": {
+      "lightThemeHex": "#292929"
+    },
+    "minimumBookingNotice": 20160,
+    "bookerLayouts": {
+      "defaultLayout": "month",
+      "enabledLayouts": [
+        "month"
+      ]
+    },
+    "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventAddress",
+        "slug": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
+    "availability": {
+      "timeZone": "America/Toronto",
+      "schedules": [
+        {
+          "name": "Availability",
+          "timeZone": "America/Toronto",
+          "isDefault": true,
+          "availability": [
+            {
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "startTime": "09:00",
+              "endTime": "23:59"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "📸 Ultimate Photo Experience Bundle",
+    "slug": "ultimate-photo-experience-bundle",
+    "price": 1680,
+    "regularPrice": 1250,
+    "discount": 20,
+    "description": "Turn your event into a full-blown media moment with the Ultimate Photo Experience Bundle. Featuring a Photo Booth, 360 Video Booth, and Magazine Photo Booth Box for a variety of stunning photo ops.",
+    "guests": "Up to 200",
+    "maxDuration": 6,
+    "servicesIncluded": [
+      "Photo Booth",
+      "360 Video Booth",
+      "Magazine Photo Booth Box"
+    ],
+    "equipment": [
+      "Photo Booth",
+      "360 Video Booth",
+      "Magazine Photo Booth Box"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "locations": [
+      {
+        "location": "Client will provide the address",
+        "location_type": "ask"
+      }
+    ],
+    "currency": "CAD",
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "startTime": "09:00",
+    "endTime": "23:59",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packages/ola/services/ultimate-photo-experience-bundle#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "Sale": "Y",
+    "New": "N",
+    "dateAdded": "05-31-2025",
+    "disableGuestsCancelling": true,
+    "disableGuestsRescheduling": true,
+    "disableCalVideoTranscription": true,
+    "disableGuests": true,
+    "color": {
+      "lightThemeHex": "#292929"
+    },
+    "minimumBookingNotice": 20160,
+    "bookerLayouts": {
+      "defaultLayout": "month",
+      "enabledLayouts": [
+        "month"
+      ]
+    },
+    "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventAddress",
+        "slug": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
+    "availability": {
+      "timeZone": "America/Toronto",
+      "schedules": [
+        {
+          "name": "Availability",
+          "timeZone": "America/Toronto",
+          "isDefault": true,
+          "availability": [
+            {
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
               "startTime": "09:00",
               "endTime": "23:59"
             }
