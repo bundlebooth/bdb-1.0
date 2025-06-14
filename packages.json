@@ -8032,9 +8032,9 @@
       ]
     }
   },
-  {
+   {
     "name": "Testing Payment",
-    "slug": "testing-payment",
+    "slug": "Testing Payment",
     "guests": 100,
     "maxDuration": 3,
     "price": 2,
@@ -8060,4 +8060,75 @@
         "location": "Client will provide the address",
         "location_type": "ask"
       }
+    ],
+    "currency": "CAD",
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "startTime": "09:00",
+    "endTime": "23:59",
+    "disableGuestsCancelling": true,
+    "disableGuestsRescheduling": true,
+    "disableCalVideoTranscription": true,
+    "disableGuests": true,
+    "color": {
+      "lightThemeHex": "#292929"
+    },
+    "minimumBookingNotice": 20160,
+    "bookerLayouts": {
+      "defaultLayout": "month",
+      "enabledLayouts": [
+        "month"
+      ]
+    },
+    "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventAddress",
+        "slug": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
+    "availability": {
+      "timeZone": "America/Toronto",
+      "schedules": [
+        {
+          "name": "Availability",
+          "timeZone": "America/Toronto",
+          "isDefault": true,
+          "availability": [
+            {
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "startTime": "09:00",
+              "endTime": "23:59"
+            }
+          ]
+        }
+      ]
+    }
+  }
 ]
