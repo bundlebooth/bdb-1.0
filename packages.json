@@ -1,5 +1,4 @@
 [
-  
   {
     "name": "🔥 Glow & Go Mini Bundle (Up to 100 Guests)",
     "slug": "glow-go-mini-bundle",
@@ -55,6 +54,7 @@
         "month"
       ]
     },
+    "timeZone": "America/Toronto",
     "bookingFields": [
       {
         "name": "phoneNumber",
@@ -63,6 +63,14 @@
         "type": "phone",
         "required": true,
         "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventLocation",
+        "slug": "eventLocation",
+        "label": "Event Location",
+        "type": "text",
+        "required": true,
+        "placeholder": "Please provide the address where the event will be held"
       }
     ]
   }
