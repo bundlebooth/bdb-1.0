@@ -1,0 +1,31 @@
+name: Delete Cal.com Event Types
+
+on:
+  push:
+    branches:
+      - main  # Adjust to your default branch, e.g., 'master' if different
+
+jobs:
+  delete-event-types:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Node.js to run JavaScript for reading JSON and making API calls
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'  # Use a recent Node.js version
+
+      # Install dependencies (axios for HTTP requests)
+      - name: Install dependencies
+        run: npm install axios
+
+      # Run script to read packages-delete.json and delete event types
+      - name: Delete Cal.com Event Types
+        env:
+          CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}  # Store API key in GitHub Secrets
+        run: node delete-event-types.js
