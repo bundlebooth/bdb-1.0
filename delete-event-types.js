@@ -1,6 +1,6 @@
 const axios = require('axios');
 const fs = require('fs').promises;
-const path = require('path');
+const retry = require('async-retry');
 
 // Configuration
 const API_BASE_URL = 'https://api.cal.com/v1';
@@ -47,28 +47,30 @@ async function fetchEventTypes(apiKey, slug) {
             const config = {
                 headers: {
                     Authorization: `Bearer ${apiKey}`,
-                    'X-Calcom-Api-Key': apiKey // Alternative header
+                    'X-Calcom-Api-Key': apiKey
                 },
                 params: {
                     limit,
                     page,
-                    apiKey, // Alternative query param
-                    includeHidden: true // Fetch hidden events
+                    apiKey,
+                    includeHidden: true
                 }
             };
             await logMessage(`Request config: ${JSON.stringify(config, (key, value) => key === 'Authorization' || key === 'apiKey' ? '***' : value, 2)}`);
 
-            const response = await axios.get(`${API_BASE_URL}/event-types`, config);
+            const response = await retry(
+                () => axios.get(`${API_BASE_URL}/event-types`, config),
+                { retries: 3, minTimeout: 1000 }
+            );
             await logMessage(`API Response status: ${response.status}, Page: ${page}`);
             await logMessage(`Full API response: ${JSON.stringify(response.data, null, 2)}`);
 
-            const eventTypeGroups = response.data.eventTypeGroups || [];
-            const eventTypes = eventTypeGroups.flatMap(group => group.eventTypes || []);
+            // Handle flat event_types array
+            const eventTypes = response.data.event_types || [];
             allEventTypes = allEventTypes.concat(eventTypes);
 
-            const pagination = response.data.pagination || {};
-            await logMessage(`Pagination: ${JSON.stringify(pagination)}`);
-            if (!pagination.nextPage && (!pagination.total || allEventTypes.length >= pagination.total)) {
+            await logMessage(`Pagination: ${JSON.stringify(response.data.pagination || {})}`);
+            if (!response.data.pagination?.nextPage && (!response.data.pagination?.total || allEventTypes.length >= response.data.pagination.total)) {
                 break;
             }
             page++;
@@ -76,7 +78,7 @@ async function fetchEventTypes(apiKey, slug) {
 
         await logMessage(`Found ${allEventTypes.length} event types`);
         allEventTypes.forEach(event => {
-            logMessage(`Event: ID ${event.id}, Slug ${event.slug}, UserID ${event.userId || 'none'}, Profile ${event.profile?.slug || 'none'}, Hidden ${event.hidden || false}`);
+            logMessage(`Event: ID ${event.id}, Slug ${event.slug}, UserID ${event.userId || 'none'}, Hidden ${event.hidden || false}`);
         });
 
         // Match without userId filter
@@ -90,13 +92,26 @@ async function fetchEventTypes(apiKey, slug) {
         // Fallback: Slug-filtered query
         if (!targetEvent) {
             await logMessage(`Falling back to slug-filtered query for: ${slug}`);
-            const response = await axios.get(`${API_BASE_URL}/event-types`, {
-                headers: { Authorization: `Bearer ${apiKey}` },
-                params: { slug, includeHidden: true }
-            });
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${apiKey}`,
+                    'X-Calcom-Api-Key': apiKey
+                },
+                params: {
+                    slug,
+                    apiKey,
+                    includeHidden: true
+                }
+            };
+            await logMessage(`Fallback request config: ${JSON.stringify(config, (key, value) => key === 'Authorization' || key === 'apiKey' ? '***' : value, 2)}`);
+
+            const response = await retry(
+                () => axios.get(`${API_BASE_URL}/event-types`, config),
+                { retries: 3, minTimeout: 1000 }
+            );
             await logMessage(`Slug query response: ${JSON.stringify(response.data, null, 2)}`);
-            const eventTypeGroups = response.data.eventTypeGroups || [];
-            const eventTypes = eventTypeGroups.flatMap(group => group.eventTypes || []);
+
+            const eventTypes = response.data.event_types || [];
             const fallbackEvent = eventTypes.find(event => event.slug === slug);
             if (fallbackEvent) {
                 await logMessage(`Matched event type in slug query: ID ${fallbackEvent.id}, Slug ${fallbackEvent.slug}, UserID ${fallbackEvent.userId || 'none'}`);
@@ -121,13 +136,16 @@ async function deleteEventType(apiKey, eventId, slug) {
     try {
         await logMessage(`API Key present for deletion: ${!!apiKey}, Length: ${apiKey ? apiKey.length : 0}`);
         await logMessage(`Deleting event type: ID ${eventId}, Slug ${slug}`);
-        const response = await axios.delete(`${API_BASE_URL}/event-types/${eventId}`, {
-            headers: { 
-                Authorization: `Bearer ${apiKey}`,
-                'X-Calcom-Api-Key': apiKey
-            },
-            params: { apiKey }
-        });
+        const response = await retry(
+            () => axios.delete(`${API_BASE_URL}/event-types/${eventId}`, {
+                headers: {
+                    Authorization: `Bearer ${apiKey}`,
+                    'X-Calcom-Api-Key': apiKey
+                },
+                params: { apiKey }
+            }),
+            { retries: 3, minTimeout: 1000 }
+        );
         await logMessage(`Successfully deleted event type: ${slug} (ID: ${eventId})`);
         return response.data;
     } catch (error) {
