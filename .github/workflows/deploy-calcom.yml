@@ -25,11 +25,14 @@ jobs:
             echo "Error: packages.json not found"
             exit 1
           fi
-      - name: Write event type script
+          echo "Success: packages.json found and verified"
+
+      - name: Write event type processing script
         run: |
           cat <<'SCRIPT' > deploy.js
           const fs = require('fs');
           const https = require('https');
+
           const dayMap = {
             'Monday': 'Monday',
             'Tuesday': 'Tuesday',
@@ -46,6 +49,7 @@ jobs:
             6: 'Saturday',
             7: 'Sunday'
           };
+
           function apiRequest(method, path, body = null, retries = 2) {
             console.log(`[INFO] Initiating ${method} request to ${path}`);
             return new Promise((resolve, reject) => {
@@ -94,6 +98,7 @@ jobs:
               req.end();
             });
           }
+
           async function getAllEventTypes() {
             console.log('[INFO] Fetching all event types');
             try {
@@ -105,6 +110,7 @@ jobs:
               return [];
             }
           }
+
           async function getEventTypeId(slug) {
             console.log(`[INFO] Fetching event type ID for slug: ${slug}`);
             try {
@@ -117,6 +123,7 @@ jobs:
               return null;
             }
           }
+
           async function getEventType(id) {
             console.log(`[INFO] Fetching event type with ID: ${id}`);
             try {
@@ -128,6 +135,7 @@ jobs:
               return null;
             }
           }
+
           async function createSchedule(scheduleData) {
             console.log('[INFO] Creating schedule:', scheduleData.name);
             try {
@@ -150,45 +158,13 @@ jobs:
               return null;
             }
           }
-          async function verifyEventType(slug, expected, eventTypeId) {
-            console.log(`[INFO] Verifying event type for slug: ${slug}`);
-            const eventType = await getEventType(eventTypeId);
-            if (!eventType || eventType.slug !== slug) {
-              console.error(`[ERROR] Event type not found for slug: ${slug}`);
-              throw new Error('Event type not found for slug: ' + slug);
-            }
-            const errors = [];
-            if (expected.bookingFields) {
-              const hasEventAddress = eventType.bookingFields.some(field => 
-                field.slug === 'eventAddress' && 
-                field.type === 'textarea' && 
-                field.required === true &&
-                field.label === 'Event Address'
-              );
-              const hasPhoneNumber = eventType.bookingFields.some(field => 
-                field.slug === 'phoneNumber' && 
-                field.type === 'phone' && 
-                field.required === true &&
-                field.label === 'Phone Number'
-              );
-              if (!hasEventAddress) {
-                errors.push('bookingFields: missing eventAddress field');
-              }
-              if (!hasPhoneNumber) {
-                errors.push('bookingFields: missing phoneNumber field');
-              }
-            }
-            if (errors.length > 0) {
-              console.error(`[ERROR] Verification failed for ${slug}: ${errors.join('; ')}`);
-              throw new Error('Verification failed for ' + slug + ': ' + errors.join('; '));
-            }
-            console.log(`[SUCCESS] Verification passed for slug: ${slug}`);
-          }
+
           function compareEventTypes(oldTypes, newTypes) {
             const added = newTypes.filter(type => !oldTypes.includes(type));
             const deleted = oldTypes.filter(type => !newTypes.includes(type));
             return { added, deleted };
           }
+
           function compareObjects(obj1, obj2, path = '') {
             console.log(`[INFO] Comparing objects at path: ${path}`);
             const differences = [];
@@ -219,6 +195,7 @@ jobs:
             }
             return differences;
           }
+
           function deduplicatePackages(packages) {
             console.log('[INFO] Deduplicating packages');
             const seenSlugs = new Set();
@@ -234,159 +211,238 @@ jobs:
             console.log(`[SUCCESS] Deduplicated to ${uniquePackages.length} packages`);
             return uniquePackages;
           }
-          async function processEvents() {
-            try {
-              console.log('[INFO] Starting event processing');
-              let packages = JSON.parse(fs.readFileSync('packages.json'));
-              console.log(`[INFO] Loaded ${packages.length} packages from packages.json`);
-              if (packages.some(pkg => Object.keys(pkg).length === 1)) {
-                packages = packages.map(p => Object.values(p)[0]);
-                console.log('[INFO] Flattened nested package structure');
+
+          async function checkDiscrepancies() {
+            console.log('[INFO] Checking for discrepancies between packages.json and Cal.com event types');
+            let packages = JSON.parse(fs.readFileSync('packages.json'));
+            console.log(`[INFO] Loaded ${packages.length} packages from packages.json`);
+            if (packages.some(pkg => Object.keys(pkg).length === 1)) {
+              packages = packages.map(p => Object.values(p)[0]);
+            }
+            packages = deduplicatePackages(packages);
+            if (packages.length === 0) {
+              console.error('[ERROR] No valid packages found after deduplication');
+              throw new Error('No valid packages found after deduplication');
+            }
+
+            const existingEventTypes = await getAllEventTypes();
+            const existingSlugs = new Set(existingEventTypes.map(e => e.slug));
+            console.log(`[INFO] Existing event type slugs:`, Array.from(existingSlugs));
+
+            for (const pkg of packages) {
+              if (!pkg.slug || !pkg.name) {
+                console.warn(`[WARN] Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
+                continue;
               }
-              // Deduplicate packages by slug
-              packages = deduplicatePackages(packages);
-              if (packages.length === 0) {
-                console.error('[ERROR] No valid packages found after deduplication');
-                throw new Error('No valid packages found after deduplication');
+              console.log(`[INFO] Checking package: ${pkg.name} (${pkg.slug})`);
+              const priceText = pkg.discount > 0 
+                ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice || pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
+                : `**Price**: **$${pkg.price}**`;
+              const servicesText = pkg.equipment && Array.isArray(pkg.equipment) && pkg.equipment.length > 0
+                ? `**Services Included**:\n${pkg.equipment.map(e => `- ${e}`).join('\n')}`
+                : `**Services Included**: None`;
+              const description = [
+                priceText,
+                `**Description**: ${pkg.description || 'No description provided'}`,
+                `**Guests**: ${pkg.guests || 'Not specified'}`,
+                `**Duration**: Up to ${pkg.maxDuration || 3} hours`,
+                servicesText,
+                `**Note**: ${pkg.note || 'No additional notes'}`
+              ].join('\n\n');
+
+              const transformed = {
+                title: pkg.name,
+                slug: pkg.slug,
+                length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
+                description: description,
+                locations: pkg.locations && Array.isArray(pkg.locations) && pkg.locations[0]?.location_type === 'ask'
+                  ? [{ type: 'address', address: 'To be provided by client', public: true }]
+                  : [{ type: 'address', address: pkg.location || 'Toronto, ON', public: true }],
+                availability: pkg.availability || {
+                  days: pkg.availabilityDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                  startTime: pkg.startTime || '09:00',
+                  endTime: pkg.endTime || '23:59'
+                },
+                tags: [],
+                disableGuests: pkg.disableGuests || false,
+                metadata: {
+                  disableCalVideoTranscription: pkg.disableCalVideoTranscription || false,
+                  disableGuestsCancelling: pkg.disableGuestsCancelling || false,
+                  disableGuestsRescheduling: pkg.disableGuestsRescheduling || false
+                },
+                bookingFields: pkg.bookingFields || [],
+                color: pkg.color || undefined,
+                minimumBookingNotice: pkg.minimumBookingNotice || undefined,
+                bookerLayouts: pkg.bookerLayouts || undefined
+              };
+              if (Array.isArray(pkg.eventType)) {
+                transformed.tags = transformed.tags.concat(pkg.eventType);
               }
-              // Step 1: Fetch existing event types for comparison
-              const existingEventTypes = await getAllEventTypes();
-              const existingSlugs = new Set(existingEventTypes.map(e => e.slug));
-              console.log(`[INFO] Existing event type slugs:`, Array.from(existingSlugs));
-              // Step 2: Prepare new event types from packages.json
-              const newEventTypes = [];
-              for (const pkg of packages) {
-                if (!pkg.slug || !pkg.name) {
-                  console.warn(`[WARN] Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
-                  continue;
-                }
-                console.log(`[INFO] Processing package: ${pkg.name} (${pkg.slug})`);
-                const priceText = pkg.discount > 0 
-                  ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice || pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
-                  : `**Price**: **$${pkg.price}**`;
-                const servicesText = pkg.equipment && Array.isArray(pkg.equipment) && pkg.equipment.length > 0
-                  ? `**Services Included**:\n${pkg.equipment.map(e => `- ${e}`).join('\n')}`
-                  : `**Services Included**: None`;
-                const description = [
-                  priceText,
-                  `**Description**: ${pkg.description || 'No description provided'}`,
-                  `**Guests**: ${pkg.guests || 'Not specified'}`,
-                  `**Duration**: Up to ${pkg.maxDuration || 3} hours`,
-                  servicesText,
-                  `**Note**: ${pkg.note || 'No additional notes'}`
-                ].join('\n\n');
-                console.log(`[INFO] Generated description for ${pkg.slug}`);
-                const transformed = {
-                  title: pkg.name,
-                  slug: pkg.slug,
-                  length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
-                  description: description,
-                  locations: pkg.locations && Array.isArray(pkg.locations) && pkg.locations[0]?.location_type === 'ask'
-                    ? [{ type: 'address', address: 'To be provided by client', public: true }]
-                    : [{ type: 'address', address: pkg.location || 'Toronto, ON', public: true }],
-                  availability: pkg.availability || {
-                    days: pkg.availabilityDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                    startTime: pkg.startTime || '09:00',
-                    endTime: pkg.endTime || '23:59'
-                  },
-                  tags: [],
-                  disableGuests: pkg.disableGuests || false,
-                  metadata: {
-                    disableCalVideoTranscription: pkg.disableCalVideoTranscription || false,
-                    disableGuestsCancelling: pkg.disableGuestsCancelling || false,
-                    disableGuestsRescheduling: pkg.disableGuestsRescheduling || false
-                  },
-                  bookingFields: pkg.bookingFields || [],
-                  color: pkg.color || undefined,
-                  minimumBookingNotice: pkg.minimumBookingNotice || undefined,
-                  bookerLayouts: pkg.bookerLayouts || undefined
-                };
-                if (Array.isArray(pkg.eventType)) {
-                  transformed.tags = transformed.tags.concat(pkg.eventType);
-                }
-                if (pkg.packageType) transformed.tags.push(pkg.packageType);
-                if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
-                if (pkg.New === 'Y') transformed.tags.push('New');
-                console.log(`[INFO] Transformed package ${pkg.slug} with tags: ${transformed.tags.join(', ')}`);
-                newEventTypes.push(transformed);
-              }
-              console.log(`[SUCCESS] Prepared ${newEventTypes.length} new event types`);
-              // Step 3: Compare and update/create event types
-              for (const transformed of newEventTypes) {
-                console.log(`[INFO] Processing event type: ${transformed.slug}`);
-                const existingEventType = existingEventTypes.find(e => e.slug === transformed.slug);
-                if (existingEventType) {
-                  // Compare existing event type with new event type
-                  console.log(`[INFO] Comparing event type ${transformed.slug} with existing ID: ${existingEventType.id}`);
-                  const differences = compareObjects(transformed, existingEventType);
-                  const tagDiffs = compareEventTypes(existingEventType.tags || [], transformed.tags || []);
-                  // Always update description, include other updates if differences exist
-                  const updatePayload = { description: transformed.description };
-                  if (differences.length > 0 || tagDiffs.added.length > 0 || tagDiffs.deleted.length > 0) {
-                    console.log(`[INFO] Differences detected for slug: ${transformed.slug}`);
-                    if (differences.length > 0) {
-                      console.log('[INFO] Field differences:');
-                      differences.forEach(diff => console.log(`    ${diff}`));
-                    }
-                    if (tagDiffs.added.length > 0) {
-                      console.log(`[INFO] Added event types: ${tagDiffs.added.join(', ')}`);
-                    }
-                    if (tagDiffs.deleted.length > 0) {
-                      console.log(`[INFO] Deleted event types: ${tagDiffs.deleted.join(', ')}`);
-                    }
-                    Object.assign(updatePayload, transformed);
-                  } else {
-                    console.log(`[INFO] Only description update required for ${transformed.slug}`);
+              if (pkg.packageType) transformed.tags.push(pkg.packageType);
+              if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
+              if (pkg.New === 'Y') transformed.tags.push('New');
+
+              const existingEventType = existingEventTypes.find(e => e.slug === transformed.slug);
+              if (existingEventType) {
+                console.log(`[INFO] Comparing event type ${transformed.slug} with existing ID: ${existingEventType.id}`);
+                const differences = compareObjects(transformed, existingEventType);
+                const tagDiffs = compareEventTypes(existingEventType.tags || [], transformed.tags || []);
+                const updatePayload = { description: transformed.description };
+                if (differences.length > 0 || tagDiffs.added.length > 0 || tagDiffs.deleted.length > 0) {
+                  console.log(`[INFO] Differences detected for slug: ${transformed.slug}`);
+                  if (differences.length > 0) {
+                    console.log('[INFO] Field differences:');
+                    differences.forEach(diff => console.log(`    ${diff}`));
                   }
+                  if (tagDiffs.added.length > 0) {
+                    console.log(`[INFO] Added event types: ${tagDiffs.added.join(', ')}`);
+                  }
+                  if (tagDiffs.deleted.length > 0) {
+                    console.log(`[INFO] Deleted event types: ${tagDiffs.deleted.join(', ')}`);
+                  }
+                  Object.assign(updatePayload, transformed);
                   try {
                     await apiRequest('PATCH', `/api/v2/event-types/${existingEventType.id}`, updatePayload);
-                    console.log(`[SUCCESS] Updated event type for slug: ${transformed.slug}`);
+                    console.log(`[SUCCESS] Updated event type for slug: ${transformed.slug} with new description and fields`);
                   } catch (e) {
                     console.error(`[ERROR] Failed to update event type for slug ${transformed.slug}:`, e);
                   }
                 } else {
-                  // Create new event type if it doesn't exist
-                  console.log(`[INFO] Creating new event type for slug: ${transformed.slug}`);
+                  console.log(`[INFO] Only description update required for ${transformed.slug}`);
                   try {
-                    const result = await apiRequest('POST', '/api/v2/event-types', transformed);
-                    console.log(`[SUCCESS] Created event type for slug: ${transformed.slug} with ID: ${result.data.id}`);
-                    await verifyEventType(transformed.slug, transformed, result.data.id);
+                    await apiRequest('PATCH', `/api/v2/event-types/${existingEventType.id}`, updatePayload);
+                    console.log(`[SUCCESS] Updated description for slug: ${transformed.slug}`);
                   } catch (e) {
-                    console.error(`[ERROR] Failed to create event type for slug ${transformed.slug}:`, e);
+                    console.error(`[ERROR] Failed to update description for slug ${transformed.slug}:`, e);
                   }
                 }
-                // Update schedules if necessary
-                if (transformed.availability && Array.isArray(transformed.availability.schedules)) {
-                  console.log(`[INFO] Processing schedules for ${transformed.slug}`);
-                  const scheduleIds = [];
-                  for (const schedule of transformed.availability.schedules) {
-                    const scheduleId = await createSchedule(schedule);
-                    if (scheduleId) scheduleIds.push(scheduleId);
-                  }
-                  if (scheduleIds.length > 0) {
-                    const existingEventTypeId = await getEventTypeId(transformed.slug);
-                    if (existingEventTypeId) {
-                      try {
-                        await apiRequest('PATCH', `/api/v2/event-types/${existingEventTypeId}`, { scheduleIds });
-                        console.log(`[SUCCESS] Updated schedule IDs for slug: ${transformed.slug}`);
-                      } catch (e) {
-                        console.error(`[ERROR] Failed to update schedule IDs for slug ${transformed.slug}:`, e);
-                      }
+              }
+            }
+            console.log('[SUCCESS] Discrepancy check and updates completed');
+          }
+
+          async function insertNewEventTypes() {
+            console.log('[INFO] Checking for new event types to insert');
+            let packages = JSON.parse(fs.readFileSync('packages.json'));
+            console.log(`[INFO] Loaded ${packages.length} packages from packages.json`);
+            if (packages.some(pkg => Object.keys(pkg).length === 1)) {
+              packages = packages.map(p => Object.values(p)[0]);
+            }
+            packages = deduplicatePackages(packages);
+            if (packages.length === 0) {
+              console.error('[ERROR] No valid packages found after deduplication');
+              throw new Error('No valid packages found after deduplication');
+            }
+
+            const existingEventTypes = await getAllEventTypes();
+            const existingSlugs = new Set(existingEventTypes.map(e => e.slug));
+            console.log(`[INFO] Existing event type slugs:`, Array.from(existingSlugs));
+
+            for (const pkg of packages) {
+              if (!pkg.slug || !pkg.name) {
+                console.warn(`[WARN] Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
+                continue;
+              }
+              if (existingSlugs.has(pkg.slug)) {
+                console.log(`[INFO] Event type ${pkg.slug} already exists, skipping creation`);
+                continue;
+              }
+              console.log(`[INFO] Preparing to create new event type: ${pkg.name} (${pkg.slug})`);
+              const priceText = pkg.discount > 0 
+                ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice || pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
+                : `**Price**: **$${pkg.price}**`;
+              const servicesText = pkg.equipment && Array.isArray(pkg.equipment) && pkg.equipment.length > 0
+                ? `**Services Included**:\n${pkg.equipment.map(e => `- ${e}`).join('\n')}`
+                : `**Services Included**: None`;
+              const description = [
+                priceText,
+                `**Description**: ${pkg.description || 'No description provided'}`,
+                `**Guests**: ${pkg.guests || 'Not specified'}`,
+                `**Duration**: Up to ${pkg.maxDuration || 3} hours`,
+                servicesText,
+                `**Note**: ${pkg.note || 'No additional notes'}`
+              ].join('\n\n');
+
+              const transformed = {
+                title: pkg.name,
+                slug: pkg.slug,
+                length: pkg.maxDuration ? pkg.maxDuration * 60 : 180,
+                description: description,
+                locations: pkg.locations && Array.isArray(pkg.locations) && pkg.locations[0]?.location_type === 'ask'
+                  ? [{ type: 'address', address: 'To be provided by client', public: true }]
+                  : [{ type: 'address', address: pkg.location || 'Toronto, ON', public: true }],
+                availability: pkg.availability || {
+                  days: pkg.availabilityDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                  startTime: pkg.startTime || '09:00',
+                  endTime: pkg.endTime || '23:59'
+                },
+                tags: [],
+                disableGuests: pkg.disableGuests || false,
+                metadata: {
+                  disableCalVideoTranscription: pkg.disableCalVideoTranscription || false,
+                  disableGuestsCancelling: pkg.disableGuestsCancelling || false,
+                  disableGuestsRescheduling: pkg.disableGuestsRescheduling || false
+                },
+                bookingFields: pkg.bookingFields || [],
+                color: pkg.color || undefined,
+                minimumBookingNotice: pkg.minimumBookingNotice || undefined,
+                bookerLayouts: pkg.bookerLayouts || undefined
+              };
+              if (Array.isArray(pkg.eventType)) {
+                transformed.tags = transformed.tags.concat(pkg.eventType);
+              }
+              if (pkg.packageType) transformed.tags.push(pkg.packageType);
+              if (pkg.Sale === 'Y') transformed.tags.push('On Sale');
+              if (pkg.New === 'Y') transformed.tags.push('New');
+
+              console.log(`[INFO] Creating new event type for slug: ${transformed.slug}`);
+              try {
+                const result = await apiRequest('POST', '/api/v2/event-types', transformed);
+                console.log(`[SUCCESS] Created event type for slug: ${transformed.slug} with ID: ${result.data.id}`);
+              } catch (e) {
+                console.error(`[ERROR] Failed to create event type for slug ${transformed.slug}:`, e);
+              }
+
+              if (transformed.availability && Array.isArray(transformed.availability.schedules)) {
+                console.log(`[INFO] Processing schedules for ${transformed.slug}`);
+                const scheduleIds = [];
+                for (const schedule of transformed.availability.schedules) {
+                  const scheduleId = await createSchedule(schedule);
+                  if (scheduleId) scheduleIds.push(scheduleId);
+                }
+                if (scheduleIds.length > 0) {
+                  const existingEventTypeId = await getEventTypeId(transformed.slug);
+                  if (existingEventTypeId) {
+                    try {
+                      await apiRequest('PATCH', `/api/v2/event-types/${existingEventTypeId}`, { scheduleIds });
+                      console.log(`[SUCCESS] Updated schedule IDs for slug: ${transformed.slug}`);
+                    } catch (e) {
+                      console.error(`[ERROR] Failed to update schedule IDs for slug ${transformed.slug}:`, e);
                     }
                   }
                 }
-                await new Promise(resolve => setTimeout(resolve, 5000));
-                console.log(`[INFO] Completed processing for ${transformed.slug}`);
               }
-              console.log('[SUCCESS] Event processing completed');
+              await new Promise(resolve => setTimeout(resolve, 5000));
+            }
+            console.log('[SUCCESS] New event type insertion completed');
+          }
+
+          async function processEvents() {
+            try {
+              console.log('[INFO] Starting event processing pipeline');
+              await checkDiscrepancies();
+              await insertNewEventTypes();
+              console.log('[SUCCESS] Event processing pipeline completed');
             } catch (e) {
               console.error('[ERROR] Fatal error during event processing:', e.message || JSON.stringify(e));
               process.exit(1);
             }
           }
+
           processEvents();
           SCRIPT
-      - name: Create event types
+
+      - name: Process event types (Check discrepancies and insert new)
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
         run: node deploy.js
@@ -396,6 +452,7 @@ jobs:
           cat <<'SCRIPT' > configure-payments.js
           const fs = require('fs');
           const https = require('https');
+
           function apiRequest(method, path, body = null) {
             return new Promise((resolve, reject) => {
               const options = {
@@ -427,6 +484,7 @@ jobs:
               req.end();
             });
           }
+
           async function getEventTypeId(slug) {
             try {
               const res = await apiRequest('GET', '/api/v2/event-types?slug=' + encodeURIComponent(slug));
@@ -437,8 +495,10 @@ jobs:
               return null;
             }
           }
+
           async function configurePayments() {
             try {
+              console.log('[INFO] Starting payment configuration');
               let packages = JSON.parse(fs.readFileSync('packages.json'));
               if (packages.some(pkg => Object.keys(pkg).length === 1)) {
                 packages = packages.map(pkg => Object.values(pkg)[0]);
@@ -446,17 +506,19 @@ jobs:
               packages = packages.filter((pkg, index, self) => 
                 index === self.findIndex(p => p.slug === pkg.slug)
               );
+              console.log(`[INFO] Processing ${packages.length} packages for payment configuration`);
               for (const pkg of packages) {
                 if (!pkg.slug || !pkg.name) {
-                  console.warn(`Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
+                  console.warn(`[WARN] Invalid package: missing slug or name for package: ${JSON.stringify(pkg)}`);
                   continue;
                 }
                 if (!pkg.price || pkg.price <= 0) {
+                  console.log(`[INFO] Skipping payment configuration for ${pkg.slug} due to invalid price`);
                   continue;
                 }
                 const eventTypeId = await getEventTypeId(pkg.slug);
                 if (!eventTypeId) {
-                  console.warn(`No event type found for slug ${pkg.slug}, skipping payment configuration`);
+                  console.warn(`[WARN] No event type found for slug ${pkg.slug}, skipping payment configuration`);
                   continue;
                 }
                 const paymentPayload = {
@@ -474,20 +536,23 @@ jobs:
                 };
                 try {
                   await apiRequest('PATCH', '/api/v2/event-types/' + eventTypeId, paymentPayload);
-                  console.log(`Configured payment for slug: ${pkg.slug}`);
+                  console.log(`[SUCCESS] Configured payment for slug: ${pkg.slug}`);
                 } catch (e) {
-                  console.error(`Failed to configure payment for slug ${pkg.slug}:`, e);
+                  console.error(`[ERROR] Failed to configure payment for slug ${pkg.slug}:`, e);
                 }
                 await new Promise(resolve => setTimeout(resolve, 2000));
               }
+              console.log('[SUCCESS] Payment configuration completed');
             } catch (e) {
-              console.error('Error: ' + (e.message || JSON.stringify(e)));
+              console.error('[ERROR] Fatal error during payment configuration:', e.message || JSON.stringify(e));
               process.exit(1);
             }
           }
+
           configurePayments();
           SCRIPT
-      - name: Configure payments
+
+      - name: Configure payments for event types
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
         run: node configure-payments.js
