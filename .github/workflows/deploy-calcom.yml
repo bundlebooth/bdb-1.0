@@ -124,6 +124,7 @@ jobs:
               if (packages.some(pkg => Object.keys(pkg).length === 1)) {
                 packages = packages.map(p => Object.values(p)[0]);
               }
+              console.log(`[DEBUG] Loaded ${packages.length} packages from packages.json`);
               return deduplicatePackages(packages);
             } catch (e) {
               console.error(`[ERROR] Failed to parse packages.json: ${e.message}`);
@@ -157,10 +158,11 @@ jobs:
                   days: slot.days.map(day => dayMap[day] || day)
                 }))
               };
+              console.log(`[DEBUG] Creating schedule with payload: ${JSON.stringify(payload)}`);
               const result = await apiRequest('POST', '/api/v2/schedules', payload);
               return result.data.id;
             } catch (e) {
-              console.error(`Failed to create schedule: ${e.message}`);
+              console.error(`[ERROR] Failed to create schedule: ${e.message}`);
               return null;
             }
           }
@@ -169,9 +171,22 @@ jobs:
             try {
               const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
               const eventTypes = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
+              console.log(`[DEBUG] Fetched event type for slug ${slug}: ${JSON.stringify(eventTypes[0])}`);
               return eventTypes.length ? eventTypes[0].id : null;
             } catch (e) {
-              console.error(`Error fetching event type ID for ${slug}: ${e.message}`);
+              console.error(`[ERROR] Error fetching event type ID for ${slug}: ${e.message}`);
+              return null;
+            }
+          }
+
+          async function inspectEventType(slug) {
+            try {
+              const res = await apiRequest('GET', `/api/v2/event-types?slug=${encodeURIComponent(slug)}`);
+              const eventTypes = res.data?.eventTypeGroups?.flatMap(group => group.eventTypes || []) || [];
+              console.log(`[DEBUG] Inspected event type ${slug}: ${JSON.stringify(eventTypes[0], null, 2)}`);
+              return eventTypes[0] || null;
+            } catch (e) {
+              console.error(`[ERROR] Error inspecting event type ${slug}: ${e.message}`);
               return null;
             }
           }
@@ -180,13 +195,15 @@ jobs:
             try {
               const packages = loadPackages();
               if (!packages.length) throw new Error('No valid packages found');
+              console.log(`[INFO] Processing ${packages.length} packages`);
               const existingEventTypes = await getAllEventTypes();
               const existingSlugs = new Set(existingEventTypes.map(e => e.slug));
               for (const pkg of packages) {
                 if (!pkg.slug || !pkg.name) {
-                  console.warn(`Invalid package: ${JSON.stringify(pkg)}`);
+                  console.warn(`[WARN] Invalid package: ${JSON.stringify(pkg)}`);
                   continue;
                 }
+                console.log(`[INFO] Processing package: ${pkg.slug}`);
                 const priceText = pkg.discount > 0 
                   ? `**Price**: **$${pkg.price}** (Reg. ~~$${pkg.regPrice || pkg.regularPrice}~~) - ${pkg.discount}% OFF!`
                   : `**Price**: **$${pkg.price}**`;
@@ -235,24 +252,28 @@ jobs:
                   bookerLayouts: pkg.bookerLayouts
                 };
                 if (existingSlugs.has(pkg.slug)) {
-                  console.log(`Event type ${pkg.slug} already exists, updating`);
+                  console.log(`[INFO] Event type ${pkg.slug} already exists, inspecting and updating`);
+                  await inspectEventType(pkg.slug);
                   const eventTypeId = await getEventTypeId(pkg.slug);
                   if (!eventTypeId) {
-                    console.warn(`Could not find ID for event type ${pkg.slug}, skipping update`);
+                    console.warn(`[WARN] Could not find ID for event type ${pkg.slug}, skipping update`);
                     continue;
                   }
                   try {
+                    console.log(`[DEBUG] Updating event type ${pkg.slug} with payload: ${JSON.stringify(transformed)}`);
                     await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, transformed);
-                    console.log(`Updated event type: ${pkg.slug}`);
+                    console.log(`[INFO] Updated event type: ${pkg.slug}`);
+                    await inspectEventType(pkg.slug);
                   } catch (e) {
                     console.error(`[ERROR] Failed to update event type ${pkg.slug}: ${e.message}`);
                     continue;
                   }
                 } else {
                   try {
+                    console.log(`[DEBUG] Creating event type ${pkg.slug} with payload: ${JSON.stringify(transformed)}`);
                     const result = await apiRequest('POST', '/api/v2/event-types', transformed);
                     const eventTypeId = result.data.id;
-                    console.log(`Created event type: ${pkg.slug}`);
+                    console.log(`[INFO] Created event type: ${pkg.slug}`);
                     if (transformed.availability && Array.isArray(transformed.availability.schedules)) {
                       const scheduleIds = [];
                       for (const schedule of transformed.availability.schedules) {
@@ -264,13 +285,13 @@ jobs:
                       }
                       if (scheduleIds.length) {
                         await apiRequest('PATCH', `/api/v2/event-types/${eventTypeId}`, { scheduleIds });
-                        console.log(`Updated schedule IDs for: ${pkg.slug}`);
+                        console.log(`[INFO] Updated schedule IDs for: ${pkg.slug}`);
                       }
                     }
                   } catch (e) {
                     console.error(`[ERROR] Failed to create event type ${pkg.slug}: ${e.message}`);
                     if (e.message.includes('already has an event type with this slug')) {
-                      console.log(`Skipping duplicate event type: ${pkg.slug}`);
+                      console.log(`[INFO] Skipping duplicate event type: ${pkg.slug}`);
                       continue;
                     }
                     throw e;
@@ -278,9 +299,10 @@ jobs:
                 }
                 await new Promise(resolve => setTimeout(resolve, 5000));
               }
-              console.log('Event type insertion completed');
+              console.log('[INFO] Event type insertion completed');
             } catch (e) {
-              console.error(`Fatal error during insertion: ${e.message}`);
+              console.error(`[FATAL] Fatal error during insertion: ${e.message}`);
+              console.error(`[FATAL] Stack trace: ${e.stack}`);
               process.exit(1);
             }
           }
