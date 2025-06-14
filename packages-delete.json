@@ -1,1 +1,100 @@
-
+[
+{
+    "name": "🍩 Morning Mixer Bundle",
+    "slug": "morning-mixer-bundle",
+    "guests": 150,
+    "maxDuration": 6,
+    "price": 1320,
+    "regPrice": 1650,
+    "discount": 20,
+    "description": "Perfect for brunch and daytime events, the Morning Mixer Bundle includes a Photo Booth and Audio Guest Book for a fun and heartfelt experience.",
+    "equipment": [
+      "Photo Booth",
+      "Audio Guest Book"
+    ],
+    "note": "Additional charges apply for extended hours or additional services.",
+    "eventType": [
+      "All"
+    ],
+    "packageType": "Bundle",
+    "bookingUrl": "https://bundlebooth.ca/packs/ola/services/morning-mixer-bundle-brunch-events#068708a2-d1f2-48ce-b92d-40df4bc6d0c9",
+    "Sale": "Y",
+    "New": "N",
+    "dateAdded": "05-31-2025",
+    "locations": [
+      {
+        "location": "Client will provide the address",
+        "location_type": "ask"
+      }
+    ],
+    "currency": "CAD",
+    "availabilityDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "startTime": "09:00",
+    "endTime": "23:59",
+    "disableGuestsCancelling": true,
+    "disableGuestsRescheduling": true,
+    "disableCalVideoTranscription": true,
+    "disableGuests": true,
+    "color": {
+      "lightThemeHex": "#292929"
+    },
+    "minimumBookingNotice": 20160,
+    "bookerLayouts": {
+      "defaultLayout": "month",
+      "enabledLayouts": [
+        "month"
+      ]
+    },
+    "bookingFields": [
+      {
+        "name": "phoneNumber",
+        "slug": "phoneNumber",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true,
+        "placeholder": "Please enter your phone number (e.g., +1 123-456-7890)"
+      },
+      {
+        "name": "eventAddress",
+        "slug": "eventAddress",
+        "label": "Event Address",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Please enter the full address where the event will take place"
+      }
+    ],
+    "availability": {
+      "timeZone": "America/Toronto",
+      "schedules": [
+        {
+          "name": "Availability",
+          "timeZone": "America/Toronto",
+          "isDefault": true,
+          "availability": [
+            {
+              "days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "startTime": "09:00",
+              "endTime": "23:59"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]
