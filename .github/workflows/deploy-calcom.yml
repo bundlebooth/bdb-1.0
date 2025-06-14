@@ -34,51 +34,73 @@ jobs:
           const https = require('https');
           const fs = require('fs');
 
-          function apiRequest(method, path, body = null) {
+          function apiRequest(method, path, body = null, retries = 2) {
             return new Promise((resolve, reject) => {
               const options = {
                 hostname: 'api.cal.com',
                 path,
                 method,
                 headers: {
-                  Authorization: `Bearer ${process.env.CALCOM_API_KEY}`,
+                  Authorization: `Bearer ${process.env.CALCOM_API_KEY || 'MISSING_API_KEY'}`,
                   'Content-Type': 'application/json'
                 }
               };
+              console.log(`[DEBUG] API request: ${method} ${path}`);
               const req = https.request(options, (res) => {
                 let data = '';
                 res.on('data', (chunk) => data += chunk);
                 res.on('end', () => {
+                  console.log(`[DEBUG] Response status: ${res.statusCode}, headers: ${JSON.stringify(res.headers)}`);
+                  console.log(`[DEBUG] Raw response: ${data}`);
                   if (res.statusCode >= 200 && res.statusCode < 300) {
                     try {
-                      resolve(JSON.parse(data || '{}'));
+                      const parsed = JSON.parse(data || '{}');
+                      resolve(parsed);
                     } catch (e) {
                       reject(new Error(`Failed to parse response for ${path}: ${e.message}`));
                     }
+                  } else if ((res.statusCode === 429 || res.statusCode >= 500) && retries > 0) {
+                    console.warn(`[WARN] Retrying ${method} ${path} (status ${res.statusCode}, ${retries} attempts left)`);
+                    setTimeout(() => {
+                      apiRequest(method, path, body, retries - 1).then(resolve).catch(reject);
+                    }, 2000);
                   } else {
-                    reject(new Error(`Request failed for ${path} with status ${res.statusCode}`));
+                    reject(new Error(`Request failed for ${path} with status ${res.statusCode}: ${data}`));
                   }
                 });
               });
               req.on('error', (e) => reject(new Error(`Request error for ${path}: ${e.message}`)));
-              if (body) req.write(JSON.stringify(body));
+              if (body) {
+                console.log(`[DEBUG] Request body: ${JSON.stringify(body)}`);
+                req.write(JSON.stringify(body));
+              }
               req.end();
             });
           }
 
           async function getAllEventTypes() {
             try {
-              const res = await apiRequest('GET', '/api/v2/event-types');
-              const eventTypes = Array.isArray(res) ? res :
-                res.eventTypes && Array.isArray(res.eventTypes) ? res.eventTypes :
-                res.event_types && Array.isArray(res.event_types) ? res.event_types :
-                res.data && Array.isArray(res.data) ? res.data : [];
-              if (!Array.isArray(eventTypes)) {
-                throw new Error('Invalid event types response structure');
+              let eventTypes = [];
+              let page = 1;
+              while (true) {
+                const res = await apiRequest('GET', `/api/v2/event-types?page=${page}&limit=100`);
+                console.log(`[DEBUG] Event types response for page ${page}: ${JSON.stringify(res, null, 2)}`);
+                const types = Array.isArray(res) ? res :
+                  res.eventTypes && Array.isArray(res.eventTypes) ? res.eventTypes :
+                  res.event_types && Array.isArray(res.event_types) ? res.event_types :
+                  res.data && Array.isArray(res.data) ? res.data : [];
+                if (!Array.isArray(types)) {
+                  throw new Error(`Invalid event types response structure: ${JSON.stringify(res, null, 2)}`);
+                }
+                eventTypes = eventTypes.concat(types);
+                if (!res.nextPage || types.length < 100) break;
+                page++;
               }
+              console.log(`[INFO] Retrieved ${eventTypes.length} event types`);
               return eventTypes;
             } catch (e) {
-              throw new Error(`Error fetching event types: ${e.message}`);
+              console.error(`[ERROR] Error fetching event types: ${e.message}`);
+              throw e;
             }
           }
 
@@ -112,22 +134,24 @@ jobs:
 
           async function deleteAllEventTypes() {
             try {
+              console.log('[INFO] Starting event type deletion');
               const eventTypes = await getAllEventTypes();
               if (!eventTypes.length) {
-                console.log('No event types found to delete');
+                console.log('[INFO] No event types found to delete');
                 return;
               }
               for (const { id, slug } of eventTypes) {
                 if (id) {
+                  console.log(`[INFO] Deleting event type: ${slug || 'unknown'} (ID: ${id})`);
                   await apiRequest('DELETE', `/api/v2/event-types/${id}`);
-                  console.log(`Deleted event type: ${slug || 'unknown'}`);
+                  console.log(`[SUCCESS] Deleted event type: ${slug || 'unknown'}`);
                 } else {
-                  console.warn(`Event type missing ID: ${JSON.stringify(eventTypes)}`);
+                  console.warn(`[WARN] Event type missing ID: ${JSON.stringify(eventTypes)}`);
                 }
               }
-              console.log('All event types processed for deletion');
+              console.log('[SUCCESS] All event types processed for deletion');
             } catch (e) {
-              console.error(`Fatal error during deletion: ${e.message}`);
+              console.error(`[ERROR] Fatal error during deletion: ${e.message}`);
               process.exit(1);
             }
           }
@@ -139,10 +163,11 @@ jobs:
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
         run: |
-          node delete-event-types.js || {
-            node delete-event-types.js || {
-              node delete-event-types.js || {
+          node delete-event-types.js > delete-log-1.txt 2>&1 || {
+            node delete-event-types.js > delete-log-2.txt 2>&1 || {
+              node delete-event-types.js > delete-log-3.txt 2>&1 || {
                 echo "Deletion script failed. Check logs for details."
+                cat delete-log-*.txt
                 exit 1
               }
             }
@@ -272,8 +297,9 @@ jobs:
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
         run: |
-          node update-event-types.js || {
+          node update-event-types.js > update-log.txt 2>&1 || {
             echo "Update script failed. Check logs for details."
+            cat update-log.txt
             exit 1
           }
 
@@ -396,8 +422,9 @@ jobs:
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
         run: |
-          node insert-event-types.js || {
+          node insert-event-types.js > insert-log.txt 2>&1 || {
             echo "Insertion script failed. Check logs for details."
+            cat insert-log.txt
             exit 1
           }
 
@@ -468,8 +495,9 @@ jobs:
         env:
           CALCOM_API_KEY: ${{ secrets.CALCOM_API_KEY }}
         run: |
-          node configure-payments.js || {
+          node configure-payments.js > payment-log.txt 2>&1 || {
             echo "Payment configuration failed. Check logs for details."
+            cat payment-log.txt
             exit 1
           }
 
