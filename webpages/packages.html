@@ -48,7 +48,7 @@
       --tag-green: #2ecc71;
       --bb-green: #2ecc71;
       --bb-secondary: #666;
-      --bb-hover-grey: #4a5057; /* Lighter grey for hover */
+      --bb-hover-grey: #4a5057;
     }
 
     * { 
@@ -64,7 +64,6 @@
       line-height: 1.5;
     }
 
-    /* ---------- LAYOUT ---------- */
     .container {
       display: flex;
       min-height: 100vh;
@@ -84,7 +83,6 @@
       background: var(--bb-light);
     }
 
-    /* ---------- FILTER SECTION ---------- */
     .filter-section {
       margin-bottom: 20px;
     }
@@ -116,11 +114,14 @@
     .filter-content.collapsed {
       max-height: 0;
     }
+    #equipment-filters:not(.collapsed) {
+      max-height: none;
+      overflow: visible;
+    }
 
-    /* ---------- EQUIPMENT CHECKBOXES ---------- */
     .filter-content label {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 10px;
       margin-bottom: 12px;
       cursor: pointer;
@@ -135,6 +136,7 @@
       border-radius: 4px;
       position: relative;
       flex-shrink: 0;
+      margin-top: 3px;
     }
     .filter-content label input[type="checkbox"]:checked {
       background: var(--bb-blue);
@@ -147,13 +149,11 @@
       border-radius: 2px;
     }
 
-    /* ---------- NEW STYLES FOR FILTER TAGS ---------- */
     .filter-content label .tag {
       display: inline-block;
       margin-left: 5px;
       vertical-align: middle;
     }
-    /* Adjust alignment for sale-tag and new-tag to mimic superscript */
     .filter-content label .sale-tag,
     .filter-content label .new-tag {
       font-size: 0.6rem;
@@ -162,17 +162,9 @@
       text-transform: uppercase;
       margin-left: 4px;
       position: relative;
-      top: -2px; /* Simulate superscript */
-    }
-    /* Ensure checkbox labels with tags wrap correctly */
-    .filter-content label {
-      align-items: flex-start;
-    }
-    .filter-content label input[type="checkbox"] {
-      margin-top: 3px; /* Align checkbox with tag top */
+      top: -2px;
     }
 
-    /* ---------- TOP FILTER BAR ---------- */
     #filters-horizontal {
       display: flex;
       flex-wrap: wrap;
@@ -211,7 +203,6 @@
       margin: 0;
     }
 
-    /* ---------- PACKAGE GRID ---------- */
     #packages-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -256,15 +247,15 @@
       font-size: 1rem;
     }
     .price.sale {
-      color: var(--bb-red);
+      color: var(--bb-green);
       font-weight: 600;
     }
     .price.no-sale {
       color: var(--bb-dark);
-      font-weight: 400; /* Matches default font weight of surrounding text */
+      font-weight: 400;
     }
     .discount {
-      color: var(--bb-green);
+      color: var(--bb-red);
       font-weight: 600;
       font-size: 0.9rem;
       margin-left: 5px;
@@ -281,7 +272,7 @@
       padding: 10px 16px;
       background: rgba(44, 62, 80, 0.1);
       color: var(--bb-blue);
-      font-weight: 500;
+      font-weight: normal;
       border-radius: 6px;
       text-decoration: none;
       transition: all .25s;
@@ -304,7 +295,6 @@
       transform: translateY(0);
     }
 
-    /* ---------- TAGS ---------- */
     .bundled-tag {
       background: #e8fce8;
       color: #2e7d32;
@@ -324,16 +314,6 @@
       margin-right: 5px;
       font-size: 0.8em;
       font-weight: 500;
-    }
-    .equipment-tag {
-      display: inline-block;
-      background: #f0f0f0;
-      color: #333;
-      padding: 3px 8px;
-      border-radius: 4px;
-      margin: 3px;
-      font-size: 14px;
-      font-weight: normal;
     }
     .equipment-tags {
       display: flex;
@@ -364,7 +344,107 @@
       text-transform: uppercase;
     }
 
-    /* ---------- PAGINATION ---------- */
+    .equipment-tag-photo-booth {
+      display: inline-block;
+      background: #e6f0fa;
+      color: #1e3a8a;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+    }
+    .equipment-tag-360-video-booth {
+      display: inline-block;
+      background: #e9f7e9;
+      color: #1a4d1a;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+    }
+    .equipment-tag-audio-guest-book {
+      display: inline-block;
+      background: #fef2e8;
+      color: #7c2d12;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+    }
+    .equipment-tag-magazine-photo-booth-box {
+      display: inline-block;
+      background: #f3e8ff;
+      color: #4c1d95;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+    }
+    .equipment-tag-espresso-coffee-booth {
+      display: inline-block;
+      background: #f5e9dc;
+      color: #5c4033;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+    }
+    .equipment-tag-waffle-booth {
+      display: inline-block;
+      background: #fce7f3;
+      color: #831843;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+    }
+    .equipment-tag-smoothies-booth {
+      display: inline-block;
+      background: #fce7f3;
+      color: #831843;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+    }
+    .equipment-tag-sparkler-boxes {
+      display: inline-block;
+      background: #f0f4f8;
+      color: #2d3748;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+    }
+    .equipment-tag-dry-ice-fog {
+      display: inline-block;
+      background: #e0f7fa;
+      color: #164e63;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+    }
+    .equipment-tag-laser-effect-first-dance {
+      display: inline-block;
+      background: #e8ecef;
+      color: #495057;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+    }
+
     .pagination {
       display: flex;
       justify-content: center;
@@ -410,7 +490,6 @@
       text-align: center;
     }
 
-    /* ---------- MODAL STYLES ---------- */
     .modal {
       display: none;
       position: fixed;
@@ -505,7 +584,6 @@
       grid-column: 1 / -1;
     }
 
-    /* ---------- RESPONSIVE ---------- */
     @media(max-width: 900px) {
       .container { 
         flex-direction: column; 
@@ -583,7 +661,17 @@
         width: 32px;
         height: 32px;
       }
-      .package-type-tag, .equipment-tag {
+      .package-type-tag, 
+      .equipment-tag-photo-booth,
+      .equipment-tag-360-video-booth,
+      .equipment-tag-audio-guest-book,
+      .equipment-tag-magazine-photo-booth-box,
+      .equipment-tag-espresso-coffee-booth,
+      .equipment-tag-waffle-booth,
+      .equipment-tag-smoothies-booth,
+      .equipment-tag-sparkler-boxes,
+      .equipment-tag-dry-ice-fog,
+      .equipment-tag-laser-effect-first-dance {
         font-size: 11px;
         padding: 3px 8px;
       }
@@ -596,7 +684,6 @@
 <body>
 
 <div class="container">
-  <!-- ---------- SIDEBAR ---------- -->
   <aside>
     <div class="filter-section">
       <div class="filter-header" data-filter="package-type">
@@ -612,7 +699,7 @@
     
     <div class="filter-section">
       <div class="filter-header" data-filter="package-options">
-        <h3>Promotions</h3>
+        <h3>Package Options</h3>
         <span class="toggle-icon">▼</span>
       </div>
       <div id="package-options-filters" class="filter-content">
@@ -629,7 +716,6 @@
       </div>
       <div id="event-type-filters" class="filter-content">
         <label><input type="checkbox" name="event-type" value="All" checked> All</label>
-        <!-- Event types will be dynamically populated -->
       </div>
     </div>
     
@@ -640,24 +726,22 @@
       </div>
       <div id="equipment-filters" class="filter-content">
         <label><input type="checkbox" name="equipment" value="All" checked> All</label>
-        <label><input type="checkbox" name="equipment" value="Photo Booth"> <span class="tag equipment-tag">Photo Booth</span></label>
-        <label><input type="checkbox" name="equipment" value="360 Video Booth"> <span class="tag equipment-tag">360 Video Booth</span></label>
-        <label><input type="checkbox" name="equipment" value="Audio Guest Book"> <span class="tag equipment-tag">Audio Guest Book</span></label>
-        <label><input type="checkbox" name="equipment" value="Magazine Photo Booth Box"> <span class="tag equipment-tag">Magazine Booth Box</span></label>
-        <label><input type="checkbox" name="equipment" value="Espresso & Coffee Booth"> <span class="tag equipment-tag">Espresso & Coffee Booth</span></label>
-        <label><input type="checkbox" name="equipment" value="Waffle Booth"> <span class="tag equipment-tag">Waffle Booth</span></label>
-        <label><input type="checkbox" name="equipment" value="Smoothies Booth"> <span class="tag equipment-tag">Smoothies Booth</span></label>
-        <label><input type="checkbox" name="equipment" value="Sparkler Boxes"> <span class="tag equipment-tag">Sparkler Boxes</span></label>
-        <label><input type="checkbox" name="equipment" value="Dry Ice Fog"> <span class="tag equipment-tag">Dry Ice (Fog Effect)</span></label>
-        <label><input type="checkbox" name="equipment" value="Laser Effect for First Dance"> <span class="tag equipment-tag">Laser First Dance</span></label>
+        <label><input type="checkbox" name="equipment" value="Photo Booth"> <span class="tag equipment-tag-photo-booth">Photo Booth</span></label>
+        <label><input type="checkbox" name="equipment" value="360 Video Booth"> <span class="tag equipment-tag-360-video-booth">360 Video Booth</span></label>
+        <label><input type="checkbox" name="equipment" value="Audio Guest Book"> <span class="tag equipment-tag-audio-guest-book">Audio Guest Book</span></label>
+        <label><input type="checkbox" name="equipment" value="Magazine Photo Booth Box"> <span class="tag equipment-tag-magazine-photo-booth-box">Magazine Booth Box</span></label>
+        <label><input type="checkbox" name="equipment" value="Espresso & Coffee Booth"> <span class="tag equipment-tag-espresso-coffee-booth">Espresso & Coffee Booth</span></label>
+        <label><input type="checkbox" name="equipment" value="Waffle Booth"> <span class="tag equipment-tag-waffle-booth">Waffle Booth</span></label>
+        <label><input type="checkbox" name="equipment" value="Smoothies Booth"> <span class="tag equipment-tag-smoothies-booth">Smoothies Booth</span></label>
+        <label><input type="checkbox" name="equipment" value="Sparkler Boxes"> <span class="tag equipment-tag-sparkler-boxes">Sparkler Boxes</span></label>
+        <label><input type="checkbox" name="equipment" value="Dry Ice Fog"> <span class="tag equipment-tag-dry-ice-fog">Dry Ice (Fog Effect)</span></label>
+        <label><input type="checkbox" name="equipment" value="Laser First Dance"> <span class="tag equipment-tag-laser-effect-first-dance">Laser First Dance</span></label>
       </div>
     </div>
   </aside>
 
-  <!-- ---------- MAIN ---------- -->
   <main>
     <div id="filters-horizontal" aria-label="Main filters">
-      <!-- Guests -->
       <div>
         <label for="guestFilter">Guests</label>
         <select id="guestFilter">
@@ -670,14 +754,12 @@
           <option value="300">300+</option>
         </select>
       </div>
-      <!-- Duration -->
       <div>
         <label for="durationFilter">Duration (hrs)</label>
         <select id="durationFilter">
           <option value="">Any</option>
         </select>
       </div>
-      <!-- Price Range -->
       <div>
         <label>Price Min (C$)</label>
         <input type="number" id="minPrice" placeholder="0" min="0">
@@ -686,7 +768,6 @@
         <label>Price Max (C$)</label>
         <input type="number" id="maxPrice" placeholder="4000" min="0">
       </div>
-      <!-- Sort By -->
       <div>
         <label for="sortBy">Sort By</label>
         <select id="sortBy">
@@ -705,7 +786,6 @@
   </main>
 </div>
 
-<!-- ---------- MODAL ---------- -->
 <div id="package-modal" class="modal">
   <div class="modal-content">
     <button class="modal-close" title="Close">×</button>
@@ -713,19 +793,28 @@
   </div>
 </div>
 
-<!-- ---------- SCRIPT ---------- -->
 <script>
-  /* ---------- DATA ---------- */
   let bundles = [];
 
-  /* ---------- FETCH DATA AND POPULATE EVENT TYPES ---------- */
+  const equipmentClassMap = {
+    'Photo Booth': 'equipment-tag-photo-booth',
+    '360 Video Booth': 'equipment-tag-360-video-booth',
+    'Audio Guest Book': 'equipment-tag-audio-guest-book',
+    'Magazine Photo Booth Box': 'equipment-tag-magazine-photo-booth-box',
+    'Espresso & Coffee Booth': 'equipment-tag-espresso-coffee-booth',
+    'Waffle Booth': 'equipment-tag-waffle-booth',
+    'Smoothies Booth': 'equipment-tag-smoothies-booth',
+    'Sparkler Boxes': 'equipment-tag-sparkler-boxes',
+    'Dry Ice Fog': 'equipment-tag-dry-ice-fog',
+    'Laser First Dance': 'equipment-tag-laser-effect-first-dance'
+  };
+
   async function loadPackages() {
     try {
       const response = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-1.0/refs/heads/main/packages.json');
       if (!response.ok) throw new Error('Failed to fetch packages');
       bundles = await response.json();
 
-      // Initialize Cal.com for each package's slug
       bundles.forEach(pkg => {
         const slug = pkg.slug || `fallback-${pkg.name.toLowerCase().replace(/\s+/g, '-')}`;
         const namespace = slug;
@@ -736,32 +825,27 @@
         });
       });
 
-      // Check if any packages have Sale or New fields
       const hasSaleOrNew = bundles.some(pkg => pkg.Sale === "Y" || pkg.New === "Y");
       if (!hasSaleOrNew) {
         console.warn('No packages have "Sale": "Y" or "New": "Y". Package Options filter may not work as expected.');
       }
 
-      // Populate Event Type filters dynamically
       const eventTypeContainer = document.getElementById('event-type-filters');
-      eventTypeContainer.innerHTML = ''; // Clear existing content
+      eventTypeContainer.innerHTML = '';
       const allLabel = document.createElement('label');
       allLabel.innerHTML = `<input type="checkbox" name="event-type" value="All" checked> All`;
       eventTypeContainer.appendChild(allLabel);
 
-      // Get unique event types, excluding "All" and empty values
       const uniqueEventTypes = [...new Set(
         bundles.flatMap(pkg => Array.isArray(pkg.eventType) ? pkg.eventType : [pkg.eventType])
       )].filter(type => type && type !== 'All' && type.trim() !== '');
 
-      // Create checkboxes for each unique event type
       uniqueEventTypes.forEach(type => {
         const label = document.createElement('label');
         label.innerHTML = `<input type="checkbox" name="event-type" value="${type}"> ${type}`;
         eventTypeContainer.appendChild(label);
       });
 
-      // Add event listeners to dynamically created event type checkboxes
       const eventTypeCheckboxes = document.querySelectorAll('#event-type-filters input[type="checkbox"]');
       eventTypeCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
@@ -776,7 +860,6 @@
     }
   }
 
-  /* ---------- DURATION OPTIONS ---------- */
   const durationSelect = document.getElementById('durationFilter');
   for (let i = 1; i <= 10; i++) {
     let opt = document.createElement('option');
@@ -785,7 +868,6 @@
     durationSelect.appendChild(opt);
   }
 
-  /* ---------- DOM ELEMENTS ---------- */
   const packagesContainer = document.getElementById('packages-container');
   const paginationTopContainer = document.getElementById('pagination-top');
   const paginationBottomContainer = document.getElementById('pagination-bottom');
@@ -803,12 +885,10 @@
   const modalBody = document.getElementById('modal-body');
   const modalClose = document.querySelector('.modal-close');
 
-  /* ---------- PAGINATION SETTINGS ---------- */
   const ITEMS_PER_PAGE = 9;
   let currentPage = 1;
   let filteredBundles = bundles.slice();
 
-  /* ---------- RENDER PACKAGES ---------- */
   function renderPackages(list, page = 1) {
     packagesContainer.innerHTML = '';
     if (list.length === 0) {
@@ -852,7 +932,7 @@
         <p><strong>Price:</strong> ${priceDetails}</p>
         <p><strong>Services Included:</strong></p>
         <div class="equipment-tags">
-          ${pkg.equipment.map(item => `<span class="equipment-tag">${item}</span>`).join('')}
+          ${pkg.equipment.map(item => `<span class="${equipmentClassMap[item] || 'equipment-tag-photo-booth'}">${item}</span>`).join('')}
         </div>
         <p class="package-note">${pkg.note}</p>
         <button class="book-now-button" data-cal-link="bundleboothca/${slug}" data-cal-namespace="${slug}" data-cal-config='{"layout":"month_view"}'>Book Now</button>
@@ -862,7 +942,6 @@
           openModal(pkg, div);
         }
       });
-      // Add click event for Book Now button
       const bookNowButton = div.querySelector('.book-now-button');
       bookNowButton.addEventListener('click', handleBookNowClick);
       packagesContainer.appendChild(div);
@@ -871,7 +950,6 @@
     renderPagination(list.length, page);
   }
 
-  /* ---------- HANDLE BOOK NOW CLICK ---------- */
   function handleBookNowClick(e) {
     const isMobile = window.matchMedia("(max-width: 900px)").matches;
     if (isMobile) {
@@ -879,13 +957,11 @@
       const calLink = button.getAttribute('data-cal-link');
       if (calLink) {
         window.open(`https://cal.com/${calLink}`, '_blank');
-        e.preventDefault(); // Prevent default Cal.com embed behavior
+        e.preventDefault();
       }
     }
-    // On desktop, Cal.com handles the click via its embed script
   }
 
-  /* ---------- RENDER PAGINATION ---------- */
   function renderPagination(totalItems, currentPage) {
     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
     if (totalPages <= 1) {
@@ -944,7 +1020,6 @@
     createPaginationControls(paginationBottomContainer, true);
   }
 
-  /* ---------- MODAL FUNCTIONALITY ---------- */
   function openModal(pkg, packageElement) {
     const displayType = pkg.packageType === 'Bundle' ? 'Bundled' : pkg.packageType;
     const tagClass = pkg.packageType === 'Bundle' ? 'bundled-tag' : 'package-type-tag';
@@ -957,7 +1032,7 @@
     const isNew = pkg.New === "Y";
     const priceClass = isSale ? 'price sale' : 'price no-sale';
     const priceDetails = isSale 
-      ? `<span class="${priceClass}">$${pkg.price}</span> (<span class="original-price">Reg. $${pkg.regPrice}</span>) - <span class="discount">${pkg.discount}% OFF!</span>`
+      ? `<span class="${priceClass}">$${pkg.price}</span> (<span class="original-price">Reg. $${pkg.regPrice})</span>) - <span class="discount">${pkg.discount}% OFF!</span>`
       : `<span class="${priceClass}">$${pkg.price}</span>`;
     const statusTags = [];
     if (isSale) statusTags.push('<span class="sale-tag">ON SALE!</span>');
@@ -965,20 +1040,19 @@
     
     modalBody.innerHTML = `
       <h3>${pkg.name}${statusTags.join('')}</h3>
-      <span class="${tagClass}">${displayType}</span>
+      <div><span class="${tagClass}">${displayType}</span></div>
       <p class="description"><strong>Description:</strong> ${pkg.description}</p>
       <p><strong>Guests:</strong> ${pkg.guests}</p>
       <p><strong>Duration:</strong> ${durationPrefix}${durationText}</p>
       <p><strong>Price:</strong> ${priceDetails}</p>
       <p><strong>Services Included:</strong></p>
       <div class="equipment-tags">
-        ${pkg.equipment.map(item => `<span class="equipment-tag">${item}</span>`).join('')}
+        ${pkg.equipment.map(item => `<span class="${equipmentClassMap[item] || 'equipment-tag-photo-booth'}">${item}</span>`).join('')}
       </div>
       <p class="package-note"><strong>Note:</strong> ${pkg.note}</p>
       <button class="book-now-button" data-cal-link="bundleboothca/${slug}" data-cal-namespace="${slug}" data-cal-config='{"layout":"month_view"}'>Book Now</button>
     `;
 
-    // Add click event for Book Now button in modal
     const modalBookNowButton = modalBody.querySelector('.book-now-button');
     modalBookNowButton.addEventListener('click', handleBookNowClick);
 
@@ -1015,12 +1089,10 @@
     }
   });
 
-  /* ---------- FILTER LOGIC ---------- */
   function filterPackages() {
     currentPage = 1;
     let filtered = bundles.slice();
 
-    // Package Options Filter
     const selectedPackageOptions = Array.from(packageOptionsFilters)
       .filter(i => i.checked)
       .map(i => i.value);
@@ -1033,7 +1105,6 @@
       });
     }
 
-    // Event Type Filter
     const selectedEventTypes = Array.from(document.querySelectorAll('#event-type-filters input[type="checkbox"]'))
       .filter(i => i.checked)
       .map(i => i.value);
@@ -1044,7 +1115,6 @@
       });
     }
 
-    // Package Type Filter
     const selectedPackageTypes = Array.from(packageTypeFilters)
       .filter(i => i.checked)
       .map(i => i.value);
@@ -1052,27 +1122,28 @@
       filtered = filtered.filter(pkg => selectedPackageTypes.includes(pkg.packageType));
     }
 
-    // Equipment Filter
     const selectedEquipment = Array.from(equipmentFilters)
       .filter(i => i.checked)
       .map(i => i.value);
     if (selectedEquipment.length && !selectedEquipment.includes("All")) {
-      filtered = filtered.filter(pkg => selectedEquipment.every(eq => pkg.equipment.includes(eq)));
+      filtered = filtered.filter(pkg => 
+        selectedEquipment.every(eq => 
+          pkg.equipment.includes(eq) || 
+          (eq === "Laser First Dance" && pkg.equipment.includes("Laser Effect for First Dance"))
+        )
+      );
     }
 
-    // Guests Filter
     const guestsVal = guestFilter.value;
     if (guestsVal) {
       filtered = filtered.filter(pkg => pkg.guests >= parseInt(guestsVal));
     }
 
-    // Duration Filter
     const durationVal = durationFilter.value;
     if (durationVal) {
       filtered = filtered.filter(pkg => pkg.maxDuration >= parseInt(durationVal, 10));
     }
 
-    // Price Filters
     const minPriceVal = minPriceFilter.value || 0;
     if (minPriceVal) {
       filtered = filtered.filter(pkg => pkg.price >= parseFloat(minPriceVal));
@@ -1082,7 +1153,6 @@
       filtered = filtered.filter(pkg => pkg.price <= parseFloat(maxPriceVal));
     }
 
-    // Sorting
     switch (sortBySelect.value) {
       case 'price-desc':
         filtered.sort((a, b) => b.price - a.price);
@@ -1101,7 +1171,6 @@
     renderPackages(filteredBundles, currentPage);
   }
 
-  /* ---------- UPDATE ALL CHECKBOX LOGIC ---------- */
   function updateAllCheckbox(filterType, changedCheckbox) {
     const allCheckbox = document.querySelector(`#${filterType}-filters input[value="All"]`);
     const otherCheckboxes = Array.from(document.querySelectorAll(`#${filterType}-filters input[type="checkbox"]`)).filter(cb => cb.value !== "All");
@@ -1131,7 +1200,6 @@
     filterPackages();
   }
 
-  /* ---------- TOGGLE FILTER SECTIONS ---------- */
   function toggleFilterSection(filterId) {
     const content = document.getElementById(`${filterId}`);
     const icon = document.querySelector(`.filter-header[data-filter="${filterId.replace('-filters', '')}"] .toggle-icon`);
@@ -1140,14 +1208,16 @@
     icon.classList.toggle('collapsed', !isCollapsed);
   }
 
-  /* ---------- SET INITIAL FILTER STATE BASED ON DEVICE ---------- */
   function setInitialFilterState() {
     const isMobile = window.matchMedia("(max-width: 900px)").matches;
     filterHeaders.forEach(header => {
       const filterId = header.dataset.filter + '-filters';
       const content = document.getElementById(`${filterId}`);
       const icon = header.querySelector('.toggle-icon');
-      if (isMobile) {
+      if (filterId === 'equipment-filters') {
+        content.classList.remove('collapsed');
+        icon.classList.remove('collapsed');
+      } else if (isMobile) {
         content.classList.add('collapsed');
         icon.classList.add('collapsed');
       } else {
@@ -1157,7 +1227,6 @@
     });
   }
 
-  /* ---------- EVENT LISTENERS ---------- */
   guestFilter.addEventListener('change', filterPackages);
   durationFilter.addEventListener('change', filterPackages);
   minPriceFilter.addEventListener('input', filterPackages);
@@ -1192,7 +1261,6 @@
     header.addEventListener('touchstart', toggleHandler, { passive: true });
   });
 
-  /* ---------- INITIAL SETUP ---------- */
   setInitialFilterState();
   document.addEventListener('DOMContentLoaded', loadPackages);
 </script>
