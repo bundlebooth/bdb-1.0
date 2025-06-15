@@ -87,7 +87,7 @@
       scroll-snap-type: x mandatory;
       scroll-behavior: smooth;
       gap: 30px;
-      padding: 20px;
+      padding: 0 60px;
       position: relative;
       margin-bottom: 30px;
       -webkit-overflow-scrolling: touch;
@@ -119,7 +119,7 @@
       position: absolute;
       top: 0;
       right: 0;
-      width: 100%;
+      width: 120px;
       height: 100%;
       background: linear-gradient(to left, rgba(255,255,255,0.9), transparent);
       pointer-events: none;
@@ -182,26 +182,34 @@
       display: none;
       background: #fff;
       border: 1px solid var(--bb-border);
-      border-radius: 8px;
-      padding: 15px;
-      animation: fadeIn 0.5s ease-in-out;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s forwards;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      touch-action: auto;
     }
 
     .slide.active {
       display: block;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    .slide:active {
+      transform: scale(0.98);
+    }
+
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .slide h4 {
-      margin: 0 0 10px;
+      margin: 0;
       color: var(--bb-blue);
       font-size: 1.1rem;
-      display: inline-block;
-      vertical-align: middle;
+      line-height: 1.3;
     }
 
     .sale-tag {
@@ -223,22 +231,27 @@
     }
 
     .slide p {
-      margin: 8px 0;
+      margin: 10px 0;
       font-size: 0.9rem;
       color: #555;
       line-height: 1.5;
     }
 
+    .slide p.description {
+      margin: 10px 0;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
     .price {
+      font-size: 1rem;
       font-weight: 600;
       color: var(--bb-red);
-      font-size: 0.9rem;
     }
 
     .price.no-sale {
       font-weight: 400;
-      color: #555;
-      font-size: 0.9rem;
+      color: var(--bb-dark);
     }
 
     .original-price {
@@ -257,7 +270,7 @@
 
     .book-now-button {
       display: inline-block;
-      margin-top: 12px;
+      margin-top: 15px;
       padding: 10px 16px;
       background: rgba(44, 62, 80, 0.1);
       color: var(--bb-blue);
@@ -361,20 +374,27 @@
     }
 
     .package-type-tag {
-      display: inline-block;
+      display: block;
       background: #e8f4fc;
       color: var(--bb-blue);
       padding: 3px 8px;
       border-radius: 4px;
       font-size: 0.8em;
       font-weight: 500;
-      margin-top: 5px;
-      margin-bottom: 8px;
+      margin: 8px 0 10px 0;
+      width: fit-content;
     }
 
     .bundled-tag {
       background: #e8fce8;
       color: #2e7d32;
+      display: block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      font-weight: 500;
+      margin: 8px 0 10px 0;
+      width: fit-content;
     }
 
     .equipment-tag {
@@ -384,8 +404,15 @@
       padding: 3px 8px;
       border-radius: 4px;
       margin: 3px;
-      font-size: 0.8em;
-      font-weight: 500;
+      font-size: 14px;
+      font-weight: normal;
+    }
+
+    .equipment-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 10px 0;
     }
 
     .loading {
@@ -440,6 +467,7 @@
         padding: 0;
         overflow-x: hidden;
         scroll-snap-type: none;
+        touch-action: auto;
       }
 
       .booth-container {
@@ -454,7 +482,7 @@
 
     @media (max-width: 600px) {
       .booth-content {
-        padding: 20px;
+        padding: 16px;
       }
       
       h2 {
@@ -467,10 +495,12 @@
       
       .slide h4 {
         font-size: 1rem;
+        margin-bottom: 12px;
       }
       
       .slide p {
         font-size: 0.85rem;
+        margin: 8px 0;
       }
       
       .image-container {
@@ -481,11 +511,32 @@
         width: 200px;
         height: 200px;
       }
+
+      .slide {
+        padding: 16px;
+      }
+      
+      .package-type-tag, .bundled-tag {
+        font-size: 11px;
+        margin: 6px 0 8px 0;
+      }
+      
+      .equipment-tag {
+        margin: 3px;
+        font-size: 11px;
+      }
+      
+      .book-now-button {
+        margin-top: 12px;
+      }
+
+      .sale-tag, .new-tag {
+        font-size: 0.5rem;
+      }
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Cal.com embed script -->
   <script type="text/javascript">
     (function (C, A, L) { 
       let p = function (a, ar) { a.q.push(ar); }; 
@@ -523,7 +574,6 @@
       <div class="booth-option" data-booth="2">Laser First Dance</div>
     </div>
     <div class="booth-grid">
-      <!-- Sparklers Box Section -->
       <div class="booth-container">
         <div class="image-container">
           <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/rs%3Dw_1280%2Ch_1921.webp" alt="Sparklers Box" class="booth-image">
@@ -548,12 +598,11 @@
             </button>
           </div>
           <div class="book-now-wrapper">
-            <a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a>
+            <a href="https://rebrand.ly/ymgbgn4" target="_blank" class="browse-more-button">Browse More</a>
           </div>
         </div>
       </div>
       
-      <!-- Dry Ice Fog Section -->
       <div class="booth-container">
         <div class="image-container">
           <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/rs%253Dw_1280%252Ch_1784.webp" alt="Dry Ice Fog" class="booth-image">
@@ -578,12 +627,11 @@
             </button>
           </div>
           <div class="book-now-wrapper">
-            <a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a>
+            <a href="https://rebrand.ly/ymgbgn4" target="_blank" class="browse-more-button">Browse More</a>
           </div>
         </div>
       </div>
       
-      <!-- Laser First Dance Section -->
       <div class="booth-container">
         <div class="image-container">
           <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/rs%3Dw_1920%2Cm.png" alt="Laser First Dance" class="booth-image">
@@ -608,7 +656,7 @@
             </button>
           </div>
           <div class="book-now-wrapper">
-            <a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a>
+            <a href="https://rebrand.ly/ymgbgn4" target="_blank" class="browse-more-button">Browse More</a>
           </div>
         </div>
       </div>
@@ -617,11 +665,9 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('Page loaded at:', new Date().toISOString()); // Debug: Confirm page load
-      // Data source for packages
+      console.log('Page loaded at:', new Date().toISOString());
       const dataSource = 'https://raw.githubusercontent.com/bundlebooth/bdb-1.0/main/packages.json';
 
-      // Fallback package data
       const fallbackPackages = [
         {
           name: "Sample Sparkler Boxes Package",
@@ -662,7 +708,6 @@
         }
       ];
 
-      // Initialize Cal.com for each package's slug
       fallbackPackages.forEach(pkg => {
         const slug = pkg.slug || `fallback-${pkg.name.toLowerCase().replace(/\s+/g, '-')}`;
         const namespace = slug;
@@ -673,17 +718,15 @@
         });
       });
 
-      // Initialize booth navigation and drag functionality
       const boothGrid = document.querySelector('.booth-grid');
       const boothOptions = document.querySelectorAll('.booth-option');
       const boothContainers = document.querySelectorAll('.booth-container');
 
-      // Drag functionality
       let isDragging = false;
       let startX, scrollLeft, velocity = 0, lastTime = 0, lastX;
 
       function startDrag(e) {
-        if (window.innerWidth <= 900) return; // Disable drag on mobile
+        if (window.innerWidth <= 900) return;
         isDragging = true;
         boothGrid.style.cursor = 'grabbing';
         startX = (e.type === 'touchstart' ? e.touches[0].pageX : e.pageX) - boothGrid.offsetLeft;
@@ -695,13 +738,12 @@
       }
 
       function drag(e) {
-        if (!isDragging) return;
+        if (!isDragging || window.innerWidth <= 900) return;
         e.preventDefault();
         const x = (e.type === 'touchmove' ? e.touches[0].pageX : e.pageX) - boothGrid.offsetLeft;
-        const walk = (x - startX) * 1.5; // Adjust drag sensitivity
+        const walk = (x - startX) * 1.5;
         boothGrid.scrollLeft = scrollLeft - walk;
 
-        // Calculate velocity for momentum
         const now = Date.now();
         const deltaTime = now - lastTime;
         if (deltaTime > 0) {
@@ -723,12 +765,12 @@
       function applyMomentum() {
         if (Math.abs(velocity) < 0.1) return;
         let currentScroll = boothGrid.scrollLeft;
-        const momentum = velocity * 1000; // Scale velocity for momentum effect
+        const momentum = velocity * 1000;
 
         function animate() {
-          currentScroll -= velocity * 16; // Approximate 60fps frame
+          currentScroll -= velocity * 16;
           boothGrid.scrollLeft = currentScroll;
-          velocity *= 0.95; // Friction
+          velocity *= 0.95;
           if (Math.abs(velocity) > 0.01) {
             momentumId = requestAnimationFrame(animate);
           } else {
@@ -747,7 +789,7 @@
 
       function snapToNearest() {
         const scrollLeft = boothGrid.scrollLeft;
-        const containerWidth = boothContainers[0].offsetWidth + 30; // Include gap
+        const containerWidth = boothContainers[0].offsetWidth + 30;
         const index = Math.round(scrollLeft / containerWidth);
         boothGrid.scrollTo({
           left: index * containerWidth,
@@ -773,7 +815,7 @@
       function updateActiveOption() {
         if (window.innerWidth <= 900) return;
         const scrollLeft = boothGrid.scrollLeft;
-        const containerWidth = boothContainers[0].offsetWidth + 30; // Include gap
+        const containerWidth = boothContainers[0].offsetWidth + 30;
         const index = Math.round(scrollLeft / containerWidth);
         boothOptions.forEach(option => option.classList.remove('active'));
         if (boothOptions[index]) {
@@ -792,24 +834,45 @@
         boothOptions[index].classList.add('active');
       }
 
+      function setupTouchEvents() {
+        if (window.innerWidth > 900) {
+          boothGrid.addEventListener('mousedown', startDrag);
+          boothGrid.addEventListener('mousemove', drag);
+          boothGrid.addEventListener('mouseup', endDrag);
+          boothGrid.addEventListener('mouseleave', endDrag);
+          boothGrid.addEventListener('touchstart', startDrag, { passive: false });
+          boothGrid.addEventListener('touchmove', drag, { passive: false });
+          boothGrid.addEventListener('touchend', endDrag);
+        }
+      }
+
+      function removeTouchEvents() {
+        boothGrid.removeEventListener('mousedown', startDrag);
+        boothGrid.removeEventListener('mousemove', drag);
+        boothGrid.removeEventListener('mouseup', endDrag);
+        boothGrid.removeEventListener('mouseleave', endDrag);
+        boothGrid.removeEventListener('touchstart', startDrag);
+        boothGrid.removeEventListener('touchmove', drag);
+        boothGrid.removeEventListener('touchend', endDrag);
+      }
+
       boothOptions.forEach((option, index) => {
         option.addEventListener('click', () => {
           scrollToBooth(index);
         });
       });
 
-      boothGrid.addEventListener('mousedown', startDrag);
-      boothGrid.addEventListener('mousemove', drag);
-      boothGrid.addEventListener('mouseup', endDrag);
-      boothGrid.addEventListener('mouseleave', endDrag);
-      boothGrid.addEventListener('touchstart', startDrag, { passive: false });
-      boothGrid.addEventListener('touchmove', drag, { passive: false });
-      boothGrid.addEventListener('touchend', endDrag);
       boothGrid.addEventListener('scroll', () => {
         updateFadeEffect();
         updateActiveOption();
       });
-      window.addEventListener('resize', updateFadeEffect);
+
+      setupTouchEvents();
+      window.addEventListener('resize', () => {
+        removeTouchEvents();
+        setupTouchEvents();
+        updateFadeEffect();
+      });
 
       if (window.innerWidth > 900) {
         boothGrid.style.cursor = 'grab';
@@ -817,7 +880,6 @@
         updateFadeEffect();
       }
 
-      // Fetch packages from JSON
       fetch(dataSource)
         .then(response => {
           if (!response.ok) {
@@ -830,7 +892,6 @@
           if (!Array.isArray(allPackages)) {
             throw new Error('Invalid data format: Expected an array of packages');
           }
-          // Initialize Cal.com for fetched packages
           allPackages.forEach(pkg => {
             const slug = pkg.slug || `fallback-${pkg.name.toLowerCase().replace(/\s+/g, '-')}`;
             const namespace = slug;
@@ -895,7 +956,7 @@
         
         let currentSlide = 0;
         let filteredPackages = [];
-        let slides = []; // Store slide elements for toggling
+        let slides = [];
 
         function filterAndSortPackages() {
           console.log(`Filtering packages for: ${equipmentFilter}`);
@@ -945,15 +1006,14 @@
             return;
           }
 
-          // Render slides only if not already created
           if (slides.length === 0) {
-            container.innerHTML = ''; // Clear loading message
+            container.innerHTML = '';
             filteredPackages.forEach((pkg, index) => {
-              const packageTypeClass = pkg.packageType === 'Bundle' ? 'bundled-tag' : '';
+              const packageTypeClass = pkg.packageType === 'Bundle' ? 'bundled-tag' : 'package-type-tag';
               const packageTypeDisplay = pkg.packageType === 'Bundle' ? 'Bundled' : 'Individual';
               const discount = pkg.originalPrice ? calculateDiscount(pkg.price, pkg.originalPrice) : null;
               const slug = pkg.slug || `fallback-${pkg.name.toLowerCase().replace(/\s+/g, '-')}`;
-              const priceClass = discount ? 'price' : 'price no-sale';
+              const priceClass = discount ? 'price sale' : 'price no-sale';
               const isSale = pkg.Sale === 'Y';
               const isNew = pkg.New === 'Y';
               const statusTags = [];
@@ -971,31 +1031,30 @@
                 : `data-cal-link="bundleboothca/${slug}" data-cal-namespace="${slug}" data-cal-config='{"layout":"month_view"}'`;
               
               slide.innerHTML = `
-                <h4>${pkg.name || 'Unnamed Package'}${statusTags.join('')}</h4>
-                <p><span class="package-type-tag ${packageTypeClass}">${packageTypeDisplay}</span></p>
-                ${pkg.description ? `<p>${pkg.description}</p>` : ''}
-                
-                <div class="package-details">
-                  ${pkg.guests ? `<p><strong>Guests:</strong> Up to ${pkg.guests}</p>` : ''}
-                  <p><strong>Duration:</strong> ${pkg.maxDuration ? (pkg.packageType === 'Individual' ? `${pkg.maxDuration} hours` : `Up to ${pkg.maxDuration} hours`) : 'N/A'}</p>
-                  ${pkg.price ? `
-                    <p><strong>Price:</strong> <span class="${priceClass}">$${pkg.price}</span>
-                      ${pkg.originalPrice && discount ? ` <span class="original-price">(Reg. $${pkg.originalPrice})</span> <span class="discount">- ${discount}% OFF!</span>` : ''}
-                    </p>
-                  ` : ''}
-                  ${pkg.equipment ? `
-                    <p><strong>Services Included:</strong><br>
-                    ${pkg.equipment.map(item => `<span class="equipment-tag">${item}</span>`).join('')}
-                    </p>
-                  ` : ''}
-                  <${buttonTag} class="book-now-button" ${buttonAttributes}>Book Now</${buttonTag}>
-                </div>
+                  <h4>${pkg.name || 'Unnamed Package'}${statusTags.join('')}</h4>
+                  <div><span class="${packageTypeClass}">${packageTypeDisplay}</span></div>
+                  ${pkg.description ? `<p class="description">${pkg.description}</p>` : ''}
+                  <div class="package-details">
+                    ${pkg.guests ? `<p><strong>Guests:</strong> Up to ${pkg.guests}</p>` : ''}
+                    <p><strong>Duration:</strong> ${pkg.maxDuration ? (pkg.packageType === 'Individual' ? `${pkg.maxDuration} hours` : `Up to ${pkg.maxDuration} hours`) : 'N/A'}</p>
+                    ${pkg.price ? `
+                        <p><strong>Price:</strong> <span class="${priceClass}">$${pkg.price}</span>
+                        ${pkg.originalPrice && discount ? ` <span class="original-price">(Reg. $${pkg.originalPrice})</span> <span class="discount">- ${discount}% OFF!</span>` : ''}
+                        </p>
+                      ` : ''}
+                      ${pkg.equipment ? `
+                        <p><strong>Services Included:</strong></p>
+                        <div class="equipment-tags">
+                          ${pkg.equipment.map(item => `<span class="equipment-tag">${item}</span>`).join('')}
+                        </div>
+                      ` : ''}
+                      <${buttonTag} class="book-now-button" ${buttonAttributes}>Book Now</${buttonTag}>
+                  </div>
               `;
               container.appendChild(slide);
               slides.push(slide);
             });
           } else {
-            // Toggle visibility of existing slides
             slides.forEach((slide, index) => {
               slide.classList.toggle('active', index === currentSlide);
             });
@@ -1011,7 +1070,7 @@
         }
 
         prevButton.addEventListener('click', (e) => {
-          e.preventDefault(); // Prevent any default navigation
+          e.preventDefault();
           if (currentSlide > 0) {
             currentSlide--;
             console.log(`Previous slide for ${containerId}, new currentSlide: ${currentSlide}`);
@@ -1020,7 +1079,7 @@
         });
 
         nextButton.addEventListener('click', (e) => {
-          e.preventDefault(); // Prevent any default navigation
+          e.preventDefault();
           if (currentSlide < filteredPackages.length - 1) {
             currentSlide++;
             console.log(`Next slide for ${containerId}, new currentSlide: ${currentSlide}`);
