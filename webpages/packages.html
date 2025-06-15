@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>BundleBooth Packages</title>
+
+  <!-- Poppins – matches bundlebooth.ca -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+  <!-- Cal.com embed script -->
+  <script type="text/javascript">
+    (function (C, A, L) { 
+      let p = function (a, ar) { a.q.push(ar); }; 
+      let d = C.document; 
+      C.Cal = C.Cal || function () { 
+        let cal = C.Cal; 
+        let ar = arguments; 
+        if (!cal.loaded) { 
+          cal.ns = {}; 
+          cal.q = cal.q || []; 
+          d.head.appendChild(d.createElement("script")).src = A; 
+          cal.loaded = true; 
+        } 
+        if (ar[0] === L) { 
+          const api = function () { p(api, arguments); }; 
+          const namespace = ar[1]; 
+          api.q = api.q || []; 
+          if (typeof namespace === "string") {
+            cal.ns[namespace] = cal.ns[namespace] || api;
+            p(cal.ns[namespace], ar);
+            p(cal, ["initNamespace", namespace]);
+          } else p(cal, ar); 
+          return;
+        } 
+        p(cal, ar); 
+      }; 
+    })(window, "https://app.cal.com/embed/embed.js", "init");
+  </script>
+
+  <style>
+    :root {
+      --bb-blue: #333;
+      --bb-red: #e74c3c;
+      --bb-light: #f4f4f4;
+      --bb-dark: #343a40;
+      --tag-blue: #3498db;
+      --tag-green: #2ecc71;
+      --bb-green: #2ecc71;
+      --bb-secondary: #666;
+      --bb-hover-grey: #4a5057; /* Lighter grey for hover */
+    }
+
+    * { 
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bb-light);
+      color: var(--bb-dark);
+      line-height: 1.5;
+    }
+
+    /* ---------- LAYOUT ---------- */
+    .container {
+      display: flex;
+      min-height: 100vh;
+      flex-wrap: nowrap;
+    }
+    aside {
+      width: 280px;
+      background: #fff;
+      border-right: 1px solid #ddd;
+      padding: 24px 20px;
+      overflow-y: auto;
+    }
+    main {
+      flex: 1;
+      padding: 24px 20px;
+      overflow-y: auto;
+      background: var(--bb-light);
+    }
+
+    /* ---------- FILTER SECTION ---------- */
+    .filter-section {
+      margin-bottom: 20px;
+    }
+    .filter-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+      padding: 8px 0;
+    }
+    .filter-header h3 {
+      margin: 0;
+      color: var(--bb-blue);
+      font-size: 1.1rem;
+    }
+    .toggle-icon {
+      font-size: 1rem;
+      transition: transform 0.3s;
+    }
+    .toggle-icon.collapsed {
+      transform: rotate(-90deg);
+    }
+    .filter-content {
+      max-height: 500px;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+    .filter-content.collapsed {
+      max-height: 0;
+    }
+
+    /* ---------- EQUIPMENT CHECKBOXES ---------- */
+    .filter-content label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px 0;
+    }
+    .filter-content label input[type="checkbox"] {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--bb-blue);
+      border-radius: 4px;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .filter-content label input[type="checkbox"]:checked {
+      background: var(--bb-blue);
+    }
+    .filter-content label input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      background: #fff;
+      border-radius: 2px;
+    }
+
+    /* ---------- TOP FILTER BAR ---------- */
+    #filters-horizontal {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+      margin-bottom: 24px;
+      padding-bottom: 8px;
+    }
+    #filters-horizontal > div {
+      display: flex;
+      flex-direction: column;
+      min-width: 120px;
+      flex-grow: 1;
+    }
+    #filters-horizontal label {
+      font-weight: 500;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: #555;
+    }
+    select, input[type="number"] {
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      width: 100%;
+      background: #fff;
+      -webkit-appearance: none;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* ---------- PACKAGE GRID ---------- */
+    #packages-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .package {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 4px 8px rgba(0,0,0,.06);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp .6s forwards;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .package:active {
+      transform: scale(0.98);
+    }
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0) }
+    }
+    .package h3 {
+      margin: 0;
+      color: var(--bb-blue);
+      font-size: 1.1rem;
+      line-height: 1.3;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .package p.description {
+      margin: 0;
+      font-size: .9rem;
+      color: #555;
+    }
+    .package p {
+      margin: 0;
+    }
+    .price { 
+      font-size: 1rem;
+    }
+    .price.sale {
+      color: var(--bb-red);
+      font-weight: 600;
+    }
+    .price.no-sale {
+      color: var(--bb-dark);
+      font-weight: 400; /* Matches default font weight of surrounding text */
+    }
+    .discount {
+      color: var(--bb-green);
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-left: 5px;
+    }
+    .original-price {
+      text-decoration: line-through;
+      color: var(--bb-secondary);
+      font-size: 0.9rem;
+      margin-left: 5px;
+    }
+    .book-now-button {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 16px;
+      background: rgba(44, 62, 80, 0.1);
+      color: var(--bb-blue);
+      font-weight: 500;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all .25s;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+    }
+    .book-now-button:hover,
+    .book-now-button:focus { 
+      background: var(--bb-hover-grey);
+      color: #fff;
+      outline: none;
+      transform: translateY(-2px);
+    }
+    .book-now-button:active {
+      background: var(--bb-dark);
+      color: #fff;
+      transform: translateY(0);
+    }
+
+    /* ---------- TAGS ---------- */
+    .bundled-tag {
+      background: #e8fce8;
+      color: #2e7d32;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      font-weight: 500;
+      display: inline-block;
+      margin-right: 5px;
+    }
+    .package-type-tag {
+      display: inline-block;
+      background: #e8f4fc;
+      color: var(--bb-blue);
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-right: 5px;
+      font-size: 0.8em;
+      font-weight: 500;
+    }
+    .equipment-tag {
+      display: inline-block;
+      background: #f0f0f0;
+      color: #333;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+    }
+    .equipment-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0;
+    }
+    .package-note {
+      font-size: .85rem;
+      color: #666;
+      margin: 0;
+      font-style: normal;
+    }
+    .sale-tag {
+      font-size: 0.6rem;
+      color: var(--bb-red);
+      vertical-align: super;
+      font-weight: 600;
+      margin-left: 4px;
+      text-transform: uppercase;
+    }
+    .new-tag {
+      font-size: 0.6rem;
+      color: var(--bb-red);
+      vertical-align: super;
+      font-weight: 600;
+      margin-left: 4px;
+      text-transform: uppercase;
+    }
+
+    /* ---------- PAGINATION ---------- */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin: 20px 0;
+      padding: 10px 0;
+    }
+    .pagination button {
+      width: 36px;
+      height: 36px;
+      border: 1px solid #ccc;
+      background: rgba(44, 62, 80, 0.1);
+      color: var(--bb-blue);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .pagination button:hover {
+      background: var(--bb-hover-grey);
+      color: #fff;
+    }
+    .pagination button:active {
+      background: var(--bb-dark);
+      color: #fff;
+    }
+    .pagination button:disabled {
+      background: #e0e0e0;
+      color: #ccc;
+      cursor: not-allowed;
+    }
+    .pagination button svg {
+      width: 16px;
+      height: 16px;
+    }
+    .pagination-label {
+      font-size: 14px;
+      min-width: 100px;
+      text-align: center;
+    }
+
+    /* ---------- MODAL STYLES ---------- */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      overflow-y: auto;
+    }
+    .modal.active {
+      display: flex;
+      opacity: 1;
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: absolute;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      transform: scale(0.8);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .modal.active .modal-content {
+      transform: scale(1);
+      opacity: 1;
+      transition-delay: 0.1s;
+    }
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(44, 62, 80, 0.1);
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--bb-blue);
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: all 0.25s;
+    }
+    .modal-close:hover {
+      background: var(--bb-hover-grey);
+      color: #fff;
+    }
+    .modal-close:active {
+      background: var(--bb-dark);
+      color: #fff;
+    }
+    .modal-content h3 {
+      margin: 0;
+      color: var(--bb-blue);
+      font-size: 1.2rem;
+      padding-right: 20px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .modal-content p {
+      margin: 0;
+      font-size: .95rem;
+      color: #555;
+    }
+    .modal-content .equipment-tags {
+      margin: 0;
+    }
+    .modal-content .package-note {
+      font-size: .9rem;
+      color: #666;
+      font-style: normal;
+    }
+    .modal-content .book-now-button {
+      margin-top: 16px;
+    }
+    .no-results {
+      text-align: center;
+      padding: 40px 20px;
+      grid-column: 1 / -1;
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+    @media(max-width: 900px) {
+      .container { 
+        flex-direction: column; 
+        min-height: auto;
+      }
+      aside { 
+        width: 100%; 
+        border-right: none; 
+        border-bottom: 1px solid #ddd;
+        padding: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        max-height: 60vh;
+        overflow-y: auto;
+      }
+      main {
+        padding: 16px;
+      }
+      #filters-horizontal { 
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      #filters-horizontal > div { 
+        min-width: calc(50% - 8px);
+      }
+      .filter-header {
+        padding: 10px 0;
+      }
+      .filter-header h3 {
+        font-size: 1rem;
+        color: var(--bb-dark);
+      }
+      .filter-content label {
+        font-size: 14px;
+        color: var(--bb-dark);
+      }
+      .package {
+        padding: 16px;
+      }
+      .modal-content {
+        padding: 16px;
+      }
+      .modal-content h3 {
+        color: var(--bb-dark);
+      }
+      .package h3 {
+        color: var(--bb-dark);
+      }
+      .package-type-tag {
+        color: var(--bb-dark);
+      }
+    }
+    @media(max-width: 600px) {
+      #filters-horizontal > div { 
+        min-width: 100%;
+      }
+      #packages-container {
+        grid-template-columns: 1fr;
+      }
+      .package h3 {
+        font-size: 1rem;
+      }
+      .modal-content {
+        width: 95%;
+        padding: 15px;
+      }
+    }
+    @media(max-width: 400px) {
+      .pagination-label {
+        min-width: 80px;
+        font-size: 13px;
+      }
+      .pagination button {
+        width: 32px;
+        height: 32px;
+      }
+      .package-type-tag, .equipment-tag {
+        font-size: 11px;
+        padding: 3px 8px;
+      }
+      .sale-tag, .new-tag {
+        font-size: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- ---------- SIDEBAR ---------- -->
+  <aside>
+    <div class="filter-section">
+      <div class="filter-header" data-filter="package-type">
+        <h3>Package Type</h3>
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div id="package-type-filters" class="filter-content">
+        <label><input type="checkbox" name="package-type" value="All" checked> All</label>
+        <label><input type="checkbox" name="package-type" value="Bundle"> Bundled</label>
+        <label><input type="checkbox" name="package-type" value="Individual"> Individual</label>
+      </div>
+    </div>
+    
+    <div class="filter-section">
+      <div class="filter-header" data-filter="package-options">
+        <h3>Package Options</h3>
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div id="package-options-filters" class="filter-content">
+        <label><input type="checkbox" name="package-options" value="All" checked> All</label>
+        <label><input type="checkbox" name="package-options" value="Sale"> Sale</label>
+        <label><input type="checkbox" name="package-options" value="New"> New</label>
+      </div>
+    </div>
+    
+    <div class="filter-section">
+      <div class="filter-header" data-filter="event-type">
+        <h3>Event Type</h3>
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div id="event-type-filters" class="filter-content">
+        <label><input type="checkbox" name="event-type" value="All" checked> All</label>
+        <!-- Event types will be dynamically populated -->
+      </div>
+    </div>
+    
+    <div class="filter-section">
+      <div class="filter-header" data-filter="equipment">
+        <h3>Services Type</h3>
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div id="equipment-filters" class="filter-content">
+        <label><input type="checkbox" name="equipment" value="All" checked> All</label>
+        <label><input type="checkbox" name="equipment" value="Photo Booth"> Photo Booth</label>
+        <label><input type="checkbox" name="equipment" value="360 Video Booth"> 360 Video Booth</label>
+        <label><input type="checkbox" name="equipment" value="Audio Guest Book"> Audio Guest Book</label>
+        <label><input type="checkbox" name="equipment" value="Magazine Photo Booth Box"> Magazine Booth Box</label>
+        <label><input type="checkbox" name="equipment" value="Espresso & Coffee Booth"> Espresso & Coffee Booth</label>
+        <label><input type="checkbox" name="equipment" value="Waffle Booth"> Waffle Booth</label>
+        <label><input type="checkbox" name="equipment" value="Smoothies Booth"> Smoothies Booth</label>
+        <label><input type="checkbox" name="equipment" value="Sparkler Boxes"> Sparkler Boxes</label>
+        <label><input type="checkbox" name="equipment" value="Dry Ice Fog"> Dry Ice (Fog Effect)</label>
+        <label><input type="checkbox" name="equipment" value="Laser Effect for First Dance"> Laser First Dance</label>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ---------- MAIN ---------- -->
+  <main>
+    <div id="filters-horizontal" aria-label="Main filters">
+      <!-- Guests -->
+      <div>
+        <label for="guestFilter">Guests</label>
+        <select id="guestFilter">
+          <option value="">Any</option>
+          <option value="50">50+</option>
+          <option value="100">100+</option>
+          <option value="150">150+</option>
+          <option value="200">200+</option>
+          <option value="250">250+</option>
+          <option value="300">300+</option>
+        </select>
+      </div>
+      <!-- Duration -->
+      <div>
+        <label for="durationFilter">Duration (hrs)</label>
+        <select id="durationFilter">
+          <option value="">Any</option>
+        </select>
+      </div>
+      <!-- Price Range -->
+      <div>
+        <label>Price Min (C$)</label>
+        <input type="number" id="minPrice" placeholder="0" min="0">
+      </div>
+      <div>
+        <label>Price Max (C$)</label>
+        <input type="number" id="maxPrice" placeholder="4000" min="0">
+      </div>
+      <!-- Sort By -->
+      <div>
+        <label for="sortBy">Sort By</label>
+        <select id="sortBy">
+          <option value="">Select</option>
+          <option value="price-desc">Most Expensive</option>
+          <option value="price-asc">Least Expensive</option>
+          <option value="date-newest">Date: Newest</option>
+          <option value="date-oldest">Date: Oldest</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="pagination" id="pagination-top"></div>
+    <div id="packages-container" tabindex="0"></div>
+    <div class="pagination" id="pagination-bottom"></div>
+  </main>
+</div>
+
+<!-- ---------- MODAL ---------- -->
+<div id="package-modal" class="modal">
+  <div class="modal-content">
+    <button class="modal-close" title="Close">×</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ---------- SCRIPT ---------- -->
+<script>
+  /* ---------- DATA ---------- */
+  let bundles = [];
+
+  /* ---------- FETCH DATA AND POPULATE EVENT TYPES ---------- */
+  async function loadPackages() {
+    try {
+      const response = await fetch('https://raw.githubusercontent.com/bundlebooth/bdb-1.0/refs/heads/main/packages.json');
+      if (!response.ok) throw new Error('Failed to fetch packages');
+      bundles = await response.json();
+
+      // Initialize Cal.com for each package's slug
+      bundles.forEach(pkg => {
+        const slug = pkg.slug || `fallback-${pkg.name.toLowerCase().replace(/\s+/g, '-')}`;
+        const namespace = slug;
+        Cal("init", namespace, { origin: "https://cal.com" });
+        Cal.ns[namespace]("ui", {
+          "hideEventTypeDetails": false,
+          "layout": "month_view"
+        });
+      });
+
+      // Check if any packages have Sale or New fields
+      const hasSaleOrNew = bundles.some(pkg => pkg.Sale === "Y" || pkg.New === "Y");
+      if (!hasSaleOrNew) {
+        console.warn('No packages have "Sale": "Y" or "New": "Y". Package Options filter may not work as expected.');
+      }
+
+      // Populate Event Type filters dynamically
+      const eventTypeContainer = document.getElementById('event-type-filters');
+      eventTypeContainer.innerHTML = ''; // Clear existing content
+      const allLabel = document.createElement('label');
+      allLabel.innerHTML = `<input type="checkbox" name="event-type" value="All" checked> All`;
+      eventTypeContainer.appendChild(allLabel);
+
+      // Get unique event types, excluding "All" and empty values
+      const uniqueEventTypes = [...new Set(
+        bundles.flatMap(pkg => Array.isArray(pkg.eventType) ? pkg.eventType : [pkg.eventType])
+      )].filter(type => type && type !== 'All' && type.trim() !== '');
+
+      // Create checkboxes for each unique event type
+      uniqueEventTypes.forEach(type => {
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" name="event-type" value="${type}"> ${type}`;
+        eventTypeContainer.appendChild(label);
+      });
+
+      // Add event listeners to dynamically created event type checkboxes
+      const eventTypeCheckboxes = document.querySelectorAll('#event-type-filters input[type="checkbox"]');
+      eventTypeCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          updateAllCheckbox('event-type', checkbox);
+        });
+      });
+
+      filterPackages();
+    } catch (error) {
+      console.error('Error loading packages:', error);
+      packagesContainer.innerHTML = '<div class="no-results"><p>Unable to load packages. Please try again later.</p></div>';
+    }
+  }
+
+  /* ---------- DURATION OPTIONS ---------- */
+  const durationSelect = document.getElementById('durationFilter');
+  for (let i = 1; i <= 10; i++) {
+    let opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = i;
+    durationSelect.appendChild(opt);
+  }
+
+  /* ---------- DOM ELEMENTS ---------- */
+  const packagesContainer = document.getElementById('packages-container');
+  const paginationTopContainer = document.getElementById('pagination-top');
+  const paginationBottomContainer = document.getElementById('pagination-bottom');
+  const guestFilter = document.getElementById('guestFilter');
+  const minPriceFilter = document.getElementById('minPrice');
+  const maxPriceFilter = document.getElementById('maxPrice');
+  const sortBySelect = document.getElementById('sortBy');
+  const equipmentFilters = document.querySelectorAll('#equipment-filters input[type="checkbox"]');
+  const durationFilter = document.getElementById('durationFilter');
+  const eventTypeFilters = document.querySelectorAll('#event-type-filters input[type="checkbox"]');
+  const packageTypeFilters = document.querySelectorAll('#package-type-filters input[type="checkbox"]');
+  const packageOptionsFilters = document.querySelectorAll('#package-options-filters input[type="checkbox"]');
+  const filterHeaders = document.querySelectorAll('.filter-header');
+  const modal = document.getElementById('package-modal');
+  const modalBody = document.getElementById('modal-body');
+  const modalClose = document.querySelector('.modal-close');
+
+  /* ---------- PAGINATION SETTINGS ---------- */
+  const ITEMS_PER_PAGE = 9;
+  let currentPage = 1;
+  let filteredBundles = bundles.slice();
+
+  /* ---------- RENDER PACKAGES ---------- */
+  function renderPackages(list, page = 1) {
+    packagesContainer.innerHTML = '';
+    if (list.length === 0) {
+      packagesContainer.innerHTML = '<div class="no-results"><p>No matching packages found. <br> Try adjusting your filters or <a href="https://bundlebooth.ca/contact" target="_blank" rel="noopener noreferrer">contact us</a> to create a personalized bundle.</p></div>';
+      paginationTopContainer.innerHTML = '';
+      paginationBottomContainer.innerHTML = '';
+      return;
+    }
+
+    const start = (page - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    const paginatedList = list.slice(start, end);
+
+    paginatedList.forEach((pkg, index) => {
+      const div = document.createElement('div');
+      div.className = 'package';
+      div.dataset.index = start + index;
+      const displayType = pkg.packageType === 'Bundle' ? 'Bundled' : pkg.packageType;
+      const tagClass = pkg.packageType === 'Bundle' ? 'bundled-tag' : 'package-type-tag';
+      const durationText = pkg.packageType === 'Individual' ? `${pkg.maxDuration} hours` : `Up to ${pkg.maxDuration} hours`;
+      const slug = pkg.slug || `fallback-${pkg.name.toLowerCase().replace(/\s+/g, '-')}`;
+      const isSale = pkg.Sale === "Y";
+      const isNew = pkg.New === "Y";
+      const priceClass = isSale ? 'price sale' : 'price no-sale';
+      const priceDetails = isSale 
+        ? `<span class="${priceClass}">$${pkg.price}</span><span class="original-price">(Reg. $${pkg.regPrice})</span> - <span class="discount">${pkg.discount}% OFF!</span>`
+        : `<span class="${priceClass}">$${pkg.price}</span>`;
+      const statusTags = [];
+      if (isSale) statusTags.push('<span class="sale-tag">ON SALE!</span>');
+      if (isNew) statusTags.push('<span class="new-tag">NEW!</span>');
+      
+      div.innerHTML = `
+        <h3>${pkg.name}${statusTags.join('')}</h3>
+        <span class="${tagClass}">${displayType}</span>
+        <p class="description">${pkg.description}</p>
+        <p><strong>Guests:</strong> Up to ${pkg.guests}</p>
+        <p><strong>Duration:</strong> ${durationText}</p>
+        <p><strong>Price:</strong> ${priceDetails}</p>
+        <p><strong>Services Included:</strong></p>
+        <div class="equipment-tags">
+          ${pkg.equipment.map(item => `<span class="equipment-tag">${item}</span>`).join('')}
+        </div>
+        <p class="package-note">${pkg.note}</p>
+        <button class="book-now-button" data-cal-link="bundleboothca/${slug}" data-cal-namespace="${slug}" data-cal-config='{"layout":"month_view"}'>Book Now</button>
+      `;
+      div.addEventListener('click', (e) => {
+        if (!e.target.closest('.book-now-button')) {
+          openModal(pkg, div);
+        }
+      });
+      // Add click event for Book Now button
+      const bookNowButton = div.querySelector('.book-now-button');
+      bookNowButton.addEventListener('click', handleBookNowClick);
+      packagesContainer.appendChild(div);
+    });
+
+    renderPagination(list.length, page);
+  }
+
+  /* ---------- HANDLE BOOK NOW CLICK ---------- */
+  function handleBookNowClick(e) {
+    const isMobile = window.matchMedia("(max-width: 900px)").matches;
+    if (isMobile) {
+      const button = e.target.closest('.book-now-button');
+      const calLink = button.getAttribute('data-cal-link');
+      if (calLink) {
+        window.open(`https://cal.com/${calLink}`, '_blank');
+        e.preventDefault(); // Prevent default Cal.com embed behavior
+      }
+    }
+    // On desktop, Cal.com handles the click via its embed script
+  }
+
+  /* ---------- RENDER PAGINATION ---------- */
+  function renderPagination(totalItems, currentPage) {
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+    if (totalPages <= 1) {
+      paginationTopContainer.innerHTML = '';
+      paginationBottomContainer.innerHTML = '';
+      return;
+    }
+
+    const createPaginationControls = (container, scrollOnClick = false) => {
+      container.innerHTML = '';
+
+      const prevButton = document.createElement('button');
+      prevButton.innerHTML = `
+        <svg viewBox="0 0 24 24">
+          <path d="M15 18l-6-6 6-6" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      `;
+      prevButton.disabled = currentPage === 1;
+      prevButton.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderPackages(filteredBundles, currentPage);
+          if (scrollOnClick) {
+            packagesContainer.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      });
+
+      const nextButton = document.createElement('button');
+      nextButton.innerHTML = `
+        <svg viewBox="0 0 24 24">
+          <path d="M9 18l6-6-6-6" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      `;
+      nextButton.disabled = currentPage === totalPages;
+      nextButton.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderPackages(filteredBundles, currentPage);
+          if (scrollOnClick) {
+            packagesContainer.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      });
+
+      const pageInfo = document.createElement('span');
+      pageInfo.className = 'pagination-label';
+      pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+      container.appendChild(prevButton);
+      container.appendChild(pageInfo);
+      container.appendChild(nextButton);
+    };
+
+    createPaginationControls(paginationTopContainer, false);
+    createPaginationControls(paginationBottomContainer, true);
+  }
+
+  /* ---------- MODAL FUNCTIONALITY ---------- */
+  function openModal(pkg, packageElement) {
+    const displayType = pkg.packageType === 'Bundle' ? 'Bundled' : pkg.packageType;
+    const tagClass = pkg.packageType === 'Bundle' ? 'bundled-tag' : 'package-type-tag';
+    const durationText = pkg.packageType === 'Individual' ? `${pkg.maxDuration} hours` : `Up to ${pkg.maxDuration} hours`;
+    const slug = pkg.slug || `fallback-${pkg.name.toLowerCase().replace(/\s+/g, '-')}`;
+    const isSale = pkg.Sale === "Y";
+    const isNew = pkg.New === "Y";
+    const priceClass = isSale ? 'price sale' : 'price no-sale';
+    const priceDetails = isSale 
+      ? `<span class="${priceClass}">$${pkg.price}</span> (<span class="original-price">Reg. $${pkg.regPrice}</span>) - <span class="discount">${pkg.discount}% OFF!</span>`
+      : `<span class="${priceClass}">$${pkg.price}</span>`;
+    const statusTags = [];
+    if (isSale) statusTags.push('<span class="sale-tag">ON SALE!</span>');
+    if (isNew) statusTags.push('<span class="new-tag">NEW!</span>');
+    
+    modalBody.innerHTML = `
+      <h3>${pkg.name}${statusTags.join('')}</h3>
+      <span class="${tagClass}">${displayType}</span>
+      <p class="description"><strong>Description:</strong> ${pkg.description}</p>
+      <p><strong>Guests:</strong> Up to ${pkg.guests}</p>
+      <p><strong>Duration:</strong> ${durationText}</p>
+      <p><strong>Price:</strong> ${priceDetails}</p>
+      <p><strong>Services Included:</strong></p>
+      <div class="equipment-tags">
+        ${pkg.equipment.map(item => `<span class="equipment-tag">${item}</span>`).join('')}
+      </div>
+      <p class="package-note"><strong>Note:</strong> ${pkg.note}</p>
+      <button class="book-now-button" data-cal-link="bundleboothca/${slug}" data-cal-namespace="${slug}" data-cal-config='{"layout":"month_view"}'>Book Now</button>
+    `;
+
+    // Add click event for Book Now button in modal
+    const modalBookNowButton = modalBody.querySelector('.book-now-button');
+    modalBookNowButton.addEventListener('click', handleBookNowClick);
+
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('active'), 10);
+
+    const modalContent = modal.querySelector('.modal-content');
+    const rect = packageElement.getBoundingClientRect();
+    const scrollY = window.scrollY || window.pageYOffset;
+    const topPosition = rect.top + scrollY - 20;
+    modalContent.style.position = 'absolute';
+    modalContent.style.top = `${topPosition}px`;
+    modalContent.style.left = '50%';
+    modalContent.style.transform = 'translateX(-50%) scale(1)';
+  }
+
+  function closeModal() {
+    modal.classList.remove('active');
+    setTimeout(() => {
+      modal.style.display = 'none';
+      modalBody.innerHTML = '';
+      const modalContent = modal.querySelector('.modal-content');
+      modalContent.style.position = '';
+      modalContent.style.top = '';
+      modalContent.style.left = '';
+      modalContent.style.transform = '';
+    }, 300);
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  /* ---------- FILTER LOGIC ---------- */
+  function filterPackages() {
+    currentPage = 1;
+    let filtered = bundles.slice();
+
+    // Package Options Filter
+    const selectedPackageOptions = Array.from(packageOptionsFilters)
+      .filter(i => i.checked)
+      .map(i => i.value);
+    if (selectedPackageOptions.length && !selectedPackageOptions.includes("All")) {
+      filtered = filtered.filter(pkg => {
+        const isSale = (pkg.Sale || "N") === "Y";
+        const isNew = (pkg.New || "N") === "Y";
+        return selectedPackageOptions.includes("Sale") && isSale ||
+               selectedPackageOptions.includes("New") && isNew;
+      });
+    }
+
+    // Event Type Filter
+    const selectedEventTypes = Array.from(document.querySelectorAll('#event-type-filters input[type="checkbox"]'))
+      .filter(i => i.checked)
+      .map(i => i.value);
+    if (selectedEventTypes.length && !selectedEventTypes.includes("All")) {
+      filtered = filtered.filter(pkg => {
+        const eventTypes = Array.isArray(pkg.eventType) ? pkg.eventType : [pkg.eventType];
+        return selectedEventTypes.some(type => eventTypes.includes(type));
+      });
+    }
+
+    // Package Type Filter
+    const selectedPackageTypes = Array.from(packageTypeFilters)
+      .filter(i => i.checked)
+      .map(i => i.value);
+    if (selectedPackageTypes.length && !selectedPackageTypes.includes("All")) {
+      filtered = filtered.filter(pkg => selectedPackageTypes.includes(pkg.packageType));
+    }
+
+    // Equipment Filter
+    const selectedEquipment = Array.from(equipmentFilters)
+      .filter(i => i.checked)
+      .map(i => i.value);
+    if (selectedEquipment.length && !selectedEquipment.includes("All")) {
+      filtered = filtered.filter(pkg => selectedEquipment.every(eq => pkg.equipment.includes(eq)));
+    }
+
+    // Guests Filter
+    const guestsVal = guestFilter.value;
+    if (guestsVal) {
+      filtered = filtered.filter(pkg => pkg.guests >= parseInt(guestsVal));
+    }
+
+    // Duration Filter
+    const durationVal = durationFilter.value;
+    if (durationVal) {
+      filtered = filtered.filter(pkg => pkg.maxDuration >= parseInt(durationVal, 10));
+    }
+
+    // Price Filters
+    const minPriceVal = minPriceFilter.value || 0;
+    if (minPriceVal) {
+      filtered = filtered.filter(pkg => pkg.price >= parseFloat(minPriceVal));
+    }
+    const maxPriceVal = maxPriceFilter.value || Infinity;
+    if (maxPriceVal) {
+      filtered = filtered.filter(pkg => pkg.price <= parseFloat(maxPriceVal));
+    }
+
+    // Sorting
+    switch (sortBySelect.value) {
+      case 'price-desc':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'price-asc':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'date-newest':
+        filtered = filtered.slice().reverse();
+        break;
+      case 'date-oldest':
+        break;
+    }
+
+    filteredBundles = filtered;
+    renderPackages(filteredBundles, currentPage);
+  }
+
+  /* ---------- UPDATE ALL CHECKBOX LOGIC ---------- */
+  function updateAllCheckbox(filterType, changedCheckbox) {
+    const allCheckbox = document.querySelector(`#${filterType}-filters input[value="All"]`);
+    const otherCheckboxes = Array.from(document.querySelectorAll(`#${filterType}-filters input[type="checkbox"]`)).filter(cb => cb.value !== "All");
+
+    if (changedCheckbox.value === "All") {
+      if (changedCheckbox.checked) {
+        otherCheckboxes.forEach(cb => cb.checked = true);
+      } else {
+        otherCheckboxes.forEach(cb => cb.checked = false);
+      }
+    } else {
+      if (changedCheckbox.checked) {
+        allCheckbox.checked = false;
+        if (otherCheckboxes.every(cb => cb.checked)) {
+          allCheckbox.checked = true;
+        }
+      } else {
+        if (allCheckbox.checked) {
+          allCheckbox.checked = false;
+        }
+        if (!otherCheckboxes.some(cb => cb.checked)) {
+          allCheckbox.checked = true;
+        }
+      }
+    }
+
+    filterPackages();
+  }
+
+  /* ---------- TOGGLE FILTER SECTIONS ---------- */
+  function toggleFilterSection(filterId) {
+    const content = document.getElementById(`${filterId}`);
+    const icon = document.querySelector(`.filter-header[data-filter="${filterId.replace('-filters', '')}"] .toggle-icon`);
+    const isCollapsed = content.classList.contains('collapsed');
+    content.classList.toggle('collapsed', !isCollapsed);
+    icon.classList.toggle('collapsed', !isCollapsed);
+  }
+
+  /* ---------- SET INITIAL FILTER STATE BASED ON DEVICE ---------- */
+  function setInitialFilterState() {
+    const isMobile = window.matchMedia("(max-width: 900px)").matches;
+    filterHeaders.forEach(header => {
+      const filterId = header.dataset.filter + '-filters';
+      const content = document.getElementById(`${filterId}`);
+      const icon = header.querySelector('.toggle-icon');
+      if (isMobile) {
+        content.classList.add('collapsed');
+        icon.classList.add('collapsed');
+      } else {
+        content.classList.remove('collapsed');
+        icon.classList.remove('collapsed');
+      }
+    });
+  }
+
+  /* ---------- EVENT LISTENERS ---------- */
+  guestFilter.addEventListener('change', filterPackages);
+  durationFilter.addEventListener('change', filterPackages);
+  minPriceFilter.addEventListener('input', filterPackages);
+  maxPriceFilter.addEventListener('input', filterPackages);
+  sortBySelect.addEventListener('change', filterPackages);
+
+  packageTypeFilters.forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      updateAllCheckbox('package-type', checkbox);
+    });
+  });
+
+  packageOptionsFilters.forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      updateAllCheckbox('package-options', checkbox);
+    });
+  });
+
+  equipmentFilters.forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      updateAllCheckbox('equipment', checkbox);
+    });
+  });
+
+  filterHeaders.forEach(header => {
+    const toggleHandler = (e) => {
+      e.preventDefault();
+      const filterId = header.dataset.filter + '-filters';
+      toggleFilterSection(filterId);
+    };
+    header.addEventListener('click', toggleHandler);
+    header.addEventListener('touchstart', toggleHandler, { passive: true });
+  });
+
+  /* ---------- INITIAL SETUP ---------- */
+  setInitialFilterState();
+  document.addEventListener('DOMContentLoaded', loadPackages);
+</script>
+</body>
+</html>
