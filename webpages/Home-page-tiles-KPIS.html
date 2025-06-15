@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BundleRush KPI Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
@@ -26,8 +25,8 @@
         .kpi-container {
             display: flex;
             flex-wrap: nowrap;
-            gap: 2rem;
-            max-width: 1400px;
+            gap: 1.5rem;
+            max-width: 1200px;
             width: 100%;
             padding: 1rem;
             justify-content: center;
@@ -38,11 +37,11 @@
             background: #FFFFFF;
             border: 1px solid #E5E7EB;
             border-radius: 1rem;
-            padding: 2.5rem;
+            padding: 2rem;
             text-align: center;
             flex: 1;
-            min-width: 250px;
-            max-width: 300px;
+            min-width: 220px;
+            max-width: 270px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             animation: fadeInUp 0.6s ease forwards;
             animation-delay: calc(var(--order) * 0.1s);
@@ -57,15 +56,15 @@
 
         .kpi-icon {
             color: #666666;
-            margin-bottom: 1rem;
-            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.75rem;
         }
 
         .kpi-number {
-            font-size: 3.25rem;
+            font-size: 2.75rem;
             font-weight: 700;
             color: #666666;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             position: relative;
             display: inline-block;
         }
@@ -73,10 +72,10 @@
         .kpi-number::after {
             content: '+';
             position: absolute;
-            right: -1.75rem;
+            right: -1.5rem;
             top: 50%;
             transform: translateY(-50%) scale(0) rotate(0deg);
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             color: #666666;
             opacity: 0;
             transition: transform 0.4s ease, opacity 0.4s ease, rotate 0.4s ease;
@@ -88,7 +87,7 @@
         }
 
         .kpi-label {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #808080;
             text-transform: uppercase;
             letter-spacing: 0.06em;
@@ -99,10 +98,10 @@
             display: inline-block;
             background: #c0c0c0;
             color: #000000;
-            font-size: 1rem;
-            padding: 0.5rem 1.25rem;
-            border-radius: 1.75rem;
-            margin-top: 1rem;
+            font-size: 0.9rem;
+            padding: 0.4rem 1rem;
+            border-radius: 1.5rem;
+            margin-top: 0.75rem;
             transition: transform 0.3s ease;
             text-decoration: none;
         }
@@ -125,25 +124,25 @@
         @media (max-width: 768px) {
             .kpi-container {
                 flex-wrap: wrap;
-                gap: 1.5rem;
+                gap: 1.25rem;
                 padding: 0.5rem;
             }
             .kpi-card {
-                min-width: 200px;
-                max-width: 250px;
+                min-width: 180px;
+                max-width: 230px;
             }
             .kpi-number {
-                font-size: 2.75rem;
+                font-size: 2.25rem;
             }
             .kpi-label {
-                font-size: 0.95rem;
+                font-size: 0.85rem;
             }
             .platform-badge {
-                font-size: 0.9rem;
-                padding: 0.35rem 1rem;
+                font-size: 0.8rem;
+                padding: 0.3rem 0.8rem;
             }
             .kpi-icon {
-                font-size: 1.75rem;
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -151,22 +150,22 @@
 <body>
     <div class="kpi-container" id="kpi-container">
         <div class="kpi-card" style="--order: 1">
-            <i class="fas fa-gift fa-2x kpi-icon" aria-hidden="true"></i>
+            <span class="kpi-icon" aria-hidden="true">🎁</span>
             <div class="kpi-number" id="bundle-count">0</div>
             <div class="kpi-label">Bundles Available</div>
         </div>
         <div class="kpi-card" style="--order: 2">
-            <i class="fas fa-star fa-2x kpi-icon" aria-hidden="true"></i>
+            <span class="kpi-icon" aria-hidden="true">📸</span>
             <div class="kpi-number" id="equipment-count">0</div>
             <div class="kpi-label">Event Features</div>
         </div>
         <div class="kpi-card" style="--order: 3">
-            <i class="fas fa-calendar fa-2x kpi-icon" aria-hidden="true"></i>
+            <span class="kpi-icon" aria-hidden="true">🎉</span>
             <div class="kpi-number" id="event-type-count">0</div>
             <div class="kpi-label">Event Types</div>
         </div>
         <div class="kpi-card" style="--order: 4">
-            <i class="fas fa-link fa-2x kpi-icon" aria-hidden="true"></i>
+            <span class="kpi-icon" aria-hidden="true">🔗</span>
             <div class="kpi-number" id="platform-count">0</div>
             <div class="kpi-label">Platform</div>
             <a href="https://rebrand.ly/ymgbgn4" class="platform-badge" target="_blank" rel="noopener noreferrer">All Bundles Here!</a>
