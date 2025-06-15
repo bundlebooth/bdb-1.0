@@ -218,12 +218,12 @@
     "servicesIncluded": [
       "Photo Booth",
       "360 Video Booth",
-      "Magazine Photo Booth Box"
+      "Magazine Booth Box"
     ],
     "equipment": [
       "Photo Booth",
       "360 Video Booth",
-      "Magazine Photo Booth Box"
+      "Magazine Booth Box"
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "locations": [
@@ -530,12 +530,12 @@
     "maxDuration": 6,
     "servicesIncluded": [
       "Photo Booth",
-      "Magazine Photo Booth Box",
+      "Magazine Booth Box",
       "Sparkler Boxes"
     ],
     "equipment": [
       "Photo Booth",
-      "Magazine Photo Booth Box",
+      "Magazine Booth Box",
       "Sparkler Boxes"
     ],
     "note": "Additional charges apply for extended hours or additional services.",
@@ -1569,11 +1569,11 @@
     "maxDuration": 6,
     "servicesIncluded": [
       "Photo Booth",
-      "Magazine Photo Booth Box"
+      "Magazine Booth Box"
     ],
     "equipment": [
       "Photo Booth",
-      "Magazine Photo Booth Box"
+      "Magazine Booth Box"
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "locations": [
@@ -2282,10 +2282,10 @@
     "guests": "Up to 200",
     "maxDuration": 6,
     "servicesIncluded": [
-      "Magazine Photo Booth Box"
+      "Magazine Booth Box"
     ],
     "equipment": [
-      "Magazine Photo Booth Box"
+      "Magazine Booth Box"
     ],
     "note": "Additional hour: C$100",
     "locations": [
@@ -4186,11 +4186,11 @@
     "guests": "Up to 150",
     "maxDuration": 6,
     "servicesIncluded": [
-      "Magazine Photo Booth Box",
+      "Magazine Booth Box",
       "Dry Ice Fog"
     ],
     "equipment": [
-      "Magazine Photo Booth Box",
+      "Magazine Booth Box",
       "Dry Ice Fog"
     ],
     "note": "Additional charges apply for extended hours or additional services.",
@@ -5333,11 +5333,11 @@
     "maxDuration": 6,
     "servicesIncluded": [
       "360 Video Booth",
-      "Magazine Photo Booth Box"
+      "Magazine Booth Box"
     ],
     "equipment": [
       "360 Video Booth",
-      "Magazine Photo Booth Box"
+      "Magazine Booth Box"
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "locations": [
@@ -5645,11 +5645,11 @@
     "maxDuration": 6,
     "servicesIncluded": [
       "Audio Guest Book",
-      "Magazine Photo Booth Box"
+      "Magazine Booth Box"
     ],
     "equipment": [
       "Audio Guest Book",
-      "Magazine Photo Booth Box"
+      "Magazine Booth Box"
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "locations": [
@@ -6164,11 +6164,11 @@
     "guests": "Up to 150",
     "maxDuration": 6,
     "servicesIncluded": [
-      "Magazine Photo Booth Box",
+      "Magazine Booth Box",
       "Smoothies Booth"
     ],
     "equipment": [
-      "Magazine Photo Booth Box",
+      "Magazine Booth Box",
       "Smoothies Booth"
     ],
     "note": "Additional charges apply for extended hours or additional services.",
@@ -6477,12 +6477,12 @@
     "maxDuration": 6,
     "servicesIncluded": [
       "360 Video Booth",
-      "Magazine Photo Booth Box",
+      "Magazine Booth Box",
       "Sparkler Boxes"
     ],
     "equipment": [
       "360 Video Booth",
-      "Magazine Photo Booth Box",
+      "Magazine Booth Box",
       "Sparkler Boxes"
     ],
     "note": "Additional charges apply for extended hours or additional services.",
