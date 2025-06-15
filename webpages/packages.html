@@ -147,6 +147,31 @@
       border-radius: 2px;
     }
 
+    /* ---------- NEW STYLES FOR FILTER TAGS ---------- */
+    .filter-content label .tag {
+      display: inline-block;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+    /* Adjust alignment for sale-tag and new-tag to mimic superscript */
+    .filter-content label .sale-tag,
+    .filter-content label .new-tag {
+      font-size: 0.6rem;
+      color: var(--bb-red);
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: 4px;
+      position: relative;
+      top: -2px; /* Simulate superscript */
+    }
+    /* Ensure checkbox labels with tags wrap correctly */
+    .filter-content label {
+      align-items: flex-start;
+    }
+    .filter-content label input[type="checkbox"] {
+      margin-top: 3px; /* Align checkbox with tag top */
+    }
+
     /* ---------- TOP FILTER BAR ---------- */
     #filters-horizontal {
       display: flex;
@@ -580,8 +605,8 @@
       </div>
       <div id="package-type-filters" class="filter-content">
         <label><input type="checkbox" name="package-type" value="All" checked> All</label>
-        <label><input type="checkbox" name="package-type" value="Bundle"> Bundled</label>
-        <label><input type="checkbox" name="package-type" value="Individual"> Individual</label>
+        <label><input type="checkbox" name="package-type" value="Bundle"> <span class="tag bundled-tag">Bundled</span></label>
+        <label><input type="checkbox" name="package-type" value="Individual"> <span class="tag package-type-tag">Individual</span></label>
       </div>
     </div>
     
@@ -592,8 +617,8 @@
       </div>
       <div id="package-options-filters" class="filter-content">
         <label><input type="checkbox" name="package-options" value="All" checked> All</label>
-        <label><input type="checkbox" name="package-options" value="Sale"> Sale</label>
-        <label><input type="checkbox" name="package-options" value="New"> New</label>
+        <label><input type="checkbox" name="package-options" value="Sale"> <span class="tag sale-tag">On Sale!</span></label>
+        <label><input type="checkbox" name="package-options" value="New"> <span class="tag new-tag">New!</span></label>
       </div>
     </div>
     
@@ -615,16 +640,16 @@
       </div>
       <div id="equipment-filters" class="filter-content">
         <label><input type="checkbox" name="equipment" value="All" checked> All</label>
-        <label><input type="checkbox" name="equipment" value="Photo Booth"> Photo Booth</label>
-        <label><input type="checkbox" name="equipment" value="360 Video Booth"> 360 Video Booth</label>
-        <label><input type="checkbox" name="equipment" value="Audio Guest Book"> Audio Guest Book</label>
-        <label><input type="checkbox" name="equipment" value="Magazine Photo Booth Box"> Magazine Booth Box</label>
-        <label><input type="checkbox" name="equipment" value="Espresso & Coffee Booth"> Espresso & Coffee Booth</label>
-        <label><input type="checkbox" name="equipment" value="Waffle Booth"> Waffle Booth</label>
-        <label><input type="checkbox" name="equipment" value="Smoothies Booth"> Smoothies Booth</label>
-        <label><input type="checkbox" name="equipment" value="Sparkler Boxes"> Sparkler Boxes</label>
-        <label><input type="checkbox" name="equipment" value="Dry Ice Fog"> Dry Ice (Fog Effect)</label>
-        <label><input type="checkbox" name="equipment" value="Laser Effect for First Dance"> Laser First Dance</label>
+        <label><input type="checkbox" name="equipment" value="Photo Booth"> <span class="tag equipment-tag">Photo Booth</span></label>
+        <label><input type="checkbox" name="equipment" value="360 Video Booth"> <span class="tag equipment-tag">360 Video Booth</span></label>
+        <label><input type="checkbox" name="equipment" value="Audio Guest Book"> <span class="tag equipment-tag">Audio Guest Book</span></label>
+        <label><input type="checkbox" name="equipment" value="Magazine Photo Booth Box"> <span class="tag equipment-tag">Magazine Booth Box</span></label>
+        <label><input type="checkbox" name="equipment" value="Espresso & Coffee Booth"> <span class="tag equipment-tag">Espresso & Coffee Booth</span></label>
+        <label><input type="checkbox" name="equipment" value="Waffle Booth"> <span class="tag equipment-tag">Waffle Booth</span></label>
+        <label><input type="checkbox" name="equipment" value="Smoothies Booth"> <span class="tag equipment-tag">Smoothies Booth</span></label>
+        <label><input type="checkbox" name="equipment" value="Sparkler Boxes"> <span class="tag equipment-tag">Sparkler Boxes</span></label>
+        <label><input type="checkbox" name="equipment" value="Dry Ice Fog"> <span class="tag equipment-tag">Dry Ice (Fog Effect)</span></label>
+        <label><input type="checkbox" name="equipment" value="Laser Effect for First Dance"> <span class="tag equipment-tag">Laser First Dance</span></label>
       </div>
     </div>
   </aside>
@@ -803,7 +828,10 @@
       div.dataset.index = start + index;
       const displayType = pkg.packageType === 'Bundle' ? 'Bundled' : pkg.packageType;
       const tagClass = pkg.packageType === 'Bundle' ? 'bundled-tag' : 'package-type-tag';
-      const durationText = pkg.packageType === 'Individual' ? `${pkg.maxDuration} hours` : `Up to ${pkg.maxDuration} hours`;
+      const durationText = pkg.maxDuration
+        ? `${pkg.maxDuration} ${pkg.maxDuration === 1 ? 'hour' : 'hours'}`
+        : 'N/A';
+      const durationPrefix = pkg.packageType === 'Individual' ? '' : 'Up to ';
       const slug = pkg.slug || `fallback-${pkg.name.toLowerCase().replace(/\s+/g, '-')}`;
       const isSale = pkg.Sale === "Y";
       const isNew = pkg.New === "Y";
@@ -820,7 +848,7 @@
         <span class="${tagClass}">${displayType}</span>
         <p class="description">${pkg.description}</p>
         <p><strong>Guests:</strong> ${pkg.guests}</p>
-        <p><strong>Duration:</strong> ${durationText}</p>
+        <p><strong>Duration:</strong> ${durationPrefix}${durationText}</p>
         <p><strong>Price:</strong> ${priceDetails}</p>
         <p><strong>Services Included:</strong></p>
         <div class="equipment-tags">
@@ -920,7 +948,10 @@
   function openModal(pkg, packageElement) {
     const displayType = pkg.packageType === 'Bundle' ? 'Bundled' : pkg.packageType;
     const tagClass = pkg.packageType === 'Bundle' ? 'bundled-tag' : 'package-type-tag';
-    const durationText = pkg.packageType === 'Individual' ? `${pkg.maxDuration} hours` : `Up to ${pkg.maxDuration} hours`;
+    const durationText = pkg.maxDuration
+      ? `${pkg.maxDuration} ${pkg.maxDuration === 1 ? 'hour' : 'hours'}`
+      : 'N/A';
+    const durationPrefix = pkg.packageType === 'Individual' ? '' : 'Up to ';
     const slug = pkg.slug || `fallback-${pkg.name.toLowerCase().replace(/\s+/g, '-')}`;
     const isSale = pkg.Sale === "Y";
     const isNew = pkg.New === "Y";
@@ -937,7 +968,7 @@
       <span class="${tagClass}">${displayType}</span>
       <p class="description"><strong>Description:</strong> ${pkg.description}</p>
       <p><strong>Guests:</strong> ${pkg.guests}</p>
-      <p><strong>Duration:</strong> ${durationText}</p>
+      <p><strong>Duration:</strong> ${durationPrefix}${durationText}</p>
       <p><strong>Price:</strong> ${priceDetails}</p>
       <p><strong>Services Included:</strong></p>
       <div class="equipment-tags">
