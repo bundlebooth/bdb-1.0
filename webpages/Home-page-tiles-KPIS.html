@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BundleRush KPI Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        html {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #FFFFFF;
+            color: #c0c0c0;
+            margin: 0;
+            padding: 0.5rem;
+            display: block;
+        }
+
+        .kpi-container {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 2rem;
+            max-width: 1400px;
+            width: 100%;
+            padding: 1rem;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .kpi-card {
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 1rem;
+            padding: 2.5rem;
+            text-align: center;
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.6s ease forwards;
+            animation-delay: calc(var(--order) * 0.1s);
+            opacity: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .kpi-icon {
+            color: #666666;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .kpi-number {
+            font-size: 3.25rem;
+            font-weight: 700;
+            color: #666666;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .kpi-number::after {
+            content: '+';
+            position: absolute;
+            right: -1.75rem;
+            top: 50%;
+            transform: translateY(-50%) scale(0) rotate(0deg);
+            font-size: 1.75rem;
+            color: #666666;
+            opacity: 0;
+            transition: transform 0.4s ease, opacity 0.4s ease, rotate 0.4s ease;
+        }
+
+        .kpi-number.complete::after {
+            transform: translateY(-50%) scale(1) rotate(360deg);
+            opacity: 1;
+        }
+
+        .kpi-label {
+            font-size: 1.1rem;
+            color: #808080;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+        }
+
+        .platform-badge {
+            display: inline-block;
+            background: #c0c0c0;
+            color: #000000;
+            font-size: 1rem;
+            padding: 0.5rem 1.25rem;
+            border-radius: 1.75rem;
+            margin-top: 1rem;
+            transition: transform 0.3s ease;
+            text-decoration: none;
+        }
+
+        .platform-badge:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .kpi-container {
+                flex-wrap: wrap;
+                gap: 1.5rem;
+                padding: 0.5rem;
+            }
+            .kpi-card {
+                min-width: 200px;
+                max-width: 250px;
+            }
+            .kpi-number {
+                font-size: 2.75rem;
+            }
+            .kpi-label {
+                font-size: 0.95rem;
+            }
+            .platform-badge {
+                font-size: 0.9rem;
+                padding: 0.35rem 1rem;
+            }
+            .kpi-icon {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="kpi-container" id="kpi-container">
+        <div class="kpi-card" style="--order: 1">
+            <i class="fas fa-gift fa-2x kpi-icon" aria-hidden="true"></i>
+            <div class="kpi-number" id="bundle-count">0</div>
+            <div class="kpi-label">Bundles Available</div>
+        </div>
+        <div class="kpi-card" style="--order: 2">
+            <i class="fas fa-star fa-2x kpi-icon" aria-hidden="true"></i>
+            <div class="kpi-number" id="equipment-count">0</div>
+            <div class="kpi-label">Event Features</div>
+        </div>
+        <div class="kpi-card" style="--order: 3">
+            <i class="fas fa-calendar fa-2x kpi-icon" aria-hidden="true"></i>
+            <div class="kpi-number" id="event-type-count">0</div>
+            <div class="kpi-label">Event Types</div>
+        </div>
+        <div class="kpi-card" style="--order: 4">
+            <i class="fas fa-link fa-2x kpi-icon" aria-hidden="true"></i>
+            <div class="kpi-number" id="platform-count">0</div>
+            <div class="kpi-label">Platform</div>
+            <a href="https://rebrand.ly/ymgbgn4" class="platform-badge" target="_blank" rel="noopener noreferrer">All Bundles Here!</a>
+        </div>
+    </div>
+
+    <script>
+        let hasStarted = false;
+
+        async function loadKPIs() {
+            if (hasStarted) return;
+            hasStarted = true;
+
+            try {
+                const response = await fetch(`https://raw.githubusercontent.com/bundlebooth/bdb-1.0/refs/heads/main/packages.json?cachebust=${Date.now()}`);
+                const data = await response.json();
+
+                const bundleCount = Array.isArray(data) ? data.length : 0;
+
+                const equipmentTypes = new Set();
+                data.forEach(bundle => {
+                    if (Array.isArray(bundle.equipment)) {
+                        bundle.equipment.forEach(equipment => {
+                            if (typeof equipment === 'string' && equipment.trim() !== '' && equipment.toLowerCase() !== 'all') {
+                                equipmentTypes.add(equipment);
+                            }
+                        });
+                    }
+                });
+
+                const eventTypes = new Set();
+                data.forEach(bundle => {
+                    if (Array.isArray(bundle.eventType)) {
+                        bundle.eventType.forEach(type => {
+                            if (typeof type === 'string' && type.trim() !== '' && type.toLowerCase() !== 'all') {
+                                eventTypes.add(type);
+                            }
+                        });
+                    }
+                });
+
+                animateCounter('bundle-count', bundleCount, true, () => {
+                    animateCounter('equipment-count', equipmentTypes.size, true, () => {
+                        animateCounter('event-type-count', eventTypes.size, true, () => {
+                            animateCounter('platform-count', 1, false);
+                        });
+                    });
+                });
+            } catch (error) {
+                console.error('Error fetching KPI data:', error);
+                animateCounter('bundle-count', 0, true, () => {
+                    animateCounter('equipment-count', 0, true, () => {
+                        animateCounter('event-type-count', 0, true, () => {
+                            animateCounter('platform-count', 1, false);
+                        });
+                    });
+                });
+            }
+        }
+
+        function animateCounter(elementId, target, addPlus, callback) {
+            const element = document.getElementById(elementId);
+            let current = 0;
+            const increment = target / 30;
+            const interval = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(interval);
+                    element.textContent = Math.round(current);
+                    if (addPlus) {
+                        element.classList.add('complete');
+                    }
+                    if (callback) callback();
+                } else {
+                    element.textContent = Math.round(current);
+                }
+            }, 30);
+        }
+
+        function isElementInViewport(el) {
+            const rect = el.getBoundingClientRect();
+            const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+            const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+
+            return (
+                rect.top <= windowHeight * 0.9 &&
+                rect.bottom >= 0 &&
+                rect.left <= windowWidth &&
+                rect.right >= 0
+            );
+        }
+
+        function checkVisibility() {
+            const kpiContainer = document.getElementById('kpi-container');
+            if (kpiContainer && isElementInViewport(kpiContainer)) {
+                loadKPIs();
+                window.removeEventListener('scroll', checkVisibility);
+                window.removeEventListener('resize', checkVisibility);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkVisibility();
+            window.addEventListener('scroll', checkVisibility);
+            window.addEventListener('resize', checkVisibility);
+        });
+    </script>
+</body>
+</html>
