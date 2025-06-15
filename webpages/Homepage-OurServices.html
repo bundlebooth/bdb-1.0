@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BundleBooth Homepage Simplified Grid</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bb-blue: #2c3e50;
+      --bb-red: #e74c3c;
+      --bb-light: #f8f9fa;
+      --bb-dark: #343a40;
+      --bb-primary: #3498db;
+      --bb-secondary: #95a5a6;
+      --bb-border: #e0e0e0;
+      --bb-green: #27ae60;
+      --bb-hover-grey: #4a5057;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #fff;
+    }
+
+    /* Loading Spinner Styles */
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .loader {
+      border: 8px solid #c0c0c0;
+      border-top: 8px solid #555;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 30px;
+    }
+
+    .booth-grid {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      gap: 30px;
+      padding: 30px 0;
+    }
+
+    .booth-container {
+      flex: 0 0 calc(33.33% - 20px);
+      min-width: calc(33.33% - 20px);
+      max-width: 400px;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid var(--bb-border);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      overflow: hidden;
+    }
+
+    .booth-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .image-container {
+      height: 200px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #FFFFFF 0%, #F5F6F5 100%);
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+
+    .booth-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .booth-container:hover .booth-image {
+      transform: scale(1.1);
+    }
+
+    .booth-content {
+      padding: 15px;
+      text-align: center;
+    }
+
+    .booth-icon {
+      color: #C0C0C0;
+      margin-bottom: 8px;
+    }
+
+    .booth-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #555555;
+      margin-bottom: 8px;
+    }
+
+    .booth-description {
+      font-size: 0.95rem;
+      color: #777777;
+      margin-bottom: 12px;
+    }
+
+    .booth-description strong {
+      font-weight: 600;
+    }
+
+    .learn-more-button {
+      display: inline-block;
+      padding: 8px 16px;
+      background: rgba(44, 62, 80, 0.1);
+      color: var(--bb-blue);
+      font-weight: 500;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.25s;
+      border: none;
+      cursor: pointer;
+      animation: pulse 2s infinite;
+    }
+
+    .learn-more-button:hover,
+    .learn-more-button:focus {
+      background: var(--bb-hover-grey);
+      color: #fff;
+      transform: translateY(-2px);
+      animation: none;
+      outline: none;
+    }
+
+    .learn-more-button:active {
+      background: var(--bb-dark);
+      color: #fff;
+      transform: translateY(0);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 900px) {
+      .booth-grid {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        padding: 20px 0;
+        overflow-x: hidden;
+      }
+
+      .booth-container {
+        flex: 0 0 100%;
+        min-width: 100%;
+        max-width: 350px;
+      }
+
+      .image-container {
+        height: 180px;
+      }
+
+      .booth-content {
+        padding: 12px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .booth-grid {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 0;
+      }
+
+      .booth-container {
+        flex: 0 0 100%;
+        min-width: 100%;
+        max-width: 300px;
+      }
+
+      .image-container {
+        height: 160px;
+      }
+
+      .booth-title {
+        font-size: 1.1rem;
+      }
+
+      .booth-description {
+        font-size: 0.85rem;
+      }
+
+      .learn-more-button {
+        padding: 7px 12px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Spinner -->
+  <div class="loader-overlay" id="loader">
+    <div class="loader"></div>
+  </div>
+
+  <div class="container">
+    <div class="booth-grid">
+      <!-- Interactive Booths & Keepsakes -->
+      <div class="booth-container">
+        <div class="image-container">
+          <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/Screenshot%202025-05-23%20165713-11a8954.png" alt="Interactive Booths & Keepsakes" class="booth-image">
+        </div>
+        <div class="booth-content">
+          <div class="booth-title">Interactive Booths & Keepsakes</div>
+          <p class="booth-description">
+            Capture the fun with our <strong>Photo</strong> and <strong>Video</strong> Booths, <strong>Magazine</strong> <strong>Booth</strong>, and <strong>Audio Guest Book</strong> for lasting memories.
+          </p>
+          <a href="https://rebrand.ly/gbletsf" target="_blank" rel="noopener noreferrer" class="learn-more-button">Learn More</a>
+        </div>
+      </div>
+      <!-- Dessert & Beverage Stations -->
+      <div class="booth-container">
+        <div class="image-container">
+          <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/pixelcut-export(4)-28e230f.png" alt="Dessert & Beverage Stations" class="booth-image">
+        </div>
+        <div class="booth-content">
+          <div class="booth-title">Dessert & Beverage Stations</div>
+          <p class="booth-description">
+            Treat your guests to our tempting <strong>Waffles</strong> and a satisfying <strong>Espresso</strong>/<strong>Coffee</strong> and <strong>Smoothies</strong> <strong>Booth</strong>.
+          </p>
+          <a href="https://rebrand.ly/udwlgnu" target="_blank" rel="noopener noreferrer" class="learn-more-button">Learn More</a>
+        </div>
+      </div>
+      <!-- Special Effects & Ambiance -->
+      <div class="booth-container">
+        <div class="image-container">
+          <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/rs%253Dw_1280%252Ch_1921.webp" alt="Special Effects & Ambiance" class="booth-image">
+        </div>
+        <div class="booth-content">
+          <div class="booth-title">Special Effects & Ambiance</div>
+          <p class="booth-description">
+            Enhance your event with <strong>Sparkler Effects</strong>, dramatic <strong>Dry Ice Fog</strong>, and a <strong>Laser Light Show</strong> for an unforgettable atmosphere.
+          </p>
+          <a href="https://rebrand.ly/jn0vpv5" target="_blank" rel="noopener noreferrer" class="learn-more-button">Learn More</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Hide loader when page is fully loaded
+    window.onload = function() {
+      document.getElementById('loader').style.display = 'none';
+    };
+  </script>
+</body>
+</html>
