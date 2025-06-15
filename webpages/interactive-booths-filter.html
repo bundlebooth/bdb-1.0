@@ -201,7 +201,6 @@
       animation: fadeInUp 0.6s forwards;
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
-      touch-action: auto;
     }
 
     .slide.active {
@@ -478,7 +477,6 @@
         padding: 0;
         overflow-x: hidden;
         scroll-snap-type: none;
-        touch-action: auto;
       }
 
       .booth-container {
@@ -548,6 +546,7 @@
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Cal.com embed script -->
   <script type="text/javascript">
     (function (C, A, L) { 
       let p = function (a, ar) { a.q.push(ar); }; 
@@ -586,6 +585,7 @@
       <div class="booth-option" data-booth="3">Magazine Booth</div>
     </div>
     <div class="booth-grid">
+      <!-- Photo Booth Section -->
       <div class="booth-container">
         <div class="image-container">
           <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/ChatGPT%2520Image%2520May%252021%252C%25202025%252C%252008_46_42%2520PM.png" alt="Photo Booth" class="booth-image">
@@ -618,6 +618,7 @@
         </div>
       </div>
       
+      <!-- 360 Video Booth Section -->
       <div class="booth-container">
         <div class="image-container">
           <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/May%2021%2C%202025%2C%2008_37_10%20PM.png" alt="360 Video Booth" class="booth-image">
@@ -634,7 +635,7 @@
           <div class="slideshow-container" id="video-booth-slideshow">
             <div class="loading">Loading 360 Video Booth packages...</div>
           </div>
-          <div class="slideshow-note">Go to Packages or tap 'Browse More' to view more options.</div>
+          <div class="slideshow-note">Go to Packages or tap 'Browse More' to view more packages.</div>
           <div class="slideshow-controls">
             <button class="slideshow-button" id="video-booth-prev" aria-label="Previous Slide" disabled>
               <i class="fas fa-chevron-left"></i>
@@ -650,6 +651,7 @@
         </div>
       </div>
       
+      <!-- Audio Guest Book Section -->
       <div class="booth-container">
         <div class="image-container">
           <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/blob-1481c96.png" alt="Audio Guest Book" class="booth-image">
@@ -664,7 +666,7 @@
           <div class="slideshow-container" id="audio-guestbook-slideshow">
             <div class="loading">Loading Audio Guest Book packages...</div>
           </div>
-          <div class="slideshow-note">Go to Packages or tap 'Browse More' to view more options.</div>
+          <div class="slideshow-note">Go to Packages or tap 'Browse More' to view more packages.</div>
           <div class="slideshow-controls">
             <button class="slideshow-button" id="audio-guestbook-prev" aria-label="Previous Slide" disabled>
               <i class="fas fa-chevron-left"></i>
@@ -680,6 +682,7 @@
         </div>
       </div>
       
+      <!-- Magazine Photo Booth Box Section -->
       <div class="booth-container">
         <div class="image-container">
           <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/blob-c4f551c.png" alt="Magazine Photo Booth Box" class="booth-image">
@@ -694,7 +697,7 @@
           <div class="slideshow-container" id="magazine-booth-slideshow">
             <div class="loading">Loading Magazine Booth packages...</div>
           </div>
-          <div class="slideshow-note">Go to Packages or tap 'Browse More' to view more options.</div>
+          <div class="slideshow-note">Go to Packages or tap 'Browse More' to view more packages.</div>
           <div class="slideshow-controls">
             <button class="slideshow-button" id="magazine-booth-prev" aria-label="Previous Slide" disabled>
               <i class="fas fa-chevron-left"></i>
@@ -715,8 +718,10 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       console.log('Page loaded at:', new Date().toISOString());
+	  // Data source for packages
       const dataSource = 'https://raw.githubusercontent.com/bundlebooth/bdb-1.0/main/packages.json';
-      
+	  
+      // Fallback package data
       const fallbackPackages = [
         {
           name: 'Sample Photo Booth Package',
@@ -770,6 +775,7 @@
         },
       ];
 
+      // Initialize Cal.com for each package's slug
       fallbackPackages.forEach(pkg => {
         const slug = pkg.slug || `fallback-${pkg.name.toLowerCase().replace(/\s+/g, '-')}`;
         const namespace = slug;
@@ -780,15 +786,17 @@
         });
       });
 
+      // Initialize booth navigation and drag functionality
       const boothGrid = document.querySelector('.booth-grid');
       const boothOptions = document.querySelectorAll('.booth-option');
       const boothContainers = document.querySelectorAll('.booth-container');
 
+      // Drag functionality
       let isDragging = false;
       let startX, scrollLeft, velocity = 0, lastTime = 0, lastX;
 
       function startDrag(e) {
-        if (window.innerWidth <= 900) return;
+        if (window.innerWidth <= 900) return; // Disable drag on mobile
         isDragging = true;
         boothGrid.style.cursor = 'grabbing';
         startX = (e.type === 'touchstart' ? e.touches[0].pageX : e.pageX) - boothGrid.offsetLeft;
@@ -800,12 +808,13 @@
       }
 
       function drag(e) {
-        if (!isDragging || window.innerWidth <= 900) return;
+        if (!isDragging) return;
         e.preventDefault();
         const x = (e.type === 'touchmove' ? e.touches[0].pageX : e.pageX) - boothGrid.offsetLeft;
-        const walk = (x - startX) * 1.5;
+        const walk = (x - startX) * 1.5; // Adjust drag sensitivity
         boothGrid.scrollLeft = scrollLeft - walk;
 
+        // Calculate velocity for momentum
         const now = Date.now();
         const deltaTime = now - lastTime;
         if (deltaTime > 0) {
@@ -827,12 +836,12 @@
       function applyMomentum() {
         if (Math.abs(velocity) < 0.1) return;
         let currentScroll = boothGrid.scrollLeft;
-        const momentum = velocity * 1000;
+        const momentum = velocity * 1000; // Scale velocity for momentum effect
 
         function animate() {
-          currentScroll -= velocity * 16;
+          currentScroll -= velocity * 16; // Approximate 60fps frame
           boothGrid.scrollLeft = currentScroll;
-          velocity *= 0.95;
+          velocity *= 0.95; // Friction
           if (Math.abs(velocity) > 0.01) {
             momentumId = requestAnimationFrame(animate);
           } else {
@@ -851,7 +860,7 @@
 
       function snapToNearest() {
         const scrollLeft = boothGrid.scrollLeft;
-        const containerWidth = boothContainers[0].offsetWidth + 30;
+        const containerWidth = boothContainers[0].offsetWidth + 30; // Include gap
         const index = Math.round(scrollLeft / containerWidth);
         boothGrid.scrollTo({
           left: index * containerWidth,
@@ -877,7 +886,7 @@
       function updateActiveOption() {
         if (window.innerWidth <= 900) return;
         const scrollLeft = boothGrid.scrollLeft;
-        const containerWidth = boothContainers[0].offsetWidth + 30;
+        const containerWidth = boothContainers[0].offsetWidth + 30; // Include gap
         const index = Math.round(scrollLeft / containerWidth);
         boothOptions.forEach(option => option.classList.remove('active'));
         if (boothOptions[index]) {
@@ -896,45 +905,24 @@
         boothOptions[index].classList.add('active');
       }
 
-      function setupTouchEvents() {
-        if (window.innerWidth > 900) {
-          boothGrid.addEventListener('mousedown', startDrag);
-          boothGrid.addEventListener('mousemove', drag);
-          boothGrid.addEventListener('mouseup', endDrag);
-          boothGrid.addEventListener('mouseleave', endDrag);
-          boothGrid.addEventListener('touchstart', startDrag, { passive: false });
-          boothGrid.addEventListener('touchmove', drag, { passive: false });
-          boothGrid.addEventListener('touchend', endDrag);
-        }
-      }
-
-      function removeTouchEvents() {
-        boothGrid.removeEventListener('mousedown', startDrag);
-        boothGrid.removeEventListener('mousemove', drag);
-        boothGrid.removeEventListener('mouseup', endDrag);
-        boothGrid.removeEventListener('mouseleave', endDrag);
-        boothGrid.removeEventListener('touchstart', startDrag);
-        boothGrid.removeEventListener('touchmove', drag);
-        boothGrid.removeEventListener('touchend', endDrag);
-      }
-
       boothOptions.forEach((option, index) => {
         option.addEventListener('click', () => {
           scrollToBooth(index);
         });
       });
 
+      boothGrid.addEventListener('mousedown', startDrag);
+      boothGrid.addEventListener('mousemove', drag);
+      boothGrid.addEventListener('mouseup', endDrag);
+      boothGrid.addEventListener('mouseleave', endDrag);
+      boothGrid.addEventListener('touchstart', startDrag, { passive: false });
+      boothGrid.addEventListener('touchmove', drag, { passive: false });
+      boothGrid.addEventListener('touchend', endDrag);
       boothGrid.addEventListener('scroll', () => {
         updateFadeEffect();
         updateActiveOption();
       });
-
-      setupTouchEvents();
-      window.addEventListener('resize', () => {
-        removeTouchEvents();
-        setupTouchEvents();
-        updateFadeEffect();
-      });
+      window.addEventListener('resize', updateFadeEffect);
 
       if (window.innerWidth > 900) {
         boothGrid.style.cursor = 'grab';
@@ -942,6 +930,7 @@
         updateFadeEffect();
       }
 
+      // Fetch packages from JSON
       fetch(dataSource)
         .then(response => {
           if (!response.ok) {
@@ -954,6 +943,7 @@
           if (!Array.isArray(allPackages)) {
             throw new Error('Invalid data format: Expected an array of packages');
           }
+          // Initialize Cal.com for fetched packages
           allPackages.forEach(pkg => {
             const slug = pkg.slug || `fallback-${pkg.name.toLowerCase().replace(/\s+/g, '-')}`;
             const namespace = slug;
@@ -1025,7 +1015,7 @@
         
         let currentSlide = 0;
         let filteredPackages = [];
-        let slides = [];
+        let slides = []; // Store slide elements for toggling
 
         function filterAndSortPackages() {
           console.log(`Filtering packages for: ${equipmentFilter}`);
@@ -1079,8 +1069,9 @@
             return;
           }
 
+          // Render slides only if not already created
           if (slides.length === 0) {
-            container.innerHTML = '';
+            container.innerHTML = ''; // Clear loading message
             filteredPackages.forEach((pkg, index) => {
               const packageTypeClass = pkg.packageType === 'Bundle' ? 'bundled-tag' : 'package-type-tag';
               const packageTypeDisplay = pkg.packageType === 'Bundle' ? 'Bundled' : 'Individual';
@@ -1108,7 +1099,7 @@
                   <div><span class="${packageTypeClass}">${packageTypeDisplay}</span></div>
                   ${pkg.description ? `<p class="description">${pkg.description}</p>` : ''}
                   <div class="package-details">
-                    ${pkg.guests ? `<p><strong>Guests:</strong> ${pkg.guests}</p>` : ''}
+                    ${pkg.guests ? `<p><strong>Guests:</strong> Up to ${pkg.guests}</p>` : ''}
                     <p><strong>Duration:</strong> ${pkg.maxDuration ? (pkg.packageType === 'Individual' ? `${pkg.maxDuration} hours` : `Up to ${pkg.maxDuration} hours`) : 'N/A'}</p>
                     ${pkg.price ? `
                         <p><strong>Price:</strong> <span class="${priceClass}">$${pkg.price}</span>
@@ -1128,6 +1119,7 @@
               slides.push(slide);
             });
           } else {
+            // Toggle visibility of existing slides
             slides.forEach((slide, index) => {
               slide.classList.toggle('active', index === currentSlide);
             });
