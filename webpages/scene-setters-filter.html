@@ -1030,13 +1030,19 @@
                 ? `href="https://app.cal.com/bundleboothca/${slug}" target="_blank" rel="noopener noreferrer"`
                 : `data-cal-link="bundleboothca/${slug}" data-cal-namespace="${slug}" data-cal-config='{"layout":"month_view"}'`;
               
+              // Determine duration text (singular/plural)
+              const durationText = pkg.maxDuration
+                ? `${pkg.maxDuration} ${pkg.maxDuration === 1 ? 'hour' : 'hours'}`
+                : 'N/A';
+              const durationPrefix = pkg.packageType === 'Individual' ? '' : 'Up to ';
+
               slide.innerHTML = `
                   <h4>${pkg.name || 'Unnamed Package'}${statusTags.join('')}</h4>
                   <div><span class="${packageTypeClass}">${packageTypeDisplay}</span></div>
                   ${pkg.description ? `<p class="description">${pkg.description}</p>` : ''}
                   <div class="package-details">
                     ${pkg.guests ? `<p><strong>Guests:</strong> ${pkg.guests}</p>` : ''}
-                    <p><strong>Duration:</strong> ${pkg.maxDuration ? (pkg.packageType === 'Individual' ? `${pkg.maxDuration} hours` : `Up to ${pkg.maxDuration} hours`) : 'N/A'}</p>
+                    <p><strong>Duration:</strong> ${durationPrefix}${durationText}</p>
                     ${pkg.price ? `
                         <p><strong>Price:</strong> <span class="${priceClass}">$${pkg.price}</span>
                         ${pkg.originalPrice && discount ? ` <span class="original-price">(Reg. $${pkg.originalPrice})</span> <span class="discount">- ${discount}% OFF!</span>` : ''}
