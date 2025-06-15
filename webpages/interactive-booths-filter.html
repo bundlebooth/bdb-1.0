@@ -1108,7 +1108,7 @@
                   <div><span class="${packageTypeClass}">${packageTypeDisplay}</span></div>
                   ${pkg.description ? `<p class="description">${pkg.description}</p>` : ''}
                   <div class="package-details">
-                    ${pkg.guests ? `<p><strong>Guests:</strong> Up to ${pkg.guests}</p>` : ''}
+                    ${pkg.guests ? `<p><strong>Guests:</strong> ${pkg.guests}</p>` : ''}
                     <p><strong>Duration:</strong> ${pkg.maxDuration ? (pkg.packageType === 'Individual' ? `${pkg.maxDuration} hours` : `Up to ${pkg.maxDuration} hours`) : 'N/A'}</p>
                     ${pkg.price ? `
                         <p><strong>Price:</strong> <span class="${priceClass}">$${pkg.price}</span>
