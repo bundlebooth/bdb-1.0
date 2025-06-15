@@ -845,12 +845,12 @@
     "servicesIncluded": [
       "Photo Booth",
       "Audio Guest Book",
-      "Laser Effect for First Dance"
+      "Laser First Dance"
     ],
     "equipment": [
       "Photo Booth",
       "Audio Guest Book",
-      "Laser Effect for First Dance"
+      "Laser First Dance"
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "locations": [
@@ -3982,10 +3982,10 @@
     "guests": "Up to 200",
     "maxDuration": 1,
     "servicesIncluded": [
-      "Laser Effect for First Dance"
+      "Laser First Dance"
     ],
     "equipment": [
-      "Laser Effect for First Dance"
+      "Laser First Dance"
     ],
     "note": "Laser light show for first dance",
     "locations": [
@@ -5437,11 +5437,11 @@
     "maxDuration": 6,
     "servicesIncluded": [
       "360 Video Booth",
-      "Laser Effect for First Dance"
+      "Laser First Dance"
     ],
     "equipment": [
       "360 Video Booth",
-      "Laser Effect for First Dance"
+      "Laser First Dance"
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "locations": [
@@ -5853,11 +5853,11 @@
     "maxDuration": 6,
     "servicesIncluded": [
       "Sparkler Boxes",
-      "Laser Effect for First Dance"
+      "Laser First Dance"
     ],
     "equipment": [
       "Sparkler Boxes",
-      "Laser Effect for First Dance"
+      "Laser First Dance"
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "locations": [
@@ -5957,11 +5957,11 @@
     "maxDuration": 6,
     "servicesIncluded": [
       "Photo Booth",
-      "Laser Effect for First Dance"
+      "Laser First Dance"
     ],
     "equipment": [
       "Photo Booth",
-      "Laser Effect for First Dance"
+      "Laser First Dance"
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "locations": [
@@ -6900,12 +6900,12 @@
     "servicesIncluded": [
       "Photo Booth",
       "Dry Ice Fog",
-      "Laser Effect for First Dance"
+      "Laser First Dance"
     ],
     "equipment": [
       "Photo Booth",
       "Dry Ice Fog",
-      "Laser Effect for First Dance"
+      "Laser First Dance"
     ],
     "note": "Additional charges apply for extended hours or additional services.",
     "locations": [
