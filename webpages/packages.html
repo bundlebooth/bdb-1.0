@@ -102,9 +102,14 @@
     .toggle-icon {
       font-size: 1rem;
       transition: transform 0.3s;
+      width: 16px;
+      text-align: center;
     }
-    .toggle-icon.collapsed {
-      transform: rotate(-90deg);
+    .toggle-icon.collapsed::before {
+      content: '+';
+    }
+    .toggle-icon:not(.collapsed)::before {
+      content: '−';
     }
     .filter-content {
       max-height: 500px;
@@ -364,9 +369,9 @@
       font-size: 14px;
       font-weight: normal;
     }
-    .equipment-tag-audio-guest-book {
+    .equipment-tag-waffle-booth {
       display: inline-block;
-      background: #fef2e8;
+      background: #fcf4e8;
       color: #7c2d12;
       padding: 3px 8px;
       border-radius: 4px;
@@ -386,7 +391,7 @@
     }
     .equipment-tag-espresso-coffee-booth {
       display: inline-block;
-      background: #f5e9dc;
+      background: #e6d9cb;
       color: #5c4033;
       padding: 3px 8px;
       border-radius: 4px;
@@ -394,7 +399,7 @@
       font-size: 14px;
       font-weight: normal;
     }
-    .equipment-tag-waffle-booth {
+    .equipment-tag-audio-guest-book {
       display: inline-block;
       background: #fce7f3;
       color: #831843;
@@ -416,8 +421,8 @@
     }
     .equipment-tag-sparkler-boxes {
       display: inline-block;
-      background: #f0f4f8;
-      color: #2d3748;
+      background: #fff7cc;
+      color: #5a4a00;
       padding: 3px 8px;
       border-radius: 4px;
       margin: 3px;
@@ -688,7 +693,7 @@
     <div class="filter-section">
       <div class="filter-header" data-filter="package-type">
         <h3>Package Type</h3>
-        <span class="toggle-icon">▼</span>
+        <span class="toggle-icon"></span>
       </div>
       <div id="package-type-filters" class="filter-content">
         <label><input type="checkbox" name="package-type" value="All" checked> All</label>
@@ -700,7 +705,7 @@
     <div class="filter-section">
       <div class="filter-header" data-filter="package-options">
         <h3>Package Options</h3>
-        <span class="toggle-icon">▼</span>
+        <span class="toggle-icon"></span>
       </div>
       <div id="package-options-filters" class="filter-content">
         <label><input type="checkbox" name="package-options" value="All" checked> All</label>
@@ -712,7 +717,7 @@
     <div class="filter-section">
       <div class="filter-header" data-filter="event-type">
         <h3>Event Type</h3>
-        <span class="toggle-icon">▼</span>
+        <span class="toggle-icon"></span>
       </div>
       <div id="event-type-filters" class="filter-content">
         <label><input type="checkbox" name="event-type" value="All" checked> All</label>
@@ -722,14 +727,14 @@
     <div class="filter-section">
       <div class="filter-header" data-filter="equipment">
         <h3>Services Type</h3>
-        <span class="toggle-icon">▼</span>
+        <span class="toggle-icon"></span>
       </div>
       <div id="equipment-filters" class="filter-content">
         <label><input type="checkbox" name="equipment" value="All" checked> All</label>
         <label><input type="checkbox" name="equipment" value="Photo Booth"> <span class="tag equipment-tag-photo-booth">Photo Booth</span></label>
         <label><input type="checkbox" name="equipment" value="360 Video Booth"> <span class="tag equipment-tag-360-video-booth">360 Video Booth</span></label>
         <label><input type="checkbox" name="equipment" value="Audio Guest Book"> <span class="tag equipment-tag-audio-guest-book">Audio Guest Book</span></label>
-        <label><input type="checkbox" name="equipment" value="Magazine Photo Booth Box"> <span class="tag equipment-tag-magazine-photo-booth-box">Magazine Booth Box</span></label>
+        <label><input type="checkbox" name="equipment" value="Magazine Booth Box"> <span class="tag equipment-tag-magazine-photo-booth-box">Magazine Booth Box</span></label>
         <label><input type="checkbox" name="equipment" value="Espresso & Coffee Booth"> <span class="tag equipment-tag-espresso-coffee-booth">Espresso & Coffee Booth</span></label>
         <label><input type="checkbox" name="equipment" value="Waffle Booth"> <span class="tag equipment-tag-waffle-booth">Waffle Booth</span></label>
         <label><input type="checkbox" name="equipment" value="Smoothies Booth"> <span class="tag equipment-tag-smoothies-booth">Smoothies Booth</span></label>
@@ -800,7 +805,7 @@
     'Photo Booth': 'equipment-tag-photo-booth',
     '360 Video Booth': 'equipment-tag-360-video-booth',
     'Audio Guest Book': 'equipment-tag-audio-guest-book',
-    'Magazine Photo Booth Box': 'equipment-tag-magazine-photo-booth-box',
+    'Magazine Booth Box': 'equipment-tag-magazine-photo-booth-box',
     'Espresso & Coffee Booth': 'equipment-tag-espresso-coffee-booth',
     'Waffle Booth': 'equipment-tag-waffle-booth',
     'Smoothies Booth': 'equipment-tag-smoothies-booth',
@@ -861,7 +866,7 @@
   }
 
   const durationSelect = document.getElementById('durationFilter');
-  for (let i = 1; i <= 10; i++) {
+  for (let i = 1; i <= 50; i++) {
     let opt = document.createElement('option');
     opt.value = i;
     opt.textContent = i;
@@ -1129,7 +1134,7 @@
       filtered = filtered.filter(pkg => 
         selectedEquipment.every(eq => 
           pkg.equipment.includes(eq) || 
-          (eq === "Laser First Dance" && pkg.equipment.includes("Laser Effect for First Dance"))
+          (eq === "Laser First Dance" && pkg.equipment.includes("Laser First Dance"))
         )
       );
     }
@@ -1214,10 +1219,7 @@
       const filterId = header.dataset.filter + '-filters';
       const content = document.getElementById(`${filterId}`);
       const icon = header.querySelector('.toggle-icon');
-      if (filterId === 'equipment-filters') {
-        content.classList.remove('collapsed');
-        icon.classList.remove('collapsed');
-      } else if (isMobile) {
+      if (isMobile) {
         content.classList.add('collapsed');
         icon.classList.add('collapsed');
       } else {
