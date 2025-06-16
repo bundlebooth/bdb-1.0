@@ -63,22 +63,43 @@
     .booth-option {
       cursor: pointer;
       padding: 8px 16px;
-      background: rgba(44, 62, 80, 0.1);
       border-radius: 6px;
       font-size: 0.9rem;
-      color: var(--bb-blue);
-      transition: background 0.3s ease, color 0.3s ease;
-    }
-
-    .booth-option:hover {
-      background: var(--bb-hover-grey);
-      color: #fff;
-    }
-
-    .booth-option.active {
-      background: var(--bb-dark);
-      color: #fff;
       font-weight: 500;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Sparkler Boxes Option */
+    .booth-option[data-service="sparkler-boxes"] {
+      background: #fff4e6;
+      color: #b8860b;
+    }
+
+    .booth-option[data-service="sparkler-boxes"].active {
+      box-shadow: 0 0 8px rgba(184, 134, 11, 0.6);
+      transform: scale(1.05);
+    }
+
+    /* Dry Ice Fog Option */
+    .booth-option[data-service="dry-ice-fog"] {
+      background: #e6f0fa;
+      color: #4682b4;
+    }
+
+    .booth-option[data-service="dry-ice-fog"].active {
+      box-shadow: 0 0 8px rgba(70, 130, 180, 0.6);
+      transform: scale(1.05);
+    }
+
+    /* Laser Effect for First Dance Option */
+    .booth-option[data-service="laser-effect-for-first-dance"] {
+      background: #f5e6ff;
+      color: #6a1b9a;
+    }
+
+    .booth-option[data-service="laser-effect-for-first-dance"].active {
+      box-shadow: 0 0 8px rgba(106, 27, 154, 0.6);
+      transform: scale(1.05);
     }
 
     .booth-grid {
@@ -254,6 +275,11 @@
       color: var(--bb-dark);
     }
 
+    .price.sale {
+      color: var(--bb-green);
+      font-weight: 600;
+    }
+
     .original-price {
       text-decoration: line-through;
       color: var(--bb-secondary);
@@ -262,7 +288,7 @@
     }
 
     .discount {
-      color: var(--bb-green);
+      color: var(--bb-red);
       font-weight: 600;
       font-size: 0.9rem;
       margin-left: 5px;
@@ -406,6 +432,112 @@
       margin: 3px;
       font-size: 14px;
       font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .equipment-tag:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-espresso-coffee-booth {
+      background: #e6d9cb;
+      color: #5c4033;
+    }
+
+    .equipment-tag-espresso-coffee-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-waffle-booth {
+      background: #fcf4e8;
+      color: #7c2d12;
+    }
+
+    .equipment-tag-waffle-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-smoothies-booth {
+      background: #e0f7fa;
+      color: #164e63;
+    }
+
+    .equipment-tag-smoothies-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-photo-booth {
+      background: #e6f0fa;
+      color: #1e3a8a;
+    }
+
+    .equipment-tag-photo-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-360-video-booth {
+      background: #e9f7e9;
+      color: #1a4d1a;
+    }
+
+    .equipment-tag-360-video-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-magazine-photo-booth-box {
+      background: #f3e8ff;
+      color: #4c1d95;
+    }
+
+    .equipment-tag-magazine-photo-booth-box:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-audio-guest-book {
+      background: #fce7f3;
+      color: #831843;
+    }
+
+    .equipment-tag-audio-guest-book:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-sparkler-boxes {
+      background: #fff4e6;
+      color: #b8860b;
+    }
+
+    .equipment-tag-sparkler-boxes:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-dry-ice-fog {
+      background: #e6f0fa;
+      color: #4682b4;
+    }
+
+    .equipment-tag-dry-ice-fog:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-laser-first-dance {
+      background: #f5e6ff;
+      color: #6a1b9a;
+    }
+
+    .equipment-tag-laser-first-dance:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .equipment-tags {
@@ -569,9 +701,9 @@
 <body>
   <div class="container">
     <div class="booth-options">
-      <div class="booth-option active" data-booth="0">Sparklers Box</div>
-      <div class="booth-option" data-booth="1">Dry Ice Fog</div>
-      <div class="booth-option" data-booth="2">Laser First Dance</div>
+      <div class="booth-option active" data-booth="0" data-service="sparkler-boxes">Sparklers Box</div>
+      <div class="booth-option" data-booth="1" data-service="dry-ice-fog">Dry Ice Fog</div>
+      <div class="booth-option" data-booth="2" data-service="laser-effect-for-first-dance">Laser First Dance</div>
     </div>
     <div class="booth-grid">
       <div class="booth-container">
@@ -598,7 +730,7 @@
             </button>
           </div>
           <div class="book-now-wrapper">
-            <a href="https://rebrand.ly/ymgbgn4" target="_blank" class="browse-more-button">Browse More</a>
+            <a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a>
           </div>
         </div>
       </div>
@@ -627,7 +759,7 @@
             </button>
           </div>
           <div class="book-now-wrapper">
-            <a href="https://rebrand.ly/ymgbgn4" target="_blank" class="browse-more-button">Browse More</a>
+            <a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a>
           </div>
         </div>
       </div>
@@ -656,7 +788,7 @@
             </button>
           </div>
           <div class="book-now-wrapper">
-            <a href="https://rebrand.ly/ymgbgn4" target="_blank" class="browse-more-button">Browse More</a>
+            <a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a>
           </div>
         </div>
       </div>
@@ -696,7 +828,7 @@
         },
         {
           name: "Sample Laser First Dance Package",
-          equipment: ["Laser Effect for First Dance"],
+          equipment: ["Laser First Dance"],
           packageType: "Individual",
           price: 500,
           description: "A sample laser first dance package for display purposes.",
@@ -932,7 +1064,7 @@
             prevId: 'laser-dance-prev',
             nextId: 'laser-dance-next',
             indicatorId: 'laser-dance-indicator',
-            filter: 'Laser Effect for First Dance'
+            filter: 'Laser First Dance'
           }
         ];
 
@@ -1051,7 +1183,7 @@
                       ${pkg.equipment ? `
                         <p><strong>Services Included:</strong></p>
                         <div class="equipment-tags">
-                          ${pkg.equipment.map(item => `<span class="equipment-tag">${item}</span>`).join('')}
+                          ${pkg.equipment.map(item => `<span class="equipment-tag equipment-tag-${item.toLowerCase().replace(/[^a-z0-9]+/g, '-')}" style="display: inline-block">${item}</span>`).join('')}
                         </div>
                       ` : ''}
                       <${buttonTag} class="book-now-button" ${buttonAttributes}>Book Now</${buttonTag}>
