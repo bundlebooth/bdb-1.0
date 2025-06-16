@@ -30,6 +30,7 @@
       color: #333;
       background-color: #fff;
       padding-bottom: 40px;
+      overscroll-behavior-y: auto;
     }
 
     .container {
@@ -63,22 +64,54 @@
     .booth-option {
       cursor: pointer;
       padding: 8px 16px;
-      background: rgba(44, 62, 80, 0.1);
       border-radius: 6px;
       font-size: 0.9rem;
-      color: var(--bb-blue);
-      transition: background 0.3s ease, color 0.3s ease;
-    }
-
-    .booth-option:hover {
-      background: var(--bb-hover-grey);
-      color: #fff;
-    }
-
-    .booth-option.active {
-      background: var(--bb-dark);
-      color: #fff;
       font-weight: 500;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Photo Booth Option */
+    .booth-option[data-service="photo-booth"] {
+      background: #e6f0fa;
+      color: #1e3a8a;
+    }
+
+    .booth-option[data-service="photo-booth"].active {
+      box-shadow: 0 0 8px rgba(30, 58, 138, 0.6);
+      transform: scale(1.05);
+    }
+
+    /* 360 Video Booth Option */
+    .booth-option[data-service="360-video-booth"] {
+      background: #e9f7e9;
+      color: #1a4d1a;
+    }
+
+    .booth-option[data-service="360-video-booth"].active {
+      box-shadow: 0 0 8px rgba(26, 77, 26, 0.6);
+      transform: scale(1.05);
+    }
+
+    /* Audio Guest Book Option */
+    .booth-option[data-service="audio-guest-book"] {
+      background: #fce7f3;
+      color: #831843;
+    }
+
+    .booth-option[data-service="audio-guest-book"].active {
+      box-shadow: 0 0 8px rgba(131, 24, 67, 0.6);
+      transform: scale(1.05);
+    }
+
+    /* Magazine Booth Option */
+    .booth-option[data-service="magazine-booth"] {
+      background: #f3e8ff;
+      color: #4c1d95;
+    }
+
+    .booth-option[data-service="magazine-booth"].active {
+      box-shadow: 0 0 8px rgba(76, 29, 149, 0.6);
+      transform: scale(1.05);
     }
 
     .booth-grid {
@@ -180,6 +213,7 @@
       position: relative;
       font-family: 'Poppins', sans-serif;
       margin-top: 20px;
+      touch-action: auto;
     }
 
     .slideshow-header {
@@ -264,6 +298,11 @@
       color: var(--bb-dark);
     }
 
+    .price.sale {
+      color: var(--bb-green);
+      font-weight: 600;
+    }
+
     .original-price {
       text-decoration: line-through;
       color: var(--bb-secondary);
@@ -272,7 +311,7 @@
     }
 
     .discount {
-      color: var(--bb-green);
+      color: var(--bb-red);
       font-weight: 600;
       font-size: 0.9rem;
       margin-left: 5px;
@@ -293,7 +332,7 @@
       width: 100%;
       text-align: center;
       transition: all 0.25s;
-      touch-action: manipulation;
+      touch-action: auto;
     }
 
     .book-now-button:hover,
@@ -323,7 +362,7 @@
       transition: all 0.25s;
       border: none;
       cursor: pointer;
-      touch-action: manipulation;
+      touch-action: auto;
     }
 
     .browse-more-button:hover {
@@ -349,6 +388,7 @@
       align-items: center;
       gap: 10px;
       margin-top: 15px;
+      touch-action: auto;
     }
 
     .slideshow-button {
@@ -362,7 +402,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      touch-action: manipulation;
+      touch-action: auto;
     }
 
     .slideshow-button:hover {
@@ -416,6 +456,187 @@
       margin: 3px;
       font-size: 14px;
       font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-photo-booth {
+      display: inline-block;
+      background: #e6f0fa;
+      color: #1e3a8a;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-photo-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-360-video-booth {
+      display: inline-block;
+      background: #e9f7e9;
+      color: #1a4d1a;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-360-video-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-waffle-booth {
+      display: inline-block;
+      background: #fcf4e8;
+      color: #7c2d12;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-waffle-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-magazine-booth-box {
+      display: inline-block;
+      background: #f3e8ff;
+      color: #4c1d95;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-magazine-booth-box:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-espresso-coffee-booth {
+      display: inline-block;
+      background: #e6d9cb;
+      color: #5c4033;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-espresso-coffee-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-espresso-and-coffee-booth {
+      display: inline-block;
+      background: #e6d9cb;
+      color: #5c4033;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-espresso-and-coffee-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-audio-guest-book {
+      display: inline-block;
+      background: #fce7f3;
+      color: #831843;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-audio-guest-book:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-smoothies-booth {
+      display: inline-block;
+      background: #fce7f3;
+      color: #831843;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-smoothies-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-sparkler-boxes {
+      display: inline-block;
+      background: #fff7cc;
+      color: #5a4a00;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-sparkler-boxes:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-dry-ice-fog {
+      display: inline-block;
+      background: #e0f7fa;
+      color: #164e63;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-dry-ice-fog:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-laser-effect-first-dance {
+      display: inline-block;
+      background: #e8ecef;
+      color: #495057;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-laser-effect-first-dance:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .equipment-tags {
@@ -477,6 +698,7 @@
         padding: 0;
         overflow-x: hidden;
         scroll-snap-type: none;
+        touch-action: auto;
       }
 
       .booth-container {
@@ -579,10 +801,10 @@
 <body>
   <div class="container">
     <div class="booth-options">
-      <div class="booth-option active" data-booth="0">Photo Booth</div>
-      <div class="booth-option" data-booth="1">360 Video Booth</div>
-      <div class="booth-option" data-booth="2">Audio Guest Book</div>
-      <div class="booth-option" data-booth="3">Magazine Booth</div>
+      <div class="booth-option active" data-booth="0" data-service="photo-booth">Photo Booth</div>
+      <div class="booth-option" data-booth="1" data-service="360-video-booth">360 Video Booth</div>
+      <div class="booth-option" data-booth="2" data-service="audio-guest-book">Audio Guest Book</div>
+      <div class="booth-option" data-booth="3" data-service="magazine-booth">Magazine Booth</div>
     </div>
     <div class="booth-grid">
       <!-- Photo Booth Section -->
@@ -613,7 +835,7 @@
             </button>
           </div>
           <div class="book-now-wrapper">
-            <a href="https://rebrand.ly/ymgbgn4" target="_blank" class="browse-more-button">Browse More</a>
+            <a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a>
           </div>
         </div>
       </div>
@@ -646,7 +868,7 @@
             </button>
           </div>
           <div class="book-now-wrapper">
-            <a href="https://rebrand.ly/ymgbgn4" target="_blank" class="browse-more-button">Browse More</a>
+            <a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a>
           </div>
         </div>
       </div>
@@ -677,20 +899,20 @@
             </button>
           </div>
           <div class="book-now-wrapper">
-            <a href="https://rebrand.ly/ymgbgn4" target="_blank" class="browse-more-button">Browse More</a>
+            <a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a>
           </div>
         </div>
       </div>
       
-      <!-- Magazine Photo Booth Box Section -->
+      <!-- Magazine Booth Box Section -->
       <div class="booth-container">
         <div class="image-container">
-          <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/blob-c4f551c.png" alt="Magazine Photo Booth Box" class="booth-image">
+          <img src="https://img1.wsimg.com/isteam/ip/e5031132-8c20-44e3-a810-901cf200c927/blob-c4f551c.png" alt="Magazine Booth Box" class="booth-image">
         </div>
         <div class="booth-content">
-          <h2>⭐ Magazine Photo Booth Box</h2>
+          <h2>⭐ Magazine Booth Box</h2>
           <p class="booth-description">
-            Bring the allure of a fashion magazine cover to your next event with our Magazine Photo Booth Box. Guests pose inside a life-sized, custom-branded magazine frame, instantly becoming the star of their own glamorous photo shoot. With professional lighting and a chic backdrop, this booth captures high-resolution, editorial-style portraits worthy of the front page. Give your guests a moment in the spotlight and a keepsake they'll love to share.
+            Bring the allure of a fashion magazine cover to your next event with our Magazine Booth Box. Guests pose inside a life-sized, custom-branded magazine frame, instantly becoming the star of their own glamorous photo shoot. With professional lighting and a chic backdrop, this booth captures high-resolution, editorial-style portraits worthy of the front page. Give your guests a moment in the spotlight and a keepsake they'll love to share.
           </p>
           
           <div class="slideshow-header">Available Packages:</div>
@@ -708,7 +930,7 @@
             </button>
           </div>
           <div class="book-now-wrapper">
-            <a href="https://rebrand.ly/ymgbgn4" target="_blank" class="browse-more-button">Browse More</a>
+            <a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a>
           </div>
         </div>
       </div>
@@ -718,9 +940,9 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       console.log('Page loaded at:', new Date().toISOString());
-	  // Data source for packages
+      // Data source for packages
       const dataSource = 'https://raw.githubusercontent.com/bundlebooth/bdb-1.0/main/packages.json';
-	  
+      
       // Fallback package data
       const fallbackPackages = [
         {
@@ -762,7 +984,7 @@
         },
         {
           name: 'Sample Magazine Booth Package',
-          equipment: ['Magazine Photo Booth Box'],
+          equipment: ['Magazine Booth Box'],
           packageType: 'Individual',
           price: 700,
           originalPrice: 900,
@@ -790,16 +1012,18 @@
       const boothGrid = document.querySelector('.booth-grid');
       const boothOptions = document.querySelectorAll('.booth-option');
       const boothContainers = document.querySelectorAll('.booth-container');
+      const slideshowControls = document.querySelectorAll('.slideshow-controls');
 
       // Drag functionality
       let isDragging = false;
-      let startX, scrollLeft, velocity = 0, lastTime = 0, lastX;
+      let startX, startY, scrollLeft, velocity = 0, lastTime = 0, lastX;
 
       function startDrag(e) {
         if (window.innerWidth <= 900) return; // Disable drag on mobile
         isDragging = true;
         boothGrid.style.cursor = 'grabbing';
         startX = (e.type === 'touchstart' ? e.touches[0].pageX : e.pageX) - boothGrid.offsetLeft;
+        startY = (e.type === 'touchstart' ? e.touches[0].pageY : e.pageY);
         scrollLeft = boothGrid.scrollLeft;
         velocity = 0;
         lastTime = Date.now();
@@ -809,8 +1033,15 @@
 
       function drag(e) {
         if (!isDragging) return;
-        e.preventDefault();
         const x = (e.type === 'touchmove' ? e.touches[0].pageX : e.pageX) - boothGrid.offsetLeft;
+        const y = (e.type === 'touchmove' ? e.touches[0].pageY : e.pageY);
+        const deltaX = Math.abs(x - startX);
+        const deltaY = Math.abs(y - startY);
+        if (deltaY > deltaX && e.type === 'touchmove') {
+          isDragging = false;
+          return; // Allow vertical scrolling
+        }
+        e.preventDefault();
         const walk = (x - startX) * 1.5; // Adjust drag sensitivity
         boothGrid.scrollLeft = scrollLeft - walk;
 
@@ -924,6 +1155,20 @@
       });
       window.addEventListener('resize', updateFadeEffect);
 
+      // Prevent slideshow controls from blocking vertical scroll
+      slideshowControls.forEach(control => {
+        control.addEventListener('touchstart', (e) => {
+          startY = e.touches[0].pageY;
+        }, { passive: true });
+        control.addEventListener('touchmove', (e) => {
+          const y = e.touches[0].pageY;
+          const deltaY = Math.abs(y - startY);
+          if (deltaY > 10) {
+            e.stopPropagation();
+          }
+        }, { passive: false });
+      });
+
       if (window.innerWidth > 900) {
         boothGrid.style.cursor = 'grab';
         boothOptions[0].classList.add('active');
@@ -991,7 +1236,7 @@
             prevId: 'magazine-booth-prev',
             nextId: 'magazine-booth-next',
             indicatorId: 'magazine-booth-indicator',
-            filter: 'Magazine Photo Booth Box'
+            filter: 'Magazine Booth Box'
           }
         ];
 
@@ -1109,7 +1354,7 @@
                       ${pkg.equipment ? `
                         <p><strong>Services Included:</strong></p>
                         <div class="equipment-tags">
-                          ${pkg.equipment.map(item => `<span class="equipment-tag">${item}</span>`).join('')}
+                          ${pkg.equipment.map(item => `<span class="equipment-tag equipment-tag-${item.toLowerCase().replace(/\s+/g, '-')}" style="display: inline-block">${item}</span>`).join('')}
                         </div>
                       ` : ''}
                       <${buttonTag} class="book-now-button" ${buttonAttributes}>Book Now</${buttonTag}>
