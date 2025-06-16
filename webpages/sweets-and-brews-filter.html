@@ -63,22 +63,43 @@
     .booth-option {
       cursor: pointer;
       padding: 8px 16px;
-      background: rgba(44, 62, 80, 0.1);
       border-radius: 6px;
       font-size: 0.9rem;
-      color: var(--bb-blue);
-      transition: background 0.3s ease, color 0.3s ease;
-    }
-
-    .booth-option:hover {
-      background: var(--bb-hover-grey);
-      color: #fff;
-    }
-
-    .booth-option.active {
-      background: var(--bb-dark);
-      color: #fff;
       font-weight: 500;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Espresso & Coffee Booth Option */
+    .booth-option[data-service="espresso-coffee-booth"] {
+      background: #e6d9cb;
+      color: #5c4033;
+    }
+
+    .booth-option[data-service="espresso-coffee-booth"].active {
+      box-shadow: 0 0 8px rgba(92, 64, 51, 0.6);
+      transform: scale(1.05);
+    }
+
+    /* Waffle Booth Option */
+    .booth-option[data-service="waffle-booth"] {
+      background: #fcf4e8;
+      color: #7c2d12;
+    }
+
+    .booth-option[data-service="waffle-booth"].active {
+      box-shadow: 0 0 8px rgba(124, 45, 18, 0.6);
+      transform: scale(1.05);
+    }
+
+    /* Smoothies Booth Option */
+    .booth-option[data-service="smoothies-booth"] {
+      background: #e0f7fa;
+      color: #164e63;
+    }
+
+    .booth-option[data-service="smoothies-booth"].active {
+      box-shadow: 0 0 8px rgba(22, 78, 99, 0.6);
+      transform: scale(1.05);
     }
 
     .booth-grid {
@@ -254,6 +275,11 @@
       color: var(--bb-dark);
     }
 
+    .price.sale {
+      color: var(--bb-green);
+      font-weight: 600;
+    }
+
     .original-price {
       text-decoration: line-through;
       color: var(--bb-secondary);
@@ -262,7 +288,7 @@
     }
 
     .discount {
-      color: var(--bb-green);
+      color: var(--bb-red);
       font-weight: 600;
       font-size: 0.9rem;
       margin-left: 5px;
@@ -406,6 +432,171 @@
       margin: 3px;
       font-size: 14px;
       font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-espresso-coffee-booth {
+      display: inline-block;
+      background: #e6d9cb;
+      color: #5c4033;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-espresso-coffee-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-waffle-booth {
+      display: inline-block;
+      background: #fcf4e8;
+      color: #7c2d12;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-waffle-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-smoothies-booth {
+      display: inline-block;
+      background: #e0f7fa;
+      color: #164e63;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-smoothies-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-photo-booth {
+      display: inline-block;
+      background: #e6f0fa;
+      color: #1e3a8a;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-photo-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-360-video-booth {
+      display: inline-block;
+      background: #e9f7e9;
+      color: #1a4d1a;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-360-video-booth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-magazine-photo-booth-box {
+      display: inline-block;
+      background: #f3e8ff;
+      color: #4c1d95;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-magazine-photo-booth-box:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-audio-guest-book {
+      display: inline-block;
+      background: #fce7f3;
+      color: #831843;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-audio-guest-book:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-sparkler-boxes {
+      display: inline-block;
+      background: #fff7cc;
+      color: #5a4a00;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-sparkler-boxes:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-dry-ice-fog {
+      display: inline-block;
+      background: #e0f7fa;
+      color: #164e63;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-dry-ice-fog:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .equipment-tag-laser-effect-first-dance {
+      display: inline-block;
+      background: #e8ecef;
+      color: #495057;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin: 3px;
+      font-size: 14px;
+      font-weight: normal;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .equipment-tag-laser-effect-first-dance:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .equipment-tags {
@@ -569,9 +760,9 @@
 <body>
   <div class="container">
     <div class="booth-options">
-      <div class="booth-option active" data-booth="0">Espresso & Coffee Booth</div>
-      <div class="booth-option" data-booth="1">Waffle Booth</div>
-      <div class="booth-option" data-booth="2">Smoothie Booth</div>
+      <div class="booth-option active" data-booth="0" data-service="espresso-coffee-booth">Espresso & Coffee Booth</div>
+      <div class="booth-option" data-booth="1" data-service="waffle-booth">Waffle Booth</div>
+      <div class="booth-option" data-booth="2" data-service="smoothies-booth">Smoothie Booth</div>
     </div>
     <div class="booth-grid">
       <div class="booth-container">
@@ -599,7 +790,7 @@
             </button>
           </div>
           <div class="book-now-wrapper">
-            <a href="https://rebrand.ly/ymgbgn4" target="_blank" class="browse-more-button">Browse More</a>
+            <a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a>
           </div>
         </div>
       </div>
@@ -629,7 +820,7 @@
             </button>
           </div>
           <div class="book-now-wrapper">
-            <a href="https://rebrand.ly/ymgbgn4" target="_blank" class="browse-more-button">Browse More</a>
+            <a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a>
           </div>
         </div>
       </div>
@@ -659,7 +850,7 @@
             </button>
           </div>
           <div class="book-now-wrapper">
-            <a href="https://rebrand.ly/ymgbgn4" target="_blank" class="browse-more-button">Browse More</a>
+            <a href="https://bundlebooth.ca/packages" target="_blank" class="browse-more-button">Browse More</a>
           </div>
         </div>
       </div>
@@ -1056,7 +1247,7 @@
                       ${pkg.equipment ? `
                         <p><strong>Services Included:</strong></p>
                         <div class="equipment-tags">
-                          ${pkg.equipment.map(item => `<span class="equipment-tag">${item}</span>`).join('')}
+                          ${pkg.equipment.map(item => `<span class="equipment-tag equipment-tag-${item.toLowerCase().replace(/[^a-z0-9]+/g, '-')}" style="display: inline-block">${item}</span>`).join('')}
                         </div>
                       ` : ''}
                       <${buttonTag} class="book-now-button" ${buttonAttributes}>Book Now</${buttonTag}>
