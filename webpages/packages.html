@@ -1394,7 +1394,7 @@
 
     const guestsVal = guestFilter.value || mobileGuestFilter.value;
     if (guestsVal) {
-      filtered = filtered.filter(pkg => pkg.guests >= parseInt(guestsVal));
+      filtered = filtered.filter(pkg => pkg.guests === parseInt(guestsVal));
     }
 
     const durationVal = durationFilter.value || mobileDurationFilter.value;
