@@ -788,7 +788,7 @@
 
 <div class="container">
   <aside>
-    <div class="results-count desktop-results-count" id="desktop-results-count">Showing 0 Packages</div>
+    <div class="results-count desktop-results-count" id="desktop-results-count">🎁 No Packages Available</div>
     <div class="filter-section">
       <div class="filter-header" data-filter="package-type">
         <h3>Package Type</h3>
@@ -890,7 +890,7 @@
           <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>
         </svg>
       </button>
-      <div class="results-count mobile-results-count" id="mobile-results-count">Showing 0 Packages</div>
+      <div class="results-count mobile-results-count" id="mobile-results-count">🎁 No Packages Available</div>
     </div>
     <div id="filters-horizontal">
       <div>
@@ -1055,7 +1055,7 @@
   let filteredBundles = bundles.slice();
 
   function updateResultsCount(count) {
-    const text = `Showing ${count} Package${count !== 1 ? 's' : ''}`;
+    const text = `🎁 ${count} Package${count !== 1 ? 's' : ''} Available`;
     mobileResultsCount.textContent = text;
     desktopResultsCount.textContent = text;
   }
