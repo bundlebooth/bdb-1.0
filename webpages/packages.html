@@ -281,7 +281,8 @@
       font-size: 0.9rem;
       margin-left: 5px;
     }
-    .book-now-button {
+    .book-now-button,
+    .apply-filters-button {
       display: inline-block;
       margin-top: 12px;
       padding: 10px 16px;
@@ -298,13 +299,16 @@
       text-align: center;
     }
     .book-now-button:hover,
-    .book-now-button:focus { 
+    .book-now-button:focus,
+    .apply-filters-button:hover,
+    .apply-filters-button:focus { 
       background: var(--bb-hover-grey);
       color: #fff;
       outline: none;
       transform: translateY(-2px);
     }
-    .book-now-button:active {
+    .book-now-button:active,
+    .apply-filters-button:active {
       background: var(--bb-dark);
       color: #fff;
       transform: translateY(0);
@@ -622,30 +626,22 @@
       stroke: var(--bb-dark);
     }
 
-    .apply-filters-button {
-      display: none;
-      padding: 10px 16px;
-      background: var(--bb-blue);
-      color: #fff;
-      font-weight: 500;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
+    .results-count {
+      background: #fff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
       font-size: 14px;
-      width: 100%;
-      text-align: center;
-      margin-top: 20px;
-      transition: all .25s;
+      font-weight: 500;
+      color: var(--bb-dark);
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,.05);
     }
-    .apply-filters-button:hover,
-    .apply-filters-button:focus {
-      background: var(--bb-hover-grey);
-      outline: none;
-      transform: translateY(-2px);
+    .mobile-results-count {
+      display: none;
     }
-    .apply-filters-button:active {
-      background: var(--bb-dark);
-      transform: translateY(0);
+    .desktop-results-count {
+      display: block;
     }
 
     @media(min-width: 901px) {
@@ -653,6 +649,9 @@
         display: flex;
       }
       .mobile-only-filters {
+        display: none;
+      }
+      .mobile-results-count {
         display: none;
       }
     }
@@ -713,6 +712,12 @@
       .package-type-tag {
         color: var(--bb-dark);
       }
+      .mobile-results-count {
+        display: block;
+      }
+      .desktop-results-count {
+        display: none;
+      }
     }
     @media(max-width: 600px) {
       #packages-container {
@@ -759,6 +764,7 @@
 
 <div class="container">
   <aside>
+    <div class="results-count desktop-results-count" id="desktop-results-count">Showing 0 Packages</div>
     <div class="filter-section">
       <div class="filter-header" data-filter="package-type">
         <h3>Package Type</h3>
@@ -897,6 +903,7 @@
         </select>
       </div>
     </div>
+    <div class="results-count mobile-results-count" id="mobile-results-count">Showing 0 Packages</div>
     <div class="pagination" id="pagination-top"></div>
     <div id="packages-container" tabindex="0"></div>
     <div class="pagination" id="pagination-bottom"></div>
@@ -987,6 +994,7 @@
     } catch (error) {
       console.error('Error loading packages:', error);
       packagesContainer.innerHTML = '<div class="no-results"><p>Unable to load packages. Please try again later.</p></div>';
+      updateResultsCount(0);
     }
   }
 
@@ -1013,10 +1021,18 @@
   const modalClose = document.querySelector('.modal-close');
   const filterToggleIcon = document.getElementById('filter-toggle-icon');
   const applyFiltersButton = document.getElementById('apply-filters-button');
+  const mobileResultsCount = document.getElementById('mobile-results-count');
+  const desktopResultsCount = document.getElementById('desktop-results-count');
 
   const ITEMS_PER_PAGE = 9;
   let currentPage = 1;
   let filteredBundles = bundles.slice();
+
+  function updateResultsCount(count) {
+    const text = `Showing ${count} Package${count !== 1 ? 's' : ''}`;
+    mobileResultsCount.textContent = text;
+    desktopResultsCount.textContent = text;
+  }
 
   function syncFilters(source) {
     if (source === guestFilter || source === mobileGuestFilter) {
@@ -1048,6 +1064,7 @@
 
   function renderPackages(list, page = 1) {
     packagesContainer.innerHTML = '';
+    updateResultsCount(list.length);
     if (list.length === 0) {
       packagesContainer.innerHTML = '<div class="no-results"><p>No matching packages found. <br> Try adjusting your filters or <a href="https://bundlebooth.ca/contact" target="_blank" rel="noopener noreferrer">contact us</a> to create a personalized bundle.</p></div>';
       paginationTopContainer.innerHTML = '';
