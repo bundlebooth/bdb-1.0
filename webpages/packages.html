@@ -603,6 +603,12 @@
       grid-column: 1 / -1;
     }
 
+    .filter-results-wrapper {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
     .filter-toggle-icon {
       display: none;
       width: 40px;
@@ -611,7 +617,7 @@
       border: none;
       cursor: pointer;
       padding: 8px;
-      margin-bottom: 16px;
+      flex-shrink: 0;
     }
     .filter-toggle-icon svg {
       width: 24px;
@@ -639,6 +645,11 @@
     }
     .mobile-results-count {
       display: none;
+      padding: 8px 12px;
+      font-size: 13px;
+      margin-bottom: 0;
+      flex-grow: 1;
+      text-align: center;
     }
     .desktop-results-count {
       display: block;
@@ -649,6 +660,9 @@
         display: flex;
       }
       .mobile-only-filters {
+        display: none;
+      }
+      .filter-results-wrapper {
         display: none;
       }
       .mobile-results-count {
@@ -679,6 +693,9 @@
       }
       main {
         padding: 16px;
+      }
+      .filter-results-wrapper {
+        display: flex;
       }
       .filter-toggle-icon {
         display: block;
@@ -756,6 +773,13 @@
       }
       .sale-tag, .new-tag {
         font-size: 0.5rem;
+      }
+      .filter-results-wrapper {
+        gap: 8px;
+      }
+      .mobile-results-count {
+        font-size: 12px;
+        padding: 6px 10px;
       }
     }
   </style>
@@ -860,11 +884,14 @@
   </aside>
 
   <main>
-    <button class="filter-toggle-icon" id="filter-toggle-icon" title="Toggle Filters">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>
-      </svg>
-    </button>
+    <div class="filter-results-wrapper">
+      <button class="filter-toggle-icon" id="filter-toggle-icon" title="Toggle Filters">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>
+        </svg>
+      </button>
+      <div class="results-count mobile-results-count" id="mobile-results-count">Showing 0 Packages</div>
+    </div>
     <div id="filters-horizontal">
       <div>
         <label for="guestFilter">Guests</label>
@@ -903,7 +930,6 @@
         </select>
       </div>
     </div>
-    <div class="results-count mobile-results-count" id="mobile-results-count">Showing 0 Packages</div>
     <div class="pagination" id="pagination-top"></div>
     <div id="packages-container" tabindex="0"></div>
     <div class="pagination" id="pagination-bottom"></div>
