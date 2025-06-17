@@ -668,6 +668,9 @@
       .mobile-results-count {
         display: none;
       }
+      .apply-filters-button {
+        display: none;
+      }
     }
     @media(max-width: 900px) {
       .container { 
@@ -680,9 +683,9 @@
         border-bottom: 1px solid #ddd;
         padding: 16px;
         position: fixed;
-        top: 0;
+        top: 64px; /* Start below the fixed filter-results-wrapper */
         left: 0;
-        height: 100%;
+        height: calc(100% - 64px); /* Adjust height to fit below filter-results-wrapper */
         z-index: 1000;
         transform: translateX(-100%);
         max-height: none;
@@ -692,13 +695,22 @@
         transform: translateX(0);
       }
       main {
-        padding: 16px;
+        padding: 64px 16px 16px 16px; /* Adjusted padding to account for fixed filter-results-wrapper */
       }
       .filter-results-wrapper {
         display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: var(--bb-light);
+        padding: 12px 16px;
+        z-index: 999;
+        height: 64px; /* Explicit height to ensure consistent spacing */
       }
       .filter-toggle-icon {
         display: block;
+        position: static; /* Ensure it stays within the flow of filter-results-wrapper */
       }
       .apply-filters-button {
         display: block;
@@ -1441,7 +1453,7 @@
   applyFiltersButton.addEventListener('click', () => {
     filterPackages();
     toggleFilters();
-    packagesContainer.scrollIntoView({ behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top of screen
   });
 
   // Event listeners for horizontal filters (desktop)
