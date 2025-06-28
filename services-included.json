@@ -1,0 +1,120 @@
+{
+  "services-included": [
+    {
+      "name": "360 Video Booth",
+      "features": [
+        "360 platform with HD slow-motion video capture",
+        "Studio lighting setup",
+        "On-site attendant",
+        "Custom video overlay",
+        "Fun prop set",
+        "Instant sharing via Airdrop/SMS/Email",
+        "Online gallery for download"
+      ]
+    },
+    {
+      "name": "Audio Guest Book",
+      "features": [
+        "Phone recording device",
+        "Custom welcome message",
+        "Unlimited voice recordings",
+        "USB or digital download of all audio messages",
+        "Tabletop setup with décor",
+        "Signage with instructions for guests"
+      ]
+    },
+    {
+      "name": "Dry Ice Fog",
+      "features": [
+        "Low-lying fog machine using dry ice",
+        "Perfect for first dance 'dancing on a cloud' effect",
+        "No smoke alarms triggered",
+        "Technician on site to manage fog timing",
+        "Requires proper ventilation access",
+        "Stunning visual for photos/videos"
+      ]
+    },
+    {
+      "name": "Espresso & Coffee Booth",
+      "features": [
+        "Espresso machine with professional barista",
+        "Full coffee menu (Espresso, Americano, Latte, Cappuccino)",
+        "Custom cups or sleeves with logo or monogram (optional)",
+        "Milk alternatives (almond, oat, etc.)",
+        "Premium syrups and flavors",
+        "Setup and teardown included",
+        "Branded signage/menu display",
+        "Power & water access required (or inquire if self-contained)"
+      ]
+    },
+    {
+      "name": "Laser First Dance",
+      "features": [
+        "Custom laser light show synced to music",
+        "Name/date projection options",
+        "Operator to manage timing and effects",
+        "Works best in dim/dark environments",
+        "Adds wow-factor to first dance",
+        "Can be personalized (colors, patterns, text)"
+      ]
+    },
+    {
+      "name": "Magazine Booth",
+      "features": [
+        "Custom magazine cover template",
+        "On-site attendant",
+        "Setup and teardown included"
+      ]
+    },
+    {
+      "name": "Photo Booth",
+      "features": [
+        "Sleek modern booth",
+        "Unlimited digital photo sessions",
+        "On-site attendant",
+        "Custom photo overlay",
+        "Choice of backdrop",
+        "Fun prop set",
+        "Instant sharing via Airdrop/SMS/Email",
+        "Online gallery for download",
+        "Optional 4x6 printing (if included in package)"
+      ]
+    },
+    {
+      "name": "Smoothie Booth",
+      "features": [
+        "Made-to-order smoothies",
+        "Selection of fruits and flavors",
+        "Non-dairy and dairy bases available",
+        "Eco-friendly cups and straws",
+        "Attendant to blend and serve",
+        "Branded signage and cup stickers (optional)",
+        "Setup and clean-up included"
+      ]
+    },
+    {
+      "name": "Sparkler Boxes",
+      "features": [
+        "Indoor-safe cold spark machines (non-pyro)",
+        "Two or four spark fountains",
+        "Remote or DMX controlled bursts",
+        "Ideal for grand entrances, cake cutting, or first dance",
+        "On-site technician/operator",
+        "Safety-rated equipment",
+        "Permits guidance (if needed for venue)"
+      ]
+    },
+    {
+      "name": "Waffle Booth",
+      "features": [
+        "Freshly made Belgian or bubble waffles",
+        "Choice of toppings (syrups, fruits, sprinkles, etc.)",
+        "On-site attendant to prep and serve",
+        "Branded serving trays or cones (optional)",
+        "Sweet or savory customization (if available)",
+        "Set-up & clean-up service",
+        "All materials and disposables included"
+      ]
+    }
+  ]
+}
