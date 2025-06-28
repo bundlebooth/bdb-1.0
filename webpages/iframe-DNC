@@ -1,1 +1,19 @@
-<iframe src="https://bundlebooth.github.io/bdb-1.0/webpages/package-compressed-v3-withpopup.html" width="100%" height="2300" frameborder="0" style="border:0;"></iframe>
+<iframe 
+  src="https://bundlebooth.github.io/bdb-1.0/webpages/package-compressed-v3-withpopup.html" 
+  style="width: 100%; height: 2300px; border: 0; display: block;" 
+  scrolling="no" 
+  allowfullscreen>
+</iframe>
+
+<style>
+  @media (max-width: 768px) {
+    iframe[style*="height: 2300px"] {
+      height: 2800px !important;
+    }
+  }
+  @media (max-width: 480px) {
+    iframe[style*="height: 2300px"] {
+      height: 3200px !important;
+    }
+  }
+</style>
