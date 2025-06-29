@@ -7,6 +7,7 @@
 
 
 function openModal(e, t) {
+  window.parent.postMessage({ type: 'scrollToTopOfIframe' }, '*');
     const n = e.packageType === "Bundle" ? "Bundled" : e.packageType;
     const r = e.packageType === "Bundle" ? "bundled-tag" : "package-type-tag";
     const i = e.maxDuration ? `${e.maxDuration} ${e.maxDuration === 1 ? "hour" : "hours"}` : "N/A";
